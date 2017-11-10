@@ -1,7 +1,8 @@
 import PATH from 'path'
 import FS from 'fs'
 
-import Container, { makeContainerApi } from './container'
+import Container from './container'
+import makeContainerApi from './makeContainerApi'
 
 export default makeContainer;
 

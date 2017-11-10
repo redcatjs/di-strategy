@@ -1,14 +1,8 @@
+import Var from './var'
 import Factory from './factory'
-
-export function makeContainerApi(container){
-	const di = (...args)=>{
-		return container.inject(...args);
-	};
-	di.container = container;
-	di.factory = container.factory.bind(container);
-	di.get = container.get.bind(container);
-	return di;
-}
+import Value from './value'
+import Interface from './interface'
+import makeContainerApi from './makeContainerApi'
 
 export default class Container{
 
@@ -23,8 +17,17 @@ export default class Container{
 		autoloadDirs = [],
 		autoloadExtensions = ['js'],
 		
+		defaultVar = 'interface',
+		defaultRuleVar = null,
+		defaultDecoratorVar = null,
+		
 		globalKey = false,
 	}){
+		
+		this.symClassName = Symbol('className');
+		this.symInterfaces = Symbol('types');
+		this.providerRegistry = {};
+		this.instanceRegistry = {};
 		
 		this.rules = this._mergeRules({
 			'*': {
@@ -37,10 +40,7 @@ export default class Container{
 				shareInstances: [],
 			}
 		},rules);
-		this.symClassName = Symbol('className');
-		this.symInterfaces = Symbol('types');
-		this.providerRegistry = {};
-		this.instanceRegistry = {};
+		
 		Object.keys(rules).forEach((interfaceName)=>{
 			const rule = rules[interfaceName];
 			const { instance, constructorParams } = rule;
@@ -57,8 +57,22 @@ export default class Container{
 		this.autoloadDirs = autoloadDirs;
 		this.loadExtensionRegex = new RegExp('/\.('+this.autoloadExtensions.join('|')+')$/');
 		
+		this.defaultRuleVar = defaultRuleVar || defaultVar;
+		this.defaultDecoratorVar = defaultDecoratorVar || defaultVar;
+		
+		this.allowedDefaultVars = ['interface','value'];
+		this._validateDefaultVar(defaultVar, 'defaultVar');
+		this._validateDefaultVar(this.defaultRuleVar, 'defaultRuleVar');
+		this._validateDefaultVar(this.defaultDecoratorVar, 'defaultDecoratorVar');
+		
 		if(globalKey){
 			global[globalKey] = makeContainerApi(this);
+		}
+	}
+	
+	_validateDefaultVar(value, property){
+		if(this.allowedDefaultVars.indexOf(value)===-1){
+			throw new Error('invalid type "'+value+'" specified for '+property+', possibles values: '+this.allowedDefaultVars.join(' | '));
 		}
 	}
 	
@@ -93,17 +107,16 @@ export default class Container{
 	}
 	
 	requireDep(key, requirePath){
-		if( ! this.autoloadExtensions.some(ext=>{
+		const found = this.autoloadExtensions.some(ext=>{
 			const path = requirePath+(ext?'.'+ext:'');
 			if(this.depExists(path)){
 				this.requires[key] = this.depRequire(path);
 				return true;
 			}
-		}) && ((this.autoloadFailOnMissingFile==='path' && rule.path) || this.autoloadFailOnMissingFile===true) ){
-			
+		});
+		if( ! found && ((this.autoloadFailOnMissingFile==='path' && rule.path) || this.autoloadFailOnMissingFile===true) ){
 			throw new Error('Missing expected dependency injection file "'+requirePath+'"');
 		}
-		
 	}
 	
 	autodecorateRequireMap(){
@@ -128,6 +141,11 @@ export default class Container{
 			
 			this._defineSym(target, this.symClassName, className);
 			this.registerClass(className, target);
+
+			if(typeof types == 'function'){
+				types = types();
+			}
+			types = types.map(type => this._wrapVarType(type, this.defaultDecoratorVar));
 			
 			if (target[this.symInterfaces]) {
 				types = types.concat(target[this.symInterfaces]);
@@ -136,47 +154,43 @@ export default class Container{
 		};
 	}
 	
-	factory(callback){
-		return new Factory(callback);
-	}
-	
 	get(interfaceDef, args, shareInstances = {}){
-		return this._provider(interfaceDef)(args, shareInstances);
-	}
-	
-	_provider(interfaceDef){
+		return this.provider(interfaceDef)(args, shareInstances);
+	}	
+	provider(interfaceName){
 		
-		if(typeof interfaceDef == 'object'){
-			
-			if(interfaceDef instanceof Factory){
-				return (args, shareInstances) => interfaceDef.callback(args, shareInstances);
+		if(typeof interfaceName == 'function'){
+			interfaceName = interfaceName[this.symClassName];
+			if(!interfaceName){
+				throw new Error('Unregistred class '+interfaceName.constructor.name);
 			}
-			
-			return (args, shareInstances)=>{
-				return this._recurse(interfaceDef,(str)=>{
-					return this._provider(str)(args, shareInstances);
-				});
-			};
 		}
 		
-		if(!this.providerRegistry[interfaceDef]){
-			this.providerRegistry[interfaceDef] = this._makeProvider(interfaceDef);
+		if(interfaceName instanceof Interface){
+			interfaceName = interfaceName.getName();
 		}
-		return this.providerRegistry[interfaceDef];
+		
+		if(!this.providerRegistry[interfaceName]){
+			this.providerRegistry[interfaceName] = this._makeProvider(interfaceName);
+		}
+		return this.providerRegistry[interfaceName];
 	}
 	
 	_makeProvider(interfaceDef){
 		const rule = this.getRule(interfaceDef);
 		const classDef = this._resolveInstanceOf(interfaceDef);
+		//console.log('interfaceDef', interfaceDef);
+		//console.log('classDef', classDef);
 		return (args, shareInstances)=>{
+			
+			if(shareInstances[interfaceDef]){
+				return shareInstances[interfaceDef];
+			}
 			
 			shareInstances = Object.assign({}, shareInstances);
 			
 			args = this._resolveArgs(classDef, rule, args, shareInstances);
 			
-			if(shareInstances[interfaceDef]){
-				return shareInstances[interfaceDef];
-			}
 			
 			if(this.instanceRegistry[interfaceDef]){
 				return this.instanceRegistry[interfaceDef];
@@ -201,39 +215,98 @@ export default class Container{
 			return args;
 		}
 		let interfaces = rule.constructorParams || classDef[this.symInterfaces] || [];
-		if(typeof interfaces == 'function'){
-			interfaces = interfaces();
+		
+		return interfaces.map((interfaceDef, index)=>{
+			return this.getParam(interfaceDef, rule, args, shareInstances, index);
+		});
+	}
+	
+	_resolveObject(interfaceDef, rule, args, shareInstances){
+		if(typeof interfaceDef == 'object' && !(interfaceDef instanceof Var)){
+			const o = {};
+			Object.keys(interfaceDef).forEach(k => {
+				o[k] = this.getParam(interfaceDef[k], rule, args, shareInstances);
+			});
+			return o;
+		}
+		return interfaceDef;
+	}
+	
+	getParamSubstitution(interfaceDef, rule, args, shareInstances, index){
+		const substitutions = this._wrapVarType(rule.substitutions, this.defaultRuleVar);
+		
+		if(typeof index !== 'undefined' && substitutions[index]){
+			interfaceDef = substitutions[index];
+			interfaceDef = this._wrapVarType(interfaceDef, this.defaultRuleVar, true);
 		}
 		
-		const substitutions = rule.substitutions || {};
+		if(interfaceDef instanceof Interface){
+			const interfaceName = interfaceDef.getName();
+			if(substitutions[interfaceName]){
+				interfaceDef = substitutions[interfaceName];
+				interfaceDef = this._wrapVarType(interfaceDef, this.defaultRuleVar, true);
+			}
+			
+		}
+		return interfaceDef;
+	}
+	getParam(interfaceDef, rule, args, shareInstances, index){
 		
-		return interfaces.map((interfaceDef, i)=>{
-			
-			if(typeof interfaceDef == 'string' && shareInstances[interfaceDef]){
-				return shareInstances[interfaceDef];
-			}
-			
-			if(substitutions[i]){
-				interfaceDef = substitutions[i];
-			}
-			
-			if(typeof interfaceDef == 'string' && substitutions[interfaceDef]){
-				interfaceDef = substitutions[interfaceDef];
-			}
-			if(typeof interfaceDef =='function'){
-				interfaceDef = interfaceDef();
-			}
-			
-			const shareInstance = typeof interfaceDef == 'string' && rule.shareInstances && rule.shareInstances.indexOf(interfaceDef) !== -1;
-			
+		
+		interfaceDef = this._wrapVarType(interfaceDef, this.defaultRuleVar);
+		
+		interfaceDef = this.getParamSubstitution(interfaceDef, rule, args, shareInstances, index);
+		
+		if(interfaceDef instanceof Factory){
+			return interfaceDef.callback(args, shareInstances);
+		}
+		if(interfaceDef instanceof Value){
+			return interfaceDef.getValue();
+		}
+		
+		if(interfaceDef instanceof Interface){
 			const instance = this.get(interfaceDef, undefined, shareInstances);
-			
-			if(shareInstance){
-				shareInstances[interfaceDef] = instance;
+			const interfaceName = interfaceDef.getName();
+			if(rule.shareInstances.indexOf(interfaceName) !== -1){
+				shareInstances[interfaceName] = instance;
 			}
-			
 			return instance;
-		});
+		}
+		
+		if(typeof interfaceDef == 'object'){
+			let o = this._resolveObject(interfaceDef, rule, args, shareInstances);
+			return o;
+		}
+	
+	}
+	
+	_wrapVarType(type, defaultVar, resolveFunction){
+		if(resolveFunction && typeof type == 'function'){
+			type = type();
+		}
+		if(type instanceof Var){
+			return type;
+		}
+		switch(defaultVar){
+			case 'interface':
+				if(typeof type == 'object' && type !== null){
+					const o = {};
+					Object.keys(type).forEach(key=>{
+						const v = type[key];
+						o[key] = typeof v == 'object' && v !== null && !(v instanceof Var) ? this._wrapVarType(v, defaultVar) : v;
+					});
+					return o;
+				}
+				if(typeof type == 'function'){
+					return this.factory(type);
+				}
+				return this.interface(type);
+			break;
+			case 'value':
+				return this.value(type);
+			break;
+		}
+		return type;
 	}
 	
 	registerInstance(name, instance){
@@ -241,11 +314,15 @@ export default class Container{
 	}
 	
 	getRule(interfaceName){
+		let rule = Object.assign({}, this.rules['*']);
+		
 		if(!interfaceName){
-			return this.rules['*'];
+			return rule;
 		}
 		
-		let rule = Object.assign({}, this.rules[interfaceName] ? this.rules[interfaceName] : this.rules['*']);
+		if(this.rules[interfaceName]){
+			Object.assign(rule, this.rules[interfaceName]);
+		}
 		
 		let stack = [];
 		this._resolveInstanceOf(interfaceName, stack);
@@ -375,8 +452,9 @@ export default class Container{
 		return str;
 	}
 
+	/*
 	_recurse(mixed, callback, result = {}){
-		if(typeof mixed == 'object'){
+		if(typeof mixed == 'object' && mixed !== null){
 			Object.keys(mixed).forEach((key)=>{
 				result[key] = this._recurse( mixed[key], callback );
 			});
@@ -384,5 +462,15 @@ export default class Container{
 		}
 		return callback(mixed);
 	}
+	*/
 	
+	factory(callback){
+		return new Factory(callback);
+	}
+	interface(name){
+		return new Interface(name);
+	}
+	value(value){
+		return new Value(value);
+	}
 }

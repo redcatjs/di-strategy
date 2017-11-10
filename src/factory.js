@@ -1,5 +1,7 @@
-export default class Factory {
+import Var from './var'
+export default class Factory extends Var {
 	constructor(callback){
+		super();
 		this.callback = callback;
 	}
 	callback(args, shareInstances){
