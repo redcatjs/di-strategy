@@ -2,6 +2,9 @@ import Var from './var'
 import Factory from './factory'
 import Value from './value'
 import Interface from './interface'
+
+import SharedInstance from './sharedInstance'
+
 import makeContainerApi from './makeContainerApi'
 
 export default class Container{
@@ -154,8 +157,8 @@ export default class Container{
 		};
 	}
 	
-	get(interfaceDef, args, shareInstances = {}){
-		return this.provider(interfaceDef)(args, shareInstances);
+	get(interfaceDef, args, sharedInstances = {}){
+		return this.provider(interfaceDef)(args, sharedInstances);
 	}	
 	provider(interfaceName){
 		
@@ -176,22 +179,24 @@ export default class Container{
 		return this.providerRegistry[interfaceName];
 	}
 	
-	_makeProvider(interfaceDef){
-		const rule = this.getRule(interfaceDef);
-		const classDef = this._resolveInstanceOf(interfaceDef);
-		return (args, shareInstances)=>{
+	_makeProvider(interfaceName){
+		const rule = this.getRule(interfaceName);
+		const classDef = this._resolveInstanceOf(interfaceName);
+		return (args, sharedInstances)=>{
 			
-			if(shareInstances[interfaceDef]){
-				return shareInstances[interfaceDef];
-			}
+			sharedInstances = Object.assign({}, sharedInstances);
+			rule.shareInstances.forEach(shareInterface => {
+				if(!sharedInstances[shareInterface]){
+					console.log('shareInterface',shareInterface);
+					sharedInstances[shareInterface] = new SharedInstance(shareInterface, this);
+				}
+			});
 			
-			shareInstances = Object.assign({}, shareInstances);
-			
-			args = this._resolveArgs(classDef, rule, args, shareInstances);
+			args = this._resolveArgs(classDef, rule, args, sharedInstances);
 			
 			
-			if(this.instanceRegistry[interfaceDef]){
-				return this.instanceRegistry[interfaceDef];
+			if(this.instanceRegistry[interfaceName]){
+				return this.instanceRegistry[interfaceName];
 			}
 							
 			const instance = new classDef(...args);
@@ -201,29 +206,29 @@ export default class Container{
 			}
 			
 			if(rule.shared){
-				this.registerInstance(interfaceDef, instance);
+				this.registerInstance(interfaceName, instance);
 			}
 			
 			return instance;
 		};
 	}
 	
-	_resolveArgs(classDef, rule, args, shareInstances){
+	_resolveArgs(classDef, rule, args, sharedInstances){
 		if(args){
 			return args;
 		}
 		let interfaces = rule.constructorParams || classDef[this.symInterfaces] || [];
 		
 		return interfaces.map((interfaceDef, index)=>{
-			return this.getParam(interfaceDef, rule, args, shareInstances, index);
+			return this.getParam(interfaceDef, rule, args, sharedInstances, index);
 		});
 	}
 	
-	_resolveObject(interfaceDef, rule, args, shareInstances){
+	_resolveObject(interfaceDef, rule, args, sharedInstances){
 		if(typeof interfaceDef == 'object' && !(interfaceDef instanceof Var)){
 			const o = {};
 			Object.keys(interfaceDef).forEach(k => {
-				o[k] = this.getParam(interfaceDef[k], rule, args, shareInstances);
+				o[k] = this.getParam(interfaceDef[k], rule, args, sharedInstances);
 			});
 			return o;
 		}
@@ -248,7 +253,7 @@ export default class Container{
 		}
 		return interfaceDef;
 	}
-	getParam(interfaceDef, rule, args, shareInstances, index){
+	getParam(interfaceDef, rule, args, sharedInstances, index){
 		
 		
 		interfaceDef = this._wrapVarType(interfaceDef, this.defaultRuleVar);
@@ -256,23 +261,24 @@ export default class Container{
 		interfaceDef = this.getParamSubstitution(interfaceDef, rule, index);
 		
 		if(interfaceDef instanceof Factory){
-			return interfaceDef.callback(args, shareInstances);
+			return interfaceDef.callback(args, sharedInstances);
 		}
 		if(interfaceDef instanceof Value){
 			return interfaceDef.getValue();
 		}
 		
 		if(interfaceDef instanceof Interface){
-			const instance = this.get(interfaceDef, undefined, shareInstances);
+			
 			const interfaceName = interfaceDef.getName();
-			if(rule.shareInstances.indexOf(interfaceName) !== -1){
-				shareInstances[interfaceName] = instance;
+			if(sharedInstances[interfaceName]){
+				return sharedInstances[interfaceName].get(sharedInstances);
 			}
-			return instance;
+			
+			return this.get(interfaceDef, undefined, sharedInstances);
 		}
 		
 		if(typeof interfaceDef == 'object'){
-			let o = this._resolveObject(interfaceDef, rule, args, shareInstances);
+			let o = this._resolveObject(interfaceDef, rule, args, sharedInstances);
 			return o;
 		}
 	
@@ -321,6 +327,8 @@ export default class Container{
 		if(this.rules[interfaceName]){
 			Object.assign(rule, this.rules[interfaceName]);
 		}
+		
+		rule.interfaceName = interfaceName; //for info
 		
 		let stack = [];
 		this._resolveInstanceOf(interfaceName, stack);
