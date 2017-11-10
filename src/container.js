@@ -179,8 +179,6 @@ export default class Container{
 	_makeProvider(interfaceDef){
 		const rule = this.getRule(interfaceDef);
 		const classDef = this._resolveInstanceOf(interfaceDef);
-		//console.log('interfaceDef', interfaceDef);
-		//console.log('classDef', classDef);
 		return (args, shareInstances)=>{
 			
 			if(shareInstances[interfaceDef]){
@@ -232,7 +230,7 @@ export default class Container{
 		return interfaceDef;
 	}
 	
-	getParamSubstitution(interfaceDef, rule, args, shareInstances, index){
+	getParamSubstitution(interfaceDef, rule, index){
 		const substitutions = this._wrapVarType(rule.substitutions, this.defaultRuleVar);
 		
 		if(typeof index !== 'undefined' && substitutions[index]){
@@ -255,7 +253,7 @@ export default class Container{
 		
 		interfaceDef = this._wrapVarType(interfaceDef, this.defaultRuleVar);
 		
-		interfaceDef = this.getParamSubstitution(interfaceDef, rule, args, shareInstances, index);
+		interfaceDef = this.getParamSubstitution(interfaceDef, rule, index);
 		
 		if(interfaceDef instanceof Factory){
 			return interfaceDef.callback(args, shareInstances);
@@ -451,18 +449,6 @@ export default class Container{
 		stack.push(str);
 		return str;
 	}
-
-	/*
-	_recurse(mixed, callback, result = {}){
-		if(typeof mixed == 'object' && mixed !== null){
-			Object.keys(mixed).forEach((key)=>{
-				result[key] = this._recurse( mixed[key], callback );
-			});
-			return result;
-		}
-		return callback(mixed);
-	}
-	*/
 	
 	factory(callback){
 		return new Factory(callback);
