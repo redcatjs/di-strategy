@@ -20,6 +20,9 @@ export default class Container{
 		autoloadDirs = [],
 		autoloadExtensions = ['js'],
 		
+		rootPath = null,
+		appRoot = '',
+		
 		defaultVar = 'interface',
 		defaultRuleVar = null,
 		defaultDecoratorVar = null,
@@ -39,6 +42,13 @@ export default class Container{
 		this.autoload = autoload;
 		this.autoloadDirs = autoloadDirs;
 		this.loadExtensionRegex = new RegExp('/\.('+this.autoloadExtensions.join('|')+')$/');
+		
+		this.rootPath = rootPath;
+		if( appRoot[appRoot.length-1] != '/'){
+			appRoot += '/';
+		}
+		this.appRoot = appRoot;
+		this.appRootStrLen = appRoot.length;
 		
 		this.defaultRuleVar = defaultRuleVar || defaultVar;
 		this.defaultDecoratorVar = defaultDecoratorVar || defaultVar;
@@ -110,13 +120,13 @@ export default class Container{
 				return;
 			}
 			const path = rule.path || key;
-			const requirePath = (this.rootPath?this.rootPath:'')+path;
-			this.requireDep(key, requirePath);
+			this.requireDep(key, path);
 			
 		});
 	}
 	
 	requireDep(key, requirePath){
+		requirePath = this.resolveAppRoot(requirePath);
 		const found = this.autoloadExtensions.some(ext=>{
 			const path = requirePath+(ext?'.'+ext:'');
 			if(this.depExists(path)){
@@ -127,6 +137,13 @@ export default class Container{
 		if( ! found && ((this.autoloadFailOnMissingFile==='path' && rule.path) || this.autoloadFailOnMissingFile===true) ){
 			throw new Error('Missing expected dependency injection file "'+requirePath+'"');
 		}
+	}
+	
+	resolveAppRoot(path){
+		if(path.substr(0,this.appRootStrLen)==this.appRoot){
+			path = this.rootPath+path.substr(this.appRootStrLen);
+		}
+		return path;
 	}
 	
 	autodecorateRequireMap(){
@@ -462,7 +479,7 @@ export default class Container{
 			const rule = this.rules[str];
 			let resolved = rule && rule.instanceOf ? rule.instanceOf : false;
 			if(!resolved){
-				throw new Error('Interface definition "'+str+'" not found');
+				throw new Error('Interface definition "'+str+'" not found, di load stack: '+JSON.stringify(stack, null, 2));
 			}
 			return this._resolveInstanceOf(resolved, stack);
 		}

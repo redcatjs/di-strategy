@@ -19,16 +19,15 @@ export class NodeContainer extends Container {
 		
 		let {
 			autoloadDirsRecursive = true,
-			rootPath = null,
 		} = config;
 		
-		if(!rootPath){
-			 rootPath = PATH.dirname(require.main.filename);
+		if(!this.rootPath){
+			 this.rootPath = PATH.dirname(require.main.filename);
 		}
-		if( rootPath[rootPath.length-1] != '/'){
-			rootPath += '/';
+		if( this.rootPath[this.rootPath.length-1] != '/'){
+			this.rootPath += '/';
 		}
-		this.rootPath = rootPath;
+		
 		
 		this.runAutoloader();
 	}
