@@ -95,6 +95,9 @@ export default class Container{
 	
 	autoloadFromRules(){
 		Object.keys(this.rules).forEach(key=>{
+			if(key=='*'){
+				return;
+			}
 			const rule = this.rules[key];
 			let autoload = this.autoload;
 			if(typeof rule.autoload !== 'undefined'){
@@ -107,7 +110,7 @@ export default class Container{
 				return;
 			}
 			const path = rule.path || key;
-			const requirePath = this.rootPath+path;
+			const requirePath = (this.rootPath?this.rootPath:'')+path;
 			this.requireDep(key, requirePath);
 			
 		});
