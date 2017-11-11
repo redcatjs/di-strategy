@@ -64,11 +64,7 @@ export default class Container{
 			global[globalKey] = makeContainerApi(this);
 		}
 		
-		if(typeof rules == 'function'){
-			rules = rules(this);
-		}
-		
-		this.rules = this._mergeRules({
+		this.rules = {
 			'*': {
 				shared: false,
 				inherit: true,
@@ -79,7 +75,13 @@ export default class Container{
 				substitutions: [],
 				shareInstances: [],
 			}
-		},rules);
+		};
+		
+		if(typeof rules == 'function'){
+			rules = rules(this);
+		}
+		
+		this.rules = this._mergeRules(this.rules,rules);
 		
 		Object.keys(rules).forEach((interfaceName)=>{
 			const rule = rules[interfaceName];
