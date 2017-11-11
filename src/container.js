@@ -32,26 +32,6 @@ export default class Container{
 		this.providerRegistry = {};
 		this.instanceRegistry = {};
 		
-		this.rules = this._mergeRules({
-			'*': {
-				shared: false,
-				inherit: true,
-				instanceOf: null,
-				constructorParams: null,
-				calls: [],
-				substitutions: [],
-				shareInstances: [],
-			}
-		},rules);
-		
-		Object.keys(rules).forEach((interfaceName)=>{
-			const rule = rules[interfaceName];
-			const { instance, constructorParams } = rule;
-			if(instance){
-				this.registerInstance(interfaceName, instance);
-			}
-		});
-		
 		this.requires = {};
 		this.autodecorate = autodecorate;
 		this.forceAutodecorate = forceAutodecorate;
@@ -71,6 +51,30 @@ export default class Container{
 		if(globalKey){
 			global[globalKey] = makeContainerApi(this);
 		}
+		
+		if(typeof rules == 'function'){
+			rules = rules(this);
+		}
+		
+		this.rules = this._mergeRules({
+			'*': {
+				shared: false,
+				inherit: true,
+				instanceOf: null,
+				constructorParams: null,
+				calls: [],
+				substitutions: [],
+				shareInstances: [],
+			}
+		},rules);
+		
+		Object.keys(rules).forEach((interfaceName)=>{
+			const rule = rules[interfaceName];
+			const { instance, constructorParams } = rule;
+			if(instance){
+				this.registerInstance(interfaceName, instance);
+			}
+		});
 	}
 	
 	_validateDefaultVar(value, property){
@@ -187,7 +191,6 @@ export default class Container{
 			sharedInstances = Object.assign({}, sharedInstances);
 			rule.shareInstances.forEach(shareInterface => {
 				if(!sharedInstances[shareInterface]){
-					console.log('shareInterface',shareInterface);
 					sharedInstances[shareInterface] = new SharedInstance(shareInterface, this);
 				}
 			});
@@ -202,7 +205,7 @@ export default class Container{
 			const instance = new classDef(...args);
 			
 			if(rule.calls){
-				this._runCalls(instance, rule.calls);
+				this._runCalls(instance, rule, sharedInstances);
 			}
 			
 			if(rule.shared){
@@ -422,14 +425,20 @@ export default class Container{
 		return arrayCalls;
 	}
 	
-	_runCalls(instance, calls){
+	_runCalls(instance, rule, sharedInstances){
+		let calls = rule.calls;
 		if(typeof calls == 'function'){
 			calls = calls();
 		}
 		calls = this._assocCallsToArray(calls);
 		calls.forEach((c)=>{
 			const [method, args] = c;
-			instance[method](...args);
+			
+			const resolvedArgs = args.map(arg => {
+				return this.getParam(arg, rule, args, sharedInstances);
+			});
+			
+			instance[method](...resolvedArgs);
 		});
 	}
 		
