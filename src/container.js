@@ -23,7 +23,7 @@ export default class Container{
 		autoloadExtensions = ['js'],
 		
 		rootPath = null,
-		appRoot = '',
+		appRoot = '/',
 		
 		defaultVar = 'interface',
 		defaultRuleVar = null,
@@ -43,14 +43,10 @@ export default class Container{
 		this.autoloadExtensions = autoloadExtensions;
 		this.autoload = autoload;
 		this.autoloadDirs = autoloadDirs;
-		this.loadExtensionRegex = new RegExp('/\.('+this.autoloadExtensions.join('|')+')$/');
+		this.loadExtensionRegex = new RegExp('\.('+this.autoloadExtensions.join('|')+')$');
 		
 		this.rootPath = rootPath;
-		if( appRoot[appRoot.length-1] != '/'){
-			appRoot += '/';
-		}
-		this.appRoot = appRoot;
-		this.appRootStrLen = appRoot.length;
+		this.setAppRoot(appRoot);
 		
 		this.defaultRuleVar = defaultRuleVar || defaultVar;
 		this.defaultDecoratorVar = defaultDecoratorVar || defaultVar;
@@ -91,6 +87,11 @@ export default class Container{
 			}
 		});
 		
+	}
+	
+	setAppRoot(appRoot){
+		this.appRoot = appRoot;
+		this.appRootStrLen = appRoot.length;
 	}
 	
 	_validateDefaultVar(value, property){
@@ -148,21 +149,48 @@ export default class Container{
 	
 	requireDep(key, requirePath){
 		requirePath = this.resolveAppRoot(requirePath);
-		const found = this.autoloadExtensions.some(ext=>{
-			const path = requirePath+(ext?'.'+ext:'');
+		const found = this.autoloadExtensions.concat('').some( ext => {
+			
+			const pathFragments = requirePath.split(':');
+			
+			
+			let path = pathFragments.shift();
+			if(ext){
+				path += '.'+ext;
+			}
+
 			if(this.depExists(path)){
-				this.requires[key] = this.depRequire(path);
+				let required = this.depRequire(path);
+				
+				
+				if(pathFragments.length){
+					pathFragments.forEach( subKey => {
+						if(typeof required !== 'undefined' && required !== null){
+							required = required[subKey];
+						}
+					});
+				}
+				
+				this.requires[key] = required;
+				
 				return true;
 			}
+			
 		});
 		if( ! found && ((this.autoloadFailOnMissingFile==='path' && rule.path) || this.autoloadFailOnMissingFile===true) ){
 			throw new Error('Missing expected dependency injection file "'+requirePath+'"');
 		}
 	}
 	
+	isAppRoot(path){
+		return path.substr(0,this.appRootStrLen)==this.appRoot;
+	}
+	replaceAppRootByAbsolute(path){
+		return this.rootPath+path.substr(this.appRootStrLen);
+	}
 	resolveAppRoot(path){
-		if(path.substr(0,this.appRootStrLen)==this.appRoot){
-			path = this.rootPath+path.substr(this.appRootStrLen);
+		if(this.isAppRoot(path)){
+			return this.replaceAppRootByAbsolute(path);
 		}
 		return path;
 	}

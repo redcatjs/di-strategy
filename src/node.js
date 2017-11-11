@@ -21,19 +21,26 @@ export class NodeContainer extends Container {
 			autoloadDirsRecursive = true,
 		} = config;
 		
-		if(!this.rootPath){
-			 this.rootPath = PATH.dirname(require.main.filename);
+		let rootPath = this.rootPath;
+		if(!rootPath){
+			rootPath = PATH.dirname(require.main.filename);
 		}
-		if( this.rootPath[this.rootPath.length-1] != '/'){
-			this.rootPath += '/';
+		if( rootPath[rootPath.length-1] != '/'){
+			rootPath += '/';
 		}
-		
+		this.rootPath = rootPath;
 		
 		this.runAutoloader();
 	}
 	
 	depExists(requirePath){
-		return FS.existsSync(requirePath);
+		try{
+			require.resolve(requirePath);
+			return true;
+		}
+		catch(e){
+			return false;
+		}
 	}
 	depRequire(requirePath){
 		return require(requirePath);
@@ -57,30 +64,44 @@ export class NodeContainer extends Container {
 	}
 	
 	nodeRequire(path, recursive){
-		const fileList = this.walkSync(this.rootPath+path, recursive, [], this.rootPath);
+		
+		let rootPathAbsolute;
+		let rootPathRelative;
+		if(this.isAppRoot){
+			path = this.replaceAppRootByAbsolute(path);
+			rootPathAbsolute = this.rootPath;
+			rootPathRelative = this.appRoot;
+		}
+		else{
+			rootPathRelative = path;
+			rootPathAbsolute = PATH.dirname( require.resolve(path) );
+			path = rootPathAbsolute;
+		}
+		
+		const fileList = this.walkSync(path, recursive, [], rootPathAbsolute, rootPathRelative, this.loadExtensionRegex);
+		
 		fileList.forEach(filename=>{
-			if(this.loadExtensionRegex.test(filename)){
-				const key = filename.substr(0, filename.lastIndexOf('.') || filename.length);
-				this.requires[key] = require(this.rootPath+filename);
-			}
+			const key = filename.substr(0, filename.lastIndexOf('.') || filename.length);
+			filename = this.resolveAppRoot(filename);
+			this.requires[key] = require( filename );
 		});
+		
 	}
-	walkSync(dir, recursive, filelist = [], root) {
+	walkSync(dir, recursive, filelist = [], rootPathAbsolute, rootPathRelative, exts) {
 		if( dir[dir.length-1] != '/'){
 			dir += '/';
-		}
-		if(!root){
-			root = dir;
 		}
 		const files = FS.readdirSync(dir);
 		files.forEach((file)=>{
 			if (FS.statSync(dir + file).isDirectory()) {
 				if(recursive){
-					filelist = this.walkSync(dir + file + '/', recursive, filelist, root);
+					filelist = this.walkSync(dir + file + '/', recursive, filelist, rootPathAbsolute, rootPathRelative, exts);
 				}
 			}
 			else {
-				filelist.push( (dir+file).substr(root.length) );
+				if(exts.test(file)){
+					filelist.push( rootPathRelative+(dir+'/'+file).substr(rootPathAbsolute.length) );
+				}
 			}
 		});
 		return filelist;
