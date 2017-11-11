@@ -6,6 +6,7 @@ import Factory from './factory'
 import Value from './value'
 import Interface from './interface'
 import Var from './var'
+import ClassDef from './classDef'
 
 export{
 	Container,
@@ -16,6 +17,7 @@ export{
 	Factory,
 	Value,
 	Interface,
+	ClassDef,
 }
 
 export default makeContainer;

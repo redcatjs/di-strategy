@@ -5,6 +5,8 @@ import Interface from './interface'
 
 import SharedInstance from './sharedInstance'
 
+import ClassDef from './classDef'
+
 import makeContainerApi from './makeContainerApi'
 
 export default class Container{
@@ -71,6 +73,7 @@ export default class Container{
 				shared: false,
 				inherit: true,
 				instanceOf: null,
+				classDef: null,
 				constructorParams: null,
 				calls: [],
 				substitutions: [],
@@ -85,6 +88,7 @@ export default class Container{
 				this.registerInstance(interfaceName, instance);
 			}
 		});
+		
 	}
 	
 	_validateDefaultVar(value, property){
@@ -99,8 +103,23 @@ export default class Container{
 			this.autoloadFromRules();
 		}
 		if(this.autodecorate){
-			this.autodecorateRequireMap();
+			this.autodecorateRequireMap(this.requires);
 		}
+		
+		this.autodecorateClassDefs();
+	}
+	
+	autodecorateClassDefs(){
+		const classDefinitions = {};
+		Object.entries(this.rules).forEach( ( [name, {classDef}] ) => {
+			if(classDef){
+				if(classDef instanceof ClassDef){
+					classDef = classDef.getClassDef();
+				}
+				classDefinitions[name] = classDef;
+			}
+		});
+		this.autodecorateRequireMap(classDefinitions);
 	}
 	
 	autoloadFromRules(){
@@ -146,9 +165,9 @@ export default class Container{
 		return path;
 	}
 	
-	autodecorateRequireMap(){
-		Object.keys(this.requires).forEach((name)=>{
-			this.autodecorateRequire(name,this.requires[name]);
+	autodecorateRequireMap(requires){
+		Object.keys(requires).forEach((name)=>{
+			this.autodecorateRequire(name,requires[name]);
 		});
 	}
 	autodecorateRequire(name,r){
@@ -388,7 +407,7 @@ export default class Container{
 	}
 	
 	_mergeRule(extendRule, rule){
-		let { shared, inherit, instanceOf, constructorParams, calls, substitutions, shareInstances } = rule;
+		let { shared, inherit, instanceOf, constructorParams, calls, substitutions, shareInstances, classDef } = rule;
 		if(typeof shared !== 'undefined'){
 			extendRule.shared = shared;
 		}
@@ -418,6 +437,7 @@ export default class Container{
 			}
 			extendRule.shareInstances = [...new Set([...extendRule.shareInstances, ...shareInstances])];
 		}
+		extendRule.classDef = classDef;
 		return extendRule;
 	}
 	
@@ -495,5 +515,9 @@ export default class Container{
 	}
 	value(value){
 		return new Value(value);
+	}
+	
+	classDef(callback){
+		return new ClassDef(callback);
 	}
 }
