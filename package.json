@@ -1,11 +1,12 @@
 {
   "name": "di-strategy",
   "version": "1.3.0",
-  "description": "Dependency Injection Container made universal",
+  "description": "high level dependency injector",
   "main": "dist/di.js",
   "scripts": {
     "postinstall": "npm run build",
-    "build": "babel src --out-dir dist --source-maps inline --copy-files"
+    "build": "babel src --out-dir dist --source-maps inline",
+    "dev": "babel src --out-dir dist --source-maps inline --watch"
   },
   "repository": {
     "type": "git",
@@ -17,7 +18,12 @@
     "injection",
     "container",
     "strategy",
-    "ioc"
+    "ioc",
+    "dic",
+    "node",
+    "webpack",
+    "inversion of control",
+    "decorator"
   ],
   "author": "Jo <jo@redcat.ninja> (https://redcat.ninja)",
   "license": "MIT",
