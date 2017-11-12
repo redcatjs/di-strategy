@@ -129,22 +129,17 @@ export default class Container{
 		});
 	}
 	autoloadFromRuleKey(key, stack = []){
-		const rule = this.rules[key];
-		
+		const rule = this.rules[key] || this.rules['*'];
 		if(rule.instanceOf){
-			
 			if(stack.indexOf(key)!==-1){
 				throw new Error('Cyclic interface definition error in '+JSON.stringify(stack.concat(key),null,2));
 			}
 			stack.push(key);
-			
 			this.autoloadFromRuleKey(rule.instanceOf, stack);
 		}
-		
 		if(!this.validateAutoloadFileName(key)){
 			return;
 		}
-		
 		let autoload = this.autoload;
 		if(typeof rule.autoload !== 'undefined'){
 			autoload = rule.autoload;
