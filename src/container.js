@@ -521,6 +521,12 @@ export default class Container{
 		}
 		calls = this._assocCallsToArray(calls);
 		calls.forEach((c)=>{
+			
+			if(typeof c == 'function'){
+				c(instance);
+				return;
+			}
+			
 			const [method, args] = c;
 			
 			const resolvedArgs = args.map(arg => {
