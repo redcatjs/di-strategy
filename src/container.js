@@ -127,24 +127,29 @@ export default class Container{
 	
 	autoloadFromRules(){
 		Object.keys(this.rules).forEach(key=>{
-			if(!this.validateAutoloadFileName(key)){
-				return;
-			}
-			const rule = this.rules[key];
-			let autoload = this.autoload;
-			if(typeof rule.autoload !== 'undefined'){
-				autoload = rule.autoload;
-			}
-			if(autoload === 'path'){
-				autoload = Boolean(rule.path);
-			}
-			if(!autoload){
-				return;
-			}
-			const path = rule.path || key;
-			this.requireDep(key, path);
-			
+			this.autoloadFromRuleKey(key);
 		});
+	}
+	autoloadFromRuleKey(key){
+		const rule = this.rules[key];
+		if(rule.instanceOf){
+			this.autoloadFromRuleKey(rule.instanceOf);
+		}
+		if(!this.validateAutoloadFileName(key)){
+			return;
+		}
+		let autoload = this.autoload;
+		if(typeof rule.autoload !== 'undefined'){
+			autoload = rule.autoload;
+		}
+		if(autoload === 'path'){
+			autoload = Boolean(rule.path);
+		}
+		if(!autoload){
+			return;
+		}
+		const path = rule.path || key;
+		this.requireDep(key, path);
 	}
 	
 	validateAutoloadFileName(name){
