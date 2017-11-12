@@ -102,9 +102,7 @@ export default class Container{
 	
 	runAutoloader(){
 		this.loadDirs(this.autoloadDirs);
-		if(this.autoload){
-			this.autoloadFromRules();
-		}
+		this.autoloadFromRules();
 		if(this.autodecorate){
 			this.autodecorateRequireMap(this.requires);
 		}
@@ -285,12 +283,12 @@ export default class Container{
 			
 			args = this._resolveArgs(classDef, rule, args, sharedInstances);
 			
-			
 			if(this.instanceRegistry[interfaceName]){
 				return this.instanceRegistry[interfaceName];
 			}
-							
+			
 			const instance = new classDef(...args);
+			
 			
 			if(rule.calls){
 				this._runCalls(instance, rule, sharedInstances);
