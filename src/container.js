@@ -127,7 +127,7 @@ export default class Container{
 	
 	autoloadFromRules(){
 		Object.keys(this.rules).forEach(key=>{
-			if(key=='*'){
+			if(!this.validateAutoloadFileName(key)){
 				return;
 			}
 			const rule = this.rules[key];
@@ -145,6 +145,16 @@ export default class Container{
 			this.requireDep(key, path);
 			
 		});
+	}
+	
+	validateAutoloadFileName(name){
+		if(name=='*'){
+			return false;
+		}
+		if(name.substr(0,1)==='#'){
+			return false;
+		}
+		return true;
 	}
 	
 	requireDep(key, requirePath){
