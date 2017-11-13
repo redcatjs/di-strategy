@@ -190,8 +190,7 @@ export default class Container{
 			
 			if(this.depExists(path)){
 				let required = this.depRequire(path);
-				
-				
+								
 				if(pathFragments.length){
 					pathFragments.forEach( subKey => {
 						if(typeof required !== 'undefined' && required !== null){
@@ -199,6 +198,7 @@ export default class Container{
 						}
 					});
 				}
+				
 				
 				this.requires[key] = required;
 				

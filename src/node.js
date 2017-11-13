@@ -25,9 +25,6 @@ export class NodeContainer extends Container {
 		if(!rootPath){
 			rootPath = PATH.dirname(require.main.filename);
 		}
-		if( rootPath[rootPath.length-1] != '/'){
-			rootPath += '/';
-		}
 		this.rootPath = rootPath;
 		
 		this.runAutoloader();
