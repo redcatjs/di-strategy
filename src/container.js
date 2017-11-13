@@ -136,23 +136,26 @@ export default class Container{
 				throw new Error('Cyclic interface definition error in '+JSON.stringify(stack.concat(key),null,2));
 			}
 			stack.push(key);
-			this.processRules(rule.instanceOf, stack);
+			this.processRule(rule.instanceOf, stack);
 		}
-		if(!this.validateAutoloadFileName(key)){
-			return;
+		if(rule.singleton){
+			rule.classDef = function(){
+				return rule.singleton;
+			};
 		}
-		let autoload = this.autoload;
-		if(typeof rule.autoload !== 'undefined'){
-			autoload = rule.autoload;
+		if(this.validateAutoloadFileName(key)){
+			let autoload = this.autoload;
+			if(typeof rule.autoload !== 'undefined'){
+				autoload = rule.autoload;
+			}
+			if(autoload === 'path'){
+				autoload = Boolean(rule.path);
+			}
+			if(autoload){
+				const path = rule.path || key;
+				this.requireDep(key, path);
+			}
 		}
-		if(autoload === 'path'){
-			autoload = Boolean(rule.path);
-		}
-		if(!autoload){
-			return;
-		}
-		const path = rule.path || key;
-		this.requireDep(key, path);
 	}
 	
 	validateAutoloadFileName(name){
@@ -166,6 +169,10 @@ export default class Container{
 	}
 	
 	requireDep(key, requirePath){
+		if(this.requires[key]){
+			return;
+		}
+		
 		requirePath = this.resolveAppRoot(requirePath);
 		const found = this.autoloadExtensions.concat('').some( ext => {
 			
@@ -176,7 +183,8 @@ export default class Container{
 			if(ext){
 				path += '.'+ext;
 			}
-
+			
+			
 			if(this.depExists(path)){
 				let required = this.depRequire(path);
 				
