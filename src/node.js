@@ -47,7 +47,7 @@ export class NodeContainer extends Container {
 	}
 	
 	loadDirs(dirs){
-		dirs.forEach(dir=>{
+		dirs.forEach(dir => {
 			let recursive = this.autoloadDirsRecursive;
 			let path;
 			if(typeof dir == 'object'){
@@ -80,7 +80,7 @@ export class NodeContainer extends Container {
 		
 		const fileList = this.walkSync(path, recursive, [], rootPathAbsolute, rootPathRelative, this.loadExtensionRegex);
 		
-		fileList.forEach(filename=>{
+		fileList.forEach(filename => {
 			const key = filename.substr(0, filename.lastIndexOf('.') || filename.length);
 			filename = this.resolveAppRoot(filename);
 			this.requires[key] = require( filename );
@@ -93,14 +93,14 @@ export class NodeContainer extends Container {
 		}
 		const files = FS.readdirSync(dir);
 		files.forEach((file)=>{
-			if (FS.statSync(dir + file).isDirectory()) {
+			if(FS.statSync(dir + file).isDirectory()){
 				if(recursive){
-					filelist = this.walkSync(dir + file + '/', recursive, filelist, rootPathAbsolute, rootPathRelative, exts);
+					filelist = this.walkSync(dir + file, recursive, filelist, rootPathAbsolute, rootPathRelative, exts);
 				}
 			}
-			else {
+			else{
 				if(exts.test(file)){
-					filelist.push( rootPathRelative+(dir+'/'+file).substr(rootPathAbsolute.length) );
+					filelist.push( rootPathRelative+(dir+file).substr(rootPathAbsolute.length) );
 				}
 			}
 		});
