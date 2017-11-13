@@ -244,6 +244,8 @@ export default class Container{
 				types = types.concat(target[this.symInterfaces]);
 			}
 			this._defineSym(target, this.symInterfaces, types);
+			
+			return target;
 		};
 	}
 	
