@@ -70,6 +70,7 @@ export default class Container{
 				calls: [],
 				substitutions: [],
 				shareInstances: [],
+				singleton: null,
 			}
 		};
 		
@@ -102,7 +103,7 @@ export default class Container{
 	
 	runAutoloader(){
 		this.loadDirs(this.autoloadDirs);
-		this.autoloadFromRules();
+		this.processRules();
 		if(this.autodecorate){
 			this.autodecorateRequireMap(this.requires);
 		}
@@ -123,19 +124,19 @@ export default class Container{
 		this.autodecorateRequireMap(classDefinitions);
 	}
 	
-	autoloadFromRules(){
+	processRules(){
 		Object.keys(this.rules).forEach(key=>{
-			this.autoloadFromRuleKey(key);
+			this.processRule(key);
 		});
 	}
-	autoloadFromRuleKey(key, stack = []){
+	processRule(key, stack = []){
 		const rule = this.rules[key] || this.rules['*'];
 		if(rule.instanceOf){
 			if(stack.indexOf(key)!==-1){
 				throw new Error('Cyclic interface definition error in '+JSON.stringify(stack.concat(key),null,2));
 			}
 			stack.push(key);
-			this.autoloadFromRuleKey(rule.instanceOf, stack);
+			this.processRules(rule.instanceOf, stack);
 		}
 		if(!this.validateAutoloadFileName(key)){
 			return;
@@ -456,7 +457,17 @@ export default class Container{
 	}
 	
 	_mergeRule(extendRule, rule){
-		let { shared, inherit, instanceOf, constructorParams, calls, substitutions, shareInstances, classDef } = rule;
+		let {
+			shared,
+			inherit,
+			instanceOf,
+			constructorParams,
+			calls,
+			substitutions,
+			shareInstances,
+			classDef,
+			singleton,
+		} = rule;
 		if(typeof shared !== 'undefined'){
 			extendRule.shared = shared;
 		}
@@ -487,6 +498,7 @@ export default class Container{
 			extendRule.shareInstances = [...new Set([...extendRule.shareInstances, ...shareInstances])];
 		}
 		extendRule.classDef = classDef;
+		extendRule.singleton = singleton;
 		return extendRule;
 	}
 	
