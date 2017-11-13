@@ -261,8 +261,8 @@ export default class Container{
 		};
 	}
 	
-	get(interfaceDef, args, sharedInstances = {}){
-		return this.provider(interfaceDef)(args, sharedInstances);
+	get(interfaceDef, args, sharedInstances = {}, stack = []){
+		return this.provider(interfaceDef)(args, sharedInstances, stack);
 	}	
 	provider(interfaceName){
 		
@@ -286,8 +286,7 @@ export default class Container{
 	_makeProvider(interfaceName){
 		const rule = this.getRule(interfaceName);
 		const classDef = this._resolveInstanceOf(interfaceName);
-		return (args, sharedInstances)=>{
-			
+		return (args, sharedInstances, stack)=>{
 			
 			sharedInstances = Object.assign({}, sharedInstances);
 			rule.shareInstances.forEach(shareInterface => {
@@ -312,7 +311,7 @@ export default class Container{
 			}
 			
 			params = params.map((interfaceDef, index)=>{
-				return this.getParam(interfaceDef, rule, sharedInstances, defaultVar, index);
+				return this.getParam(interfaceDef, rule, sharedInstances, defaultVar, index, stack);
 			});
 			
 			
@@ -328,17 +327,6 @@ export default class Container{
 			
 			return instance;
 		};
-	}
-	
-	_resolveObject(interfaceDef, rule, sharedInstances, defaultVar){
-		if(typeof interfaceDef == 'object' && !(interfaceDef instanceof Var)){
-			const o = {};
-			Object.keys(interfaceDef).forEach(k => {
-				o[k] = this.getParam(interfaceDef[k], rule, sharedInstances, defaultVar);
-			});
-			return o;
-		}
-		return interfaceDef;
 	}
 	
 	getParamSubstitution(interfaceDef, rule, index){
@@ -359,8 +347,7 @@ export default class Container{
 		}
 		return interfaceDef;
 	}
-	getParam(interfaceDef, rule, sharedInstances, defaultVar = 'interface', index = undefined){
-		
+	getParam(interfaceDef, rule, sharedInstances, defaultVar = 'interface', index = undefined, stack = []){
 		
 		interfaceDef = this._wrapVarType(interfaceDef, defaultVar);
 		
@@ -376,18 +363,29 @@ export default class Container{
 		if(interfaceDef instanceof Interface){
 			
 			const interfaceName = interfaceDef.getName();
+			
+			stack = stack.slice(0);
+			if(stack.indexOf(interfaceName)!==-1){
+				throw new Error('Cyclic dependency error in '+JSON.stringify(stack.concat(interfaceName),null,2));
+			}
+			stack.push(interfaceName);
+			
 			if(sharedInstances[interfaceName]){
-				return sharedInstances[interfaceName].get(sharedInstances);
+				return sharedInstances[interfaceName].get(sharedInstances, stack);
 			}
 			
-			return this.get(interfaceDef, undefined, sharedInstances);
+			return this.get(interfaceDef, undefined, sharedInstances, stack);
 		}
 		
-		if(typeof interfaceDef == 'object'){
-			let o = this._resolveObject(interfaceDef, rule, sharedInstances, defaultVar);
+		if(typeof interfaceDef == 'object' && !(interfaceDef instanceof Var)){
+			const o = {};
+			Object.keys(interfaceDef).forEach(k => {
+				o[k] = this.getParam(interfaceDef[k], rule, sharedInstances, defaultVar, undefined, stack);
+			});
 			return o;
 		}
 	
+		return interfaceDef;
 	}
 	
 	_wrapVarType(type, defaultVar, resolveFunction){
