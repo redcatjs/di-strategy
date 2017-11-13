@@ -37,6 +37,7 @@ export default class Container{
 		this.symInterfaces = Symbol('types');
 		this.providerRegistry = {};
 		this.instanceRegistry = {};
+		this.lazyCallsStack =  [];
 		
 		this.requires = {};
 		this.autodecorate = autodecorate;
@@ -71,6 +72,7 @@ export default class Container{
 				classDef: null,
 				constructorParams: null,
 				calls: [],
+				lazyCalls: [],
 				substitutions: [],
 				shareInstances: [],
 				singleton: null,
@@ -262,8 +264,10 @@ export default class Container{
 	}
 	
 	get(interfaceDef, args, sharedInstances = {}, stack = []){
-		return this.provider(interfaceDef)(args, sharedInstances, stack);
-	}	
+		const instance = this.provider(interfaceDef)(args, sharedInstances, stack);
+		this._runLazyCalls();
+		return instance;
+	}
 	provider(interfaceName){
 		
 		if(typeof interfaceName == 'function'){
@@ -317,8 +321,12 @@ export default class Container{
 			
 			const instance = new classDef(...params);
 			
-			if(rule.calls){
-				this._runCalls(instance, rule, sharedInstances);
+			this._runCalls(rule.calls, instance, rule, sharedInstances);
+			
+			if(rule.lazyCalls.length){
+				this.lazyCallsStack.push(()=>{
+					this._runCalls(rule.lazyCalls, instance, rule, sharedInstances);
+				});
 			}
 			
 			if(rule.shared){
@@ -429,7 +437,7 @@ export default class Container{
 		}
 		
 		if(this.rules[interfaceName]){
-			Object.assign(rule, this.rules[interfaceName]);
+			this._mergeRule(rule, this.rules[interfaceName]);
 		}
 		
 		rule.interfaceName = interfaceName; //for info
@@ -475,6 +483,7 @@ export default class Container{
 			instanceOf,
 			constructorParams,
 			calls,
+			lazyCalls,
 			substitutions,
 			shareInstances,
 			classDef,
@@ -493,6 +502,11 @@ export default class Container{
 			extendRule.calls = this._assocCallsToArray(extendRule.calls);
 			calls = this._assocCallsToArray(calls);
 			extendRule.calls = extendRule.calls.concat(calls);
+		}
+		if(typeof lazyCalls !== 'undefined'){
+			extendRule.lazyCalls = this._assocCallsToArray(extendRule.lazyCalls);
+			lazyCalls = this._assocCallsToArray(lazyCalls);
+			extendRule.lazyCalls = extendRule.lazyCalls.concat(lazyCalls);
 		}
 		if(typeof constructorParams !== 'undefined'){
 			extendRule.constructorParams = constructorParams;
@@ -538,12 +552,12 @@ export default class Container{
 		return arrayCalls;
 	}
 	
-	_runCalls(instance, rule, sharedInstances){
-		let calls = rule.calls;
-		if(typeof calls == 'function'){
-			calls = calls();
+	_runLazyCalls(){
+		while(this.lazyCallsStack.length){
+			this.lazyCallsStack.shift()();
 		}
-		calls = this._assocCallsToArray(calls);
+	}
+	_runCalls(calls, instance, rule, sharedInstances){
 		calls.forEach((c)=>{
 			
 			if(typeof c == 'function'){
