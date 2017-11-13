@@ -1,6 +1,6 @@
 {
   "name": "di-strategy",
-  "version": "2.2.4",
+  "version": "2.3.0",
   "description": "high level dependency injector",
   "main": "dist/di.js",
   "scripts": {
