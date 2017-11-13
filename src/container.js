@@ -292,16 +292,17 @@ export default class Container{
 		const classDef = this._resolveInstanceOf(interfaceName);
 		return (args, sharedInstances, stack)=>{
 			
+			//check for shared after params load
+			if(this.instanceRegistry[interfaceName]){
+				return this.instanceRegistry[interfaceName];
+			}
+			
 			sharedInstances = Object.assign({}, sharedInstances);
 			rule.shareInstances.forEach(shareInterface => {
 				if(!sharedInstances[shareInterface]){
 					sharedInstances[shareInterface] = new SharedInstance(shareInterface, this);
 				}
 			});
-			
-			if(this.instanceRegistry[interfaceName]){
-				return this.instanceRegistry[interfaceName];
-			}
 			
 			let params;
 			let defaultVar;
@@ -318,8 +319,16 @@ export default class Container{
 				return this.getParam(interfaceDef, rule, sharedInstances, defaultVar, index, stack);
 			});
 			
+			//recheck for shared after params load
+			if(this.instanceRegistry[interfaceName]){
+				return this.instanceRegistry[interfaceName];
+			}
 			
 			const instance = new classDef(...params);
+			
+			if(rule.shared){
+				this.registerInstance(interfaceName, instance);
+			}
 			
 			this._runCalls(rule.calls, instance, rule, sharedInstances);
 			
@@ -329,9 +338,6 @@ export default class Container{
 				});
 			}
 			
-			if(rule.shared){
-				this.registerInstance(interfaceName, instance);
-			}
 			
 			return instance;
 		};
