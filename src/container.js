@@ -571,7 +571,7 @@ export default class Container{
 				return;
 			}
 			
-			const [method, args] = c;
+			const [ method, args = [] ] = c;
 			
 			const resolvedArgs = args.map(arg => {
 				return this.getParam(arg, rule, sharedInstances, this.defaultRuleVar);
