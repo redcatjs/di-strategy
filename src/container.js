@@ -263,6 +263,10 @@ export default class Container{
 		};
 	}
 	
+	exists(name){
+		return Boolean(this.rules[name]);
+	}
+	
 	get(interfaceDef, args, sharedInstances = {}, stack = []){
 		const instance = this.provider(interfaceDef)(args, sharedInstances, stack);
 		this._runLazyCalls();
