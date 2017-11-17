@@ -76,6 +76,7 @@ export default class Container{
 				substitutions: [],
 				shareInstances: [],
 				singleton: null,
+				magicMethods: false,
 			}
 		};
 		
@@ -328,7 +329,11 @@ export default class Container{
 				return this.instanceRegistry[interfaceName];
 			}
 			
-			const instance = new classDef(...params);
+			let instance = new classDef(...params);
+			
+			if(rule.magicMethods){
+				instance = this.magicMethodsDecorator(instance, rule.magicMethods);
+			}
 			
 			if(rule.shared){
 				this.registerInstance(interfaceName, instance);
@@ -345,6 +350,25 @@ export default class Container{
 			
 			return instance;
 		};
+	}
+	
+	magicMethodsDecorator(instance, prefix){
+		const proxyDef = {};
+		
+		if(typeof prefix !== 'string'){
+			prefix = '__';
+		}
+		
+		const magics = ['get','set','deleteProperty','enumerate','ownKeys','has','defineProperty','getOwnPropertyDescriptor'];
+		magics.forEach(method=>{
+			if(instance[prefix+method]){
+				proxyDef[method] = function(...args){
+					return instance[prefix+method].call(...args);
+				};
+			}
+		});
+		
+		return new Proxy(instance, proxyDef);
 	}
 	
 	getParamSubstitution(interfaceDef, rule, index){
@@ -498,6 +522,7 @@ export default class Container{
 			shareInstances,
 			classDef,
 			singleton,
+			magicMethods,
 		} = rule;
 		if(typeof shared !== 'undefined'){
 			extendRule.shared = shared;
@@ -535,6 +560,7 @@ export default class Container{
 		}
 		extendRule.classDef = classDef;
 		extendRule.singleton = singleton;
+		extendRule.magicMethods = magicMethods;
 		return extendRule;
 	}
 	
