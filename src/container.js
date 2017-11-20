@@ -67,6 +67,7 @@ export default class Container{
 		
 		this.rules = {
 			'*': {
+				interfaceName: '*',
 				shared: false,
 				inherit: true,
 				instanceOf: null,
@@ -346,7 +347,7 @@ export default class Container{
 			if(rule.shared){
 				this.registerInstance(interfaceName, instance);
 			}
-			
+
 			this._runCalls(rule.calls, instance, rule, sharedInstances);
 			
 			if(rule.lazyCalls.length){
@@ -477,15 +478,12 @@ export default class Container{
 	getRule(interfaceName){
 		let rule = Object.assign({}, this.rules['*']);
 		
+		rule.interfaceName = interfaceName; //for info
+		
 		if(!interfaceName){
 			return rule;
 		}
 		
-		if(this.rules[interfaceName]){
-			this._mergeRule(rule, this.rules[interfaceName]);
-		}
-		
-		rule.interfaceName = interfaceName; //for info
 		
 		let stack = [];
 		this._resolveInstanceOf(interfaceName, stack);
@@ -544,6 +542,7 @@ export default class Container{
 		if(typeof instanceOf !== 'undefined' && typeof extendRule.instanceOf === 'undefined'){
 			extendRule.instanceOf = instanceOf;
 		}
+
 		if(typeof calls !== 'undefined'){
 			extendRule.calls = this._assocCallsToArray(extendRule.calls);
 			calls = this._assocCallsToArray(calls);
@@ -554,6 +553,7 @@ export default class Container{
 			lazyCalls = this._assocCallsToArray(lazyCalls);
 			extendRule.lazyCalls = extendRule.lazyCalls.concat(lazyCalls);
 		}
+		
 		if(typeof constructorParams !== 'undefined'){
 			extendRule.constructorParams = constructorParams;
 		}
