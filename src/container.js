@@ -2,6 +2,7 @@ import Var from './var'
 import Factory from './factory'
 import Value from './value'
 import Interface from './interface'
+import Require from './require'
 
 import SharedInstance from './sharedInstance'
 
@@ -408,6 +409,9 @@ export default class Container{
 		if(interfaceDef instanceof Value){
 			return interfaceDef.getValue();
 		}
+		if(interfaceDef instanceof Require){
+			return interfaceDef.require();
+		}
 		
 		if(interfaceDef instanceof Interface){
 			
@@ -651,6 +655,9 @@ export default class Container{
 	}
 	value(value){
 		return new Value(value);
+	}
+	require(dep){
+		return new Require(dep);
 	}
 	
 	classDef(callback){

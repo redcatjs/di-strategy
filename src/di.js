@@ -6,6 +6,7 @@ import Factory from './factory'
 import Value from './value'
 import Interface from './interface'
 import Var from './var'
+import Require from './require'
 import ClassDef from './classDef'
 
 export{
@@ -17,6 +18,7 @@ export{
 	Factory,
 	Value,
 	Interface,
+	Require,
 	ClassDef,
 }
 
