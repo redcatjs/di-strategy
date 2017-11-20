@@ -149,6 +149,13 @@ export default class Container{
 				return rule.singleton;
 			};
 		}
+		if(typeof rule.classDef == 'string'){
+			const classDefName = rule.classDef;
+			rule.classDef = (...args)=>{
+				const classDefinition = this.get(classDefName);
+				return new classDefinition(...args);
+			};
+		}
 		if(this.validateAutoloadFileName(key)){
 			let autoload = this.autoload;
 			if(typeof rule.autoload !== 'undefined'){
