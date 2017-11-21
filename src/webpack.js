@@ -1,6 +1,8 @@
 import Container from './container'
 import makeContainerApi from './makeContainerApi'
 
+import WebpackRequire from './webpackRequire'
+
 export default makeWebpackContainer;
 
 export function makeWebpackContainer(config){
@@ -34,6 +36,10 @@ export class WebpackContainer extends Container{
 				this.requires[key] = context(filename);
 			});
 		});
+	}
+	
+	require(dep){
+		return new WebpackRequire(dep, this.requires);
 	}
 	
 }

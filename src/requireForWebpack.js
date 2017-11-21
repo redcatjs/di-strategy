@@ -5,6 +5,6 @@ export default class Require extends Var{
 		this.dep = dep;
 	}
 	require(){
-		
+		return require(this.dep);
 	}
 }

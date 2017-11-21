@@ -4,6 +4,8 @@ import FS from 'fs'
 import Container from './container'
 import makeContainerApi from './makeContainerApi'
 
+import NodeRequire from './nodeRequire'
+
 export default makeContainer;
 
 export function makeContainer(config){
@@ -102,6 +104,10 @@ export class NodeContainer extends Container {
 			}
 		});
 		return filelist;
+	}
+	
+	require(dep){
+		return new NodeRequire(dep);
 	}
 	
 }
