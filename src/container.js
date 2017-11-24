@@ -78,7 +78,7 @@ export default class Container{
 				inherit: true,
 				instanceOf: null,
 				classDef: null,
-				constructorParams: null,
+				params: null,
 				calls: [],
 				lazyCalls: [],
 				substitutions: [],
@@ -96,7 +96,7 @@ export default class Container{
 		
 		Object.keys(rules).forEach((interfaceName)=>{
 			const rule = rules[interfaceName];
-			const { instance, constructorParams } = rule;
+			const { instance, params } = rule;
 			if(instance){
 				this.registerInstance(interfaceName, instance);
 			}
@@ -331,7 +331,7 @@ export default class Container{
 				defaultVar = this.defaultArgsVar;
 			}
 			else{
-				params = rule.constructorParams || classDef[this.symInterfaces] || [];
+				params = rule.params || classDef[this.symInterfaces] || [];
 				defaultVar = this.defaultRuleVar;
 			}
 			
@@ -531,7 +531,7 @@ export default class Container{
 			shared,
 			inherit,
 			instanceOf,
-			constructorParams,
+			params,
 			calls,
 			lazyCalls,
 			substitutions,
@@ -564,8 +564,8 @@ export default class Container{
 			extendRule.lazyCalls = extendRule.lazyCalls.concat(lazyCalls);
 		}
 		
-		if(constructorParams !== undefined){
-			extendRule.constructorParams = constructorParams;
+		if(params !== undefined){
+			extendRule.params = params;
 		}
 		if(substitutions !== undefined){
 			if(!extendRule.substitutions){
