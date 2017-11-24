@@ -10,11 +10,6 @@ import ClassDef from './classDef'
 
 import makeContainerApi from './makeContainerApi'
 
-import Sync from './sync'
-import structredHasPromise from './structredHasPromise'
-import structuredPromiseAllRecursive from './structuredPromiseAllRecursive'
-import structuredResolveParamsInterface from './structuredResolveParamsInterface'
-
 export default class Container{
 
 	constructor({
@@ -37,7 +32,6 @@ export default class Container{
 		defaultArgsVar = null,
 		
 		globalKey = false,
-		resolveAsync = false,
 	}){
 		
 		this.symClassName = Symbol('className');
@@ -85,7 +79,6 @@ export default class Container{
 				shareInstances: [],
 				singleton: null,
 				magicMethods: false,
-				async: resolveAsync,
 			}
 		};
 		
@@ -336,7 +329,7 @@ export default class Container{
 				defaultVar = this.defaultRuleVar;
 			}
 			
-			const resolvedParams = params.map((interfaceDef, index)=>{
+			params = params.map((interfaceDef, index)=>{
 				return this.getParam(interfaceDef, rule, sharedInstances, defaultVar, index, stack);
 			});
 			
@@ -345,39 +338,26 @@ export default class Container{
 				return this.instanceRegistry[interfaceName];
 			}
 			
-			const makeInstance = (resolvedParams)=>{
-				
-				resolvedParams = structuredResolveParamsInterface(params, resolvedParams);
-				
-				let instance = new classDef(...resolvedParams);
-				
-				if(rule.magicMethods){
-					instance = this.magicMethodsDecorator(instance, rule.magicMethods);
-				}
-				
-				if(rule.shared){
-					this.registerInstance(interfaceName, instance);
-				}
-
-				this._runCalls(rule.calls, instance, rule, sharedInstances);
-				
-				if(rule.lazyCalls.length){
-					this.lazyCallsStack.push(()=>{
-						this._runCalls(rule.lazyCalls, instance, rule, sharedInstances);
-					});
-				}
-				
-				
-				return instance;
-			};
+			let instance = new classDef(...params);
 			
-			if(structredHasPromise(params, resolvedParams)){
-				return structuredPromiseAllRecursive(params, resolvedParams).then(params=>{
-					return makeInstance(params);
+			if(rule.magicMethods){
+				instance = this.magicMethodsDecorator(instance, rule.magicMethods);
+			}
+			
+			if(rule.shared){
+				this.registerInstance(interfaceName, instance);
+			}
+
+			this._runCalls(rule.calls, instance, rule, sharedInstances);
+			
+			if(rule.lazyCalls.length){
+				this.lazyCallsStack.push(()=>{
+					this._runCalls(rule.lazyCalls, instance, rule, sharedInstances);
 				});
 			}
 			
-			return makeInstance(resolvedParams);
+			
+			return instance;
 		};
 	}
 	
@@ -444,22 +424,11 @@ export default class Container{
 			}
 			stack.push(interfaceName);
 			
-			let instance;
-			
 			if(sharedInstances[interfaceName]){
-				instance = sharedInstances[interfaceName].get(sharedInstances, stack);
-			}
-			else{
-				instance = this.get(interfaceDef, undefined, sharedInstances, stack);
+				return sharedInstances[interfaceName].get(sharedInstances, stack);
 			}
 			
-			const instanceRule = this.getRule(interfaceName);
-			
-			if(!instanceRule.async){
-				return new Sync(instance);
-			}
-			
-			return instance;
+			return this.get(interfaceDef, undefined, sharedInstances, stack);
 		}
 		
 		if(typeof interfaceDef == 'object' && !(interfaceDef instanceof Var)){
@@ -563,45 +532,38 @@ export default class Container{
 			classDef,
 			singleton,
 			magicMethods,
-			async,
 		} = rule;
-		if(shared !== undefined){
+		if(typeof shared !== 'undefined'){
 			extendRule.shared = shared;
 		}
-		if(inherit !== undefined){
+		if(typeof inherit !== 'undefined'){
 			extendRule.inherit = inherit;
 		}
-		if(instanceOf !== undefined && extendRule.instanceOf === undefined){
+		if(typeof instanceOf !== 'undefined' && typeof extendRule.instanceOf === 'undefined'){
 			extendRule.instanceOf = instanceOf;
 		}
-		if(magicMethods !== undefined){
-			extendRule.magicMethods = magicMethods;
-		}
-		if(async !== undefined){
-			extendRule.async = async;
-		}
 
-		if(calls !== undefined){
+		if(typeof calls !== 'undefined'){
 			extendRule.calls = this._assocCallsToArray(extendRule.calls);
 			calls = this._assocCallsToArray(calls);
 			extendRule.calls = extendRule.calls.concat(calls);
 		}
-		if(lazyCalls !== undefined){
+		if(typeof lazyCalls !== 'undefined'){
 			extendRule.lazyCalls = this._assocCallsToArray(extendRule.lazyCalls);
 			lazyCalls = this._assocCallsToArray(lazyCalls);
 			extendRule.lazyCalls = extendRule.lazyCalls.concat(lazyCalls);
 		}
 		
-		if(constructorParams !== undefined){
+		if(typeof constructorParams !== 'undefined'){
 			extendRule.constructorParams = constructorParams;
 		}
-		if(substitutions !== undefined){
+		if(typeof substitutions !== 'undefined'){
 			if(!extendRule.substitutions){
 				extendRule.substitutions = {};
 			}
 			Object.assign(extendRule.substitutions, substitutions);
 		}
-		if(shareInstances !== undefined){
+		if(typeof shareInstances !== 'undefined'){
 			if(!extendRule.shareInstances){
 				extendRule.shareInstances = [];
 			}
@@ -609,6 +571,7 @@ export default class Container{
 		}
 		extendRule.classDef = classDef;
 		extendRule.singleton = singleton;
+		extendRule.magicMethods = magicMethods;
 		return extendRule;
 	}
 	
@@ -649,15 +612,13 @@ export default class Container{
 				return;
 			}
 			
-			const [ method, params = [] ] = c;
+			const [ method, args = [] ] = c;
 			
-			let resolvedParams = params.map(param => {
-				return this.getParam(param, rule, sharedInstances, this.defaultRuleVar);
+			const resolvedArgs = args.map(arg => {
+				return this.getParam(arg, rule, sharedInstances, this.defaultRuleVar);
 			});
 			
-			resolvedParams = structuredResolveParamsInterface(params, resolvedParams);
-			
-			instance[method](...resolvedParams);
+			instance[method](...resolvedArgs);
 		});
 	}
 		
