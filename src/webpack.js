@@ -33,6 +33,9 @@ export class WebpackContainer extends Container{
 					key = key.substr(2);
 				}
 				key = dirKey+'/'+key.substr(0, key.lastIndexOf('.') || key.length);
+				if(key.split('/').pop()=='index'){
+					key = key.substr(0, key.lastIndexOf('/'));
+				}
 				this.requires[key] = context(filename);
 			});
 		});
