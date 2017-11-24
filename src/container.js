@@ -21,7 +21,6 @@ export default class Container{
 		rules,
 		
 		autodecorate = false,
-		forceAutodecorate = false,
 		
 		autoload = false,
 		autoloadFailOnMissingFile = 'path',
@@ -48,7 +47,6 @@ export default class Container{
 		
 		this.requires = {};
 		this.autodecorate = autodecorate;
-		this.forceAutodecorate = forceAutodecorate;
 		this.autoloadExtensions = autoloadExtensions;
 		this.autoload = autoload;
 		this.autoloadDirs = autoloadDirs;
@@ -254,9 +252,10 @@ export default class Container{
 		if(typeof r !== 'function'){
 			return;
 		}
-		if(!r[this.symClassName] || this.forceAutodecorate){
-			this.inject(name)(r);
+		if(r[this.symClassName]){
+			r = class extends r{};
 		}
+		this.inject(name)(r);
 	}
 	
 	inject(className, types = []){
