@@ -426,7 +426,7 @@ export default class Container{
 				instance = sharedInstances[interfaceName].get(sharedInstances, stack);
 			}
 			else{
-				instance = this.get(interfaceDef, undefined, sharedInstances, stack);
+				instance = this.get(interfaceName, undefined, sharedInstances, stack);
 			}
 			
 			const instanceRule = this.getRule(interfaceName);
