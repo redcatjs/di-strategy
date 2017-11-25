@@ -358,7 +358,6 @@ export default class Container{
 			};
 			
 			if(structredHasPromise(params, resolvedParams)){
-				console.log('structredHasPromise');
 				return structuredPromiseAllRecursive(params, resolvedParams).then(params=>{
 					return makeInstance(params);
 				});
