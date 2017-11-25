@@ -43,7 +43,6 @@ export default class Container{
 		this.symInterfaces = Symbol('types');
 		this.providerRegistry = {};
 		this.instanceRegistry = {};
-		this.lazyCallsStack =  [];
 		
 		this.requires = {};
 		this.autodecorate = autodecorate;
@@ -283,9 +282,7 @@ export default class Container{
 	}
 	
 	get(interfaceDef, args, sharedInstances = {}, stack = []){
-		const instance = this.provider(interfaceDef)(args, sharedInstances, stack);
-		this._runLazyCalls();
-		return instance;
+		return this.provider(interfaceDef)(args, sharedInstances, stack);
 	}
 	provider(interfaceName){
 		
@@ -349,23 +346,19 @@ export default class Container{
 				
 				let instance = new classDef(...resolvedParams);
 				
+				this._runCalls(rule.calls, instance, rule, sharedInstances);
+				
 				if(rule.shared){
 					this.registerInstance(interfaceName, instance);
 				}
-
-				this._runCalls(rule.calls, instance, rule, sharedInstances);
 				
-				if(rule.lazyCalls.length){
-					this.lazyCallsStack.push(()=>{
-						this._runCalls(rule.lazyCalls, instance, rule, sharedInstances);
-					});
-				}
-				
+				this._runCalls(rule.lazyCalls, instance, rule, sharedInstances);
 				
 				return instance;
 			};
 			
 			if(structredHasPromise(params, resolvedParams)){
+				console.log('structredHasPromise');
 				return structuredPromiseAllRecursive(params, resolvedParams).then(params=>{
 					return makeInstance(params);
 				});
@@ -607,11 +600,6 @@ export default class Container{
 		return arrayCalls;
 	}
 	
-	_runLazyCalls(){
-		while(this.lazyCallsStack.length){
-			this.lazyCallsStack.shift()();
-		}
-	}
 	_runCalls(calls, instance, rule, sharedInstances){
 		calls.forEach((c)=>{
 			
