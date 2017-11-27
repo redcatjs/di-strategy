@@ -120,6 +120,10 @@ export default class Container{
 		}
 		
 		this.autodecorateClassDefs();
+		
+		Object.keys(this.rules).forEach(key=>{
+			this.ruleLazyLoad(key);
+		});
 	}
 	
 	autodecorateClassDefs(){
@@ -140,6 +144,64 @@ export default class Container{
 			this.processRule(key);
 		});
 	}
+	
+	ruleLazyLoad(key, stack=[]){
+		const calls = [];
+		const lazyCalls = [];
+		
+		const rule = this.rules[key];
+		
+		if(!rule.calls){
+			return;
+		}
+		
+		rule.calls.forEach(callVal => {
+			const [method, params = []] = callVal;
+			if( this.ruleCheckCyclicLoad(params, [ key ]) ){
+				lazyCalls.push(callVal);
+			}
+			else{
+				calls.push(callVal);
+			}
+		});
+		
+		rule.calls = calls;
+		rule.lazyCalls = (rule.lazyCalls || []).concat(lazyCalls);		
+	}
+	ruleCheckCyclicLoad(params, stack=[]){
+		
+		return params.some(param=>{
+			const v = this._wrapVarType(param, this.defaultRuleVar);
+			if(v instanceof Interface){
+				const interfaceName = v.getName();
+				const paramRule = this.getRule(interfaceName);
+				
+				if(stack.indexOf(interfaceName)!==-1){
+					return true;
+				}
+				
+				stack.push(interfaceName);
+								
+				let cyclic;
+
+				cyclic = this.ruleCheckCyclicLoad(params, stack);
+				
+				if(!cyclic){
+					cyclic = paramRule.calls.some(callV=>{
+						const [method, params = [] ] = callV;
+						return this.ruleCheckCyclicLoad(params, stack);
+					});
+				}
+				
+				return cyclic;
+				
+			}
+			if(typeof v == 'object' && v !== null && !(v instanceof Var)){
+				return this.ruleCheckCyclicLoad(v, stack);
+			}
+		});
+	}
+	
 	processRule(key, stack = []){
 		const rule = this.rules[key] || this.rules['*'];
 		if(rule.instanceOf){
