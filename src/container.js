@@ -157,7 +157,7 @@ export default class Container{
 		
 		rule.calls.forEach(callVal => {
 			if(typeof callVal == 'function'){
-				return;
+				callVal = [callVal];
 			}
 			const [method, params = []] = callVal;
 			if( this.ruleCheckCyclicLoad(params, [ key ]) ){
@@ -660,13 +660,8 @@ export default class Container{
 		return calls.map((c)=>{
 			
 			if(typeof c == 'function'){
-				let callReturn = c(instance);
-				if(!resolveAsync){
-					callReturn = new Sync(callReturn);
-				}
-				return callReturn;
+				c = [c];
 			}
-			
 			const [ method, params = [], resolveAsync = rule.async  ] = c;
 			
 			let resolvedParams = params.map(param => {
@@ -675,7 +670,13 @@ export default class Container{
 			
 			const makeCall = (resolvedParams)=>{				
 				resolvedParams = structuredResolveParamsInterface(params, resolvedParams);
-				let callReturn = instance[method](...resolvedParams);
+				let callReturn;
+				if(typeof method == 'function'){
+					callReturn = method(instance, ...resolvedParams);
+				}
+				else{
+					callReturn = instance[method](...resolvedParams);
+				}
 				if(!resolveAsync){
 					callReturn = new Sync(callReturn);
 				}
