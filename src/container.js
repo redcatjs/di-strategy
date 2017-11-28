@@ -174,9 +174,9 @@ export default class Container{
 		rule.calls = calls;
 		rule.lazyCalls = (rule.lazyCalls || []).concat(lazyCalls);		
 	}
-	ruleCheckCyclicLoad(params, stack=[]){
-		
-		return params.some(param=>{
+	ruleCheckCyclicLoad(params, stack=[]){		
+		return Object.keys(params).some(k=>{
+			const param = params[k];
 			const v = this._wrapVarType(param, this.defaultRuleVar);
 			if(v instanceof Interface){
 				const interfaceName = v.getName();
@@ -190,7 +190,9 @@ export default class Container{
 								
 				let cyclic;
 
-				cyclic = this.ruleCheckCyclicLoad(params, stack);
+				if(paramRule.params){
+					cyclic = this.ruleCheckCyclicLoad(paramRule.params, stack);
+				}
 				
 				if(!cyclic){
 					cyclic = paramRule.calls.some(callV=>{
