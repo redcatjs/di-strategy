@@ -406,22 +406,32 @@ export default class Container{
 				
 				resolvedParams = structuredResolveParamsInterface(params, resolvedParams);
 				
-				let instance = new classDef(...resolvedParams);
+				const instance = new classDef(...resolvedParams);
 				
-				this._runCalls(rule.calls, instance, rule, sharedInstances);
+				const finalizeInstanceCreation = ()=>{
+					if(rule.shared){
+						this.registerInstance(interfaceName, instance);
+					}
+					
+					const callsReturn = this._runCalls(rule.lazyCalls, instance, rule, sharedInstances);
+					if(callsReturn.some(callReturn=>callReturn instanceof Promise)){
+						return Promise.all(callsReturn).then(()=>instance);
+					}
+					
+					return instance;
+				};
 				
-				if(rule.shared){
-					this.registerInstance(interfaceName, instance);
+				const callsReturn = this._runCalls(rule.calls, instance, rule, sharedInstances);
+				if(callsReturn.some(callReturn=>callReturn instanceof Promise)){
+					return Promise.all(callsReturn).then(()=>finalizeInstanceCreation());
 				}
 				
-				this._runCalls(rule.lazyCalls, instance, rule, sharedInstances);
-				
-				return instance;
+				return finalizeInstanceCreation();
 			};
 			
 			if(structredHasPromise(params, resolvedParams)){
-				return structuredPromiseAllRecursive(params, resolvedParams).then(params=>{
-					return makeInstance(params);
+				return structuredPromiseAllRecursive(params, resolvedParams).then(resolvedParams=>{
+					return makeInstance(resolvedParams);
 				});
 			}
 			
@@ -662,22 +672,37 @@ export default class Container{
 	}
 	
 	_runCalls(calls, instance, rule, sharedInstances){
-		calls.forEach((c)=>{
+		return calls.map((c)=>{
 			
 			if(typeof c == 'function'){
 				c(instance);
 				return;
 			}
 			
-			const [ method, params = [] ] = c;
+			const [ method, params = [], resolveAsync = rule.async  ] = c;
 			
 			let resolvedParams = params.map(param => {
 				return this.getParam(param, rule, sharedInstances, this.defaultRuleVar);
 			});
 			
-			resolvedParams = structuredResolveParamsInterface(params, resolvedParams);
+			const makeCall = (resolvedParams)=>{				
+				resolvedParams = structuredResolveParamsInterface(params, resolvedParams);
+				let callReturn = instance[method](...resolvedParams);
+				if(!resolveAsync){
+					callReturn = new Sync(callReturn);
+				}
+				return callReturn;
+			};
 			
-			instance[method](...resolvedParams);
+			if(structredHasPromise(params, resolvedParams)){
+				return structuredPromiseAllRecursive(params, resolvedParams).then(resolvedParams=>{
+					return makeCall(resolvedParams);
+				});
+			}
+			else{
+				return makeCall(resolvedParams);
+			}
+			
 		});
 	}
 		
