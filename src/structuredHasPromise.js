@@ -1,13 +1,15 @@
 import Var from './var'
 
-export default function structuredHasPromise(structure, mixed){
+const nativePromise = Promise;
+
+export default function structuredHasPromise(structure, mixed, PromiseInterface = nativePromise){
 	
-	if(mixed instanceof Promise){
+	if(mixed instanceof PromiseInterface){
 		return true
 	}
 	if(typeof structure == 'object' && structure !== null && !(structure instanceof Var)){
 		return Object.keys(structure).some(key=>{
-			return structuredHasPromise(structure[key], mixed[key])
+			return structuredHasPromise(structure[key], mixed[key], PromiseInterface)
 		})
 	}
 	

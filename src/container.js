@@ -448,7 +448,7 @@ export default class Container{
 				return finalizeInstanceCreation();
 			};
 			
-			if(structuredHasPromise(params, resolvedParams)){
+			if(structuredHasPromise(params, resolvedParams, this.PromiseInterface)){
 				return structuredPromiseAllRecursive(params, resolvedParams, this.PromiseInterface, this.PromiseFactory ).then(resolvedParams=>{
 					return makeInstance(resolvedParams);
 				});
@@ -704,7 +704,7 @@ export default class Container{
 				return callReturn;
 			};
 			
-			if(structuredHasPromise(params, resolvedParams)){
+			if(structuredHasPromise(params, resolvedParams, this.PromiseInterface)){
 				hasAsync = true;
 				return () => structuredPromiseAllRecursive(params, resolvedParams, this.PromiseInterface, this.PromiseFactory ).then(resolvedParams=>{
 					return makeCall(resolvedParams);
