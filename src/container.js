@@ -13,7 +13,7 @@ import ClassDef from './classDef'
 import makeContainerApi from './makeContainerApi'
 
 import Sync from './sync'
-import structredHasPromise from './structredHasPromise'
+import structuredHasPromise from './structuredHasPromise'
 import structuredPromiseAllRecursive from './structuredPromiseAllRecursive'
 import structuredResolveParamsInterface from './structuredResolveParamsInterface'
 
@@ -448,7 +448,7 @@ export default class Container{
 				return finalizeInstanceCreation();
 			};
 			
-			if(structredHasPromise(params, resolvedParams)){
+			if(structuredHasPromise(params, resolvedParams)){
 				return structuredPromiseAllRecursive(params, resolvedParams, this.PromiseInterface, this.PromiseFactory ).then(resolvedParams=>{
 					return makeInstance(resolvedParams);
 				});
@@ -704,7 +704,7 @@ export default class Container{
 				return callReturn;
 			};
 			
-			if(structredHasPromise(params, resolvedParams)){
+			if(structuredHasPromise(params, resolvedParams)){
 				hasAsync = true;
 				return () => structuredPromiseAllRecursive(params, resolvedParams, this.PromiseInterface, this.PromiseFactory ).then(resolvedParams=>{
 					return makeCall(resolvedParams);
