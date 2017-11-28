@@ -617,14 +617,10 @@ export default class Container{
 		}
 
 		if(calls !== undefined){
-			extendRule.calls = this._assocCallsToArray(extendRule.calls);
-			calls = this._assocCallsToArray(calls);
-			extendRule.calls = extendRule.calls.concat(calls);
+			extendRule.calls = ( extendRule.calls || [] ).concat(calls);
 		}
 		if(lazyCalls !== undefined){
-			extendRule.lazyCalls = this._assocCallsToArray(extendRule.lazyCalls);
-			lazyCalls = this._assocCallsToArray(lazyCalls);
-			extendRule.lazyCalls = extendRule.lazyCalls.concat(lazyCalls);
+			extendRule.lazyCalls = ( extendRule.lazyCalls || [] ).concat(lazyCalls);
 		}
 		
 		if(params !== undefined){
@@ -655,20 +651,6 @@ export default class Container{
 			extendRules[k] = this._mergeRule(extendRules[k], rules[k]);
 		});
 		return extendRules;
-	}
-	
-	_assocCallsToArray(calls = []){
-		if(typeof calls == 'function'){
-			calls = calls();
-		}
-		if(calls instanceof Array){
-			return calls;
-		}
-		let arrayCalls = [];
-		Object.keys(calls).forEach((method)=>{
-			arrayCalls.push([ method, calls[method] ]);
-		});
-		return arrayCalls;
 	}
 	
 	_runCalls(calls, instance, rule, sharedInstances){
