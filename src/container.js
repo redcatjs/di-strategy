@@ -1,3 +1,5 @@
+import mapSerie from './mapSerie'
+
 import Var from './var'
 import Factory from './factory'
 import Value from './value'
@@ -82,6 +84,7 @@ export default class Container{
 				shareInstances: [],
 				singleton: null,
 				async: resolveAsync,
+				runCallsAsync: true,
 			}
 		};
 		
@@ -417,16 +420,16 @@ export default class Container{
 					}
 					
 					const callsReturn = this._runCalls(rule.lazyCalls, instance, rule, sharedInstances);
-					if(callsReturn.some(callReturn=>callReturn instanceof Promise)){
-						return Promise.all(callsReturn).then(()=>instance);
+					if(callsReturn instanceof Promise){
+						return callsReturn.then(()=>instance);
 					}
 					
 					return instance;
 				};
 				
 				const callsReturn = this._runCalls(rule.calls, instance, rule, sharedInstances);
-				if(callsReturn.some(callReturn=>callReturn instanceof Promise)){
-					return Promise.all(callsReturn).then(()=>finalizeInstanceCreation());
+				if(callsReturn instanceof Promise){
+					return callsReturn.then(()=>finalizeInstanceCreation());
 				}
 				
 				return finalizeInstanceCreation();
@@ -605,6 +608,7 @@ export default class Container{
 			classDef,
 			singleton,
 			async,
+			runCallsAsync,
 		} = rule;
 		if(shared !== undefined){
 			extendRule.shared = shared;
@@ -617,6 +621,9 @@ export default class Container{
 		}
 		if(async !== undefined){
 			extendRule.async = async;
+		}
+		if(runCallsAsync !== undefined){
+			extendRule.runCallsAsync = runCallsAsync;
 		}
 
 		if(calls !== undefined){
@@ -657,7 +664,8 @@ export default class Container{
 	}
 	
 	_runCalls(calls, instance, rule, sharedInstances){
-		return calls.map((c)=>{
+		let hasAsync;
+		const callers = calls.map((c)=>{
 			
 			if(typeof c == 'function'){
 				c = [c];
@@ -684,15 +692,45 @@ export default class Container{
 			};
 			
 			if(structredHasPromise(params, resolvedParams)){
-				return structuredPromiseAllRecursive(params, resolvedParams).then(resolvedParams=>{
+				hasAsync = true;
+				return () => structuredPromiseAllRecursive(params, resolvedParams).then(resolvedParams=>{
 					return makeCall(resolvedParams);
 				});
 			}
 			else{
-				return makeCall(resolvedParams);
+				return () => makeCall(resolvedParams);
 			}
 			
 		});
+		
+		const runCallsAsync = rule.runCallsAsync;
+		
+		let callersReturn;
+		if(hasAsync){
+			if(!runCallsAsync){
+				callersReturn = mapSerie(callers, (caller)=>{
+					return caller();
+				});
+			}
+			else{
+				callersReturn = Promise.all( callers.map((caller)=>{
+					return caller();
+				}) );
+			}
+		}
+		else{
+			callersReturn = callers.map((caller)=>{
+				const callerReturn = caller();
+				if(callerReturn instanceof Promise){
+					hasAsync = true;
+				}
+				return callerReturn;
+			});
+			if(hasAsync){
+				callersReturn = Promise.all(callersReturn);
+			}
+		}
+		return callersReturn;
 	}
 		
 	_defineSym(target, symname, value){
