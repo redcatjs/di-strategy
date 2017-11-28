@@ -96,6 +96,7 @@ export default class Container{
 				singleton: null,
 				async: resolveAsync,
 				runCallsAsync: true,
+				extends: [],
 			}
 		};
 		
@@ -594,7 +595,10 @@ export default class Container{
 		fullStack.forEach((className)=>{
 			const mergeRule = this.rules[className];
 			if(mergeRule && mergeRule.inherit !== false){
-				rule = this._mergeRule(rule, mergeRule);
+				if(mergeRule.extends){
+					mergeRule.extends.forEach( extend => this._mergeRule(rule, extend) );
+				}
+				this._mergeRule(rule, mergeRule);
 			}
 		});
 		
