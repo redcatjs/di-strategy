@@ -657,8 +657,11 @@ export default class Container{
 		return calls.map((c)=>{
 			
 			if(typeof c == 'function'){
-				c(instance);
-				return;
+				let callReturn = c(instance);
+				if(!resolveAsync){
+					callReturn = new Sync(callReturn);
+				}
+				return callReturn;
 			}
 			
 			const [ method, params = [], resolveAsync = rule.async  ] = c;
