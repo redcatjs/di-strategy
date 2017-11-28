@@ -1,6 +1,6 @@
 export default function makeContainerApi(container){
 	const di = (...args)=>{
-		return container.inject(...args);
+		return container.decorator(...args);
 	};
 	di.container = container;
 	di.get = container.get.bind(container);

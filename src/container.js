@@ -24,7 +24,8 @@ export default class Container{
 	constructor({
 		rules,
 		
-		autodecorate = false,
+		useDecorator = true,
+		autodecorate = true,
 		
 		autoload = false,
 		autoloadFailOnMissingFile = 'path',
@@ -52,6 +53,7 @@ export default class Container{
 		this.instanceRegistry = {};
 		
 		this.requires = {};
+		this.useDecorator = useDecorator;
 		this.autodecorate = autodecorate;
 		this.autoloadExtensions = autoloadExtensions;
 		this.autoload = autoload;
@@ -130,18 +132,17 @@ export default class Container{
 	runAutoloader(){
 		this.loadDirs(this.autoloadDirs);
 		this.processRules();
-		if(this.autodecorate){
-			this.autodecorateRequireMap(this.requires);
-		}
 		
-		this.autodecorateClassDefs();
+		this.registerRequireMap(this.requires);
+		
+		this.registerClassDefs();
 		
 		Object.keys(this.rules).forEach(key=>{
 			this.ruleLazyLoad(key);
 		});
 	}
 	
-	autodecorateClassDefs(){
+	registerClassDefs(){
 		const classDefinitions = {};
 		Object.entries(this.rules).forEach( ( [name, {classDef}] ) => {
 			if(classDef){
@@ -151,7 +152,7 @@ export default class Container{
 				classDefinitions[name] = classDef;
 			}
 		});
-		this.autodecorateRequireMap(classDefinitions);
+		this.registerRequireMap(classDefinitions);
 	}
 	
 	processRules(){
@@ -321,30 +322,41 @@ export default class Container{
 		return path;
 	}
 	
-	autodecorateRequireMap(requires){
+	registerRequireMap(requires){
 		Object.keys(requires).forEach((name)=>{
-			this.autodecorateRequire(name,requires[name]);
+			this.registerRequire(name,requires[name]);
 		});
 	}
-	autodecorateRequire(name,r){
+	registerRequire(name,r){
 		if(typeof r == 'object' && typeof r.default == 'function'){
 			r = r.default;
 		}
 		if(typeof r !== 'function'){
 			return;
 		}
-		if(r[this.symClassName]){
+		if(this.useDecorator && r[this.symClassName]){
 			r = class extends r{};
 		}
-		this.inject(name)(r);
+		if(this.useDecorator && this.autodecorate){
+			this.decorator(name)(r);
+		}
+		else{
+			this.registerClass(name, r);
+		}
 	}
 	
-	inject(className, types = []){
+	
+	decorator(className, types = []){
+		if(!this.useDecorator){
+			throw new Error("You're trying to use decorator but your config specify useDecorator: false, turn it to useDecorator: true, to enable this feature");
+		}
+		
 		return (target)=>{
 			
 			this._defineSym(target, this.symClassName, className);
+			
 			this.registerClass(className, target);
-
+			
 			if(typeof types == 'function'){
 				types = types();
 			}
@@ -369,7 +381,7 @@ export default class Container{
 	provider(interfaceName){
 		
 		if(typeof interfaceName == 'function'){
-			interfaceName = interfaceName[this.symClassName];
+			interfaceName = this.useDecorator ? interfaceName[this.symClassName] : false;
 			if(!interfaceName){
 				throw new Error('Unregistred class '+interfaceName.constructor.name);
 			}
@@ -577,20 +589,22 @@ export default class Container{
 		
 		let stack = [];
 		this._resolveInstanceOf(interfaceName, stack);
-		let fullStack = stack.slice(0,-2);
-		stack = stack.reverse();
 		const rules = [];
-		stack.forEach((c)=>{
-			if(typeof c == 'function'){
-				let parentProto = c;
-				let className;
-				while(className = parentProto[this.symClassName] ){
-					fullStack.push(className);
-					parentProto = Reflect.getPrototypeOf(parentProto);
+		
+		let fullStack = new Set( stack.slice(0, -1) );
+		if(this.useDecorator){
+			stack.reverse().forEach((c)=>{
+				if(typeof c == 'function'){
+					let parentProto = c;
+					let className;
+					while(className = parentProto[this.symClassName] ){
+						fullStack.add(className);
+						parentProto = Reflect.getPrototypeOf(parentProto);
+					}
 				}
-			}
-		});
-		fullStack = fullStack.reverse();
+			});
+			fullStack = Array.from(fullStack).reverse();
+		}
 		
 		fullStack.forEach((className)=>{
 			const mergeRule = this.rules[className];
