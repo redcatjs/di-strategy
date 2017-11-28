@@ -17,6 +17,8 @@ import structredHasPromise from './structredHasPromise'
 import structuredPromiseAllRecursive from './structuredPromiseAllRecursive'
 import structuredResolveParamsInterface from './structuredResolveParamsInterface'
 
+import promiseInterface from './promiseInterface'
+
 export default class Container{
 
 	constructor({
@@ -39,6 +41,9 @@ export default class Container{
 		
 		globalKey = false,
 		resolveAsync = false,
+		
+		promiseFactory = Promise,
+		promiseInterfaces = [ Promise ],
 	}){
 		
 		this.symClassName = Symbol('className');
@@ -65,6 +70,12 @@ export default class Container{
 		this._validateDefaultVar(this.defaultRuleVar, 'defaultRuleVar');
 		this._validateDefaultVar(this.defaultDecoratorVar, 'defaultDecoratorVar');
 		this._validateDefaultVar(this.defaultArgsVar, 'defaultArgsVar');
+		
+		if(promiseInterfaces.indexOf(promiseFactory) === -1){
+			promiseInterfaces.unshift(promiseFactory);
+		}
+		this.PromiseInterface = promiseInterface(promiseInterfaces);
+		this.PromiseFactory = promiseFactory;
 		
 		if(globalKey){
 			global[globalKey] = makeContainerApi(this);
@@ -422,7 +433,7 @@ export default class Container{
 					}
 					
 					const callsReturn = this._runCalls(rule.lazyCalls, instance, rule, sharedInstances);
-					if(callsReturn instanceof Promise){
+					if(callsReturn instanceof this.PromiseInterface){
 						return callsReturn.then(()=>instance);
 					}
 					
@@ -430,7 +441,7 @@ export default class Container{
 				};
 				
 				const callsReturn = this._runCalls(rule.calls, instance, rule, sharedInstances);
-				if(callsReturn instanceof Promise){
+				if(callsReturn instanceof this.PromiseInterface){
 					return callsReturn.then(()=>finalizeInstanceCreation());
 				}
 				
@@ -438,7 +449,7 @@ export default class Container{
 			};
 			
 			if(structredHasPromise(params, resolvedParams)){
-				return structuredPromiseAllRecursive(params, resolvedParams).then(resolvedParams=>{
+				return structuredPromiseAllRecursive(params, resolvedParams, this.PromiseInterface, this.PromiseFactory ).then(resolvedParams=>{
 					return makeInstance(resolvedParams);
 				});
 			}
@@ -695,7 +706,7 @@ export default class Container{
 			
 			if(structredHasPromise(params, resolvedParams)){
 				hasAsync = true;
-				return () => structuredPromiseAllRecursive(params, resolvedParams).then(resolvedParams=>{
+				return () => structuredPromiseAllRecursive(params, resolvedParams, this.PromiseInterface, this.PromiseFactory ).then(resolvedParams=>{
 					return makeCall(resolvedParams);
 				});
 			}
@@ -712,10 +723,10 @@ export default class Container{
 			if(!runCallsAsync){
 				callersReturn = mapSerie(callers, (caller)=>{
 					return caller();
-				});
+				}, this.PromiseInterface, this.PromiseFactory);
 			}
 			else{
-				callersReturn = Promise.all( callers.map((caller)=>{
+				callersReturn = this.PromiseFactory.all( callers.map((caller)=>{
 					return caller();
 				}) );
 			}
@@ -723,13 +734,13 @@ export default class Container{
 		else{
 			callersReturn = callers.map((caller)=>{
 				const callerReturn = caller();
-				if(callerReturn instanceof Promise){
+				if(callerReturn instanceof this.PromiseInterface){
 					hasAsync = true;
 				}
 				return callerReturn;
 			});
 			if(hasAsync){
-				callersReturn = Promise.all(callersReturn);
+				callersReturn = this.PromiseFactory.all(callersReturn);
 			}
 		}
 		return callersReturn;

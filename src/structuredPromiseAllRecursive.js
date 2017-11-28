@@ -1,37 +1,36 @@
 import Var from './var'
 
-function structuredPromiseAllRecursive(structure, value) {
+const nativePromise = Promise;
 
-	
-	if (value instanceof Promise) {
+function structuredPromiseAllRecursive(structure, value, PromiseInterface = nativePromise, PromiseFactory = nativePromise) {
+
+	if (value instanceof PromiseInterface) {
 		return value
 	}
 	
 	if(!(typeof structure == 'object' && structure !== null && !(structure instanceof Var))){
-		return Promise.resolve(value);
+		return PromiseFactory.resolve(value);
 	}
 
 	if (value instanceof Array) {
-		return Promise.all(value.map((val, key)=>{
-			return structuredPromiseAllRecursive(structure[key], val)
+		return PromiseFactory.all(value.map((val, key)=>{
+			return structuredPromiseAllRecursive(structure[key], val, PromiseInterface, PromiseFactory)
 		}))
 	}
 
 	if (typeof value === 'object' && value !== null) {
-		return resolveObject(structure, value)
+		return resolveObject(structure, value, PromiseInterface, PromiseFactory)
 	}
 
-	return Promise.resolve(value)
+	return PromiseFactory.resolve(value)
 }
 
-function resolveObject(structure, object) {
-	const promises = Object.keys(object).map(key => {
-		
-		return structuredPromiseAllRecursive(structure[key], object[key]).then(value => ({ key, value }));
-		
+function resolveObject(structure, object, PromiseInterface, PromiseFactory) {
+	const promises = Object.keys(object).map(key => {		
+		return structuredPromiseAllRecursive(structure[key], object[key], PromiseInterface, PromiseFactory).then(value => ({ key, value }));
 	});
 
-	return Promise.all(promises).then(results => {
+	return PromiseFactory.all(promises).then(results => {
 		return results.reduce((obj, pair) => {
 			obj[pair.key] = pair.value;
 			return obj;
