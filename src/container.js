@@ -156,6 +156,9 @@ export default class Container{
 		}
 		
 		rule.calls.forEach(callVal => {
+			if(typeof callVal == 'function'){
+				return;
+			}
 			const [method, params = []] = callVal;
 			if( this.ruleCheckCyclicLoad(params, [ key ]) ){
 				lazyCalls.push(callVal);
