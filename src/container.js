@@ -609,14 +609,39 @@ export default class Container{
 		fullStack.forEach((className)=>{
 			const mergeRule = this.rules[className];
 			if(mergeRule && mergeRule.inherit !== false){
+				
 				if(mergeRule.extends){
-					mergeRule.extends.forEach( extend => this._mergeRule(rule, extend) );
+					this.extendsRule(rule, mergeRule.extends);
 				}
+				
 				this._mergeRule(rule, mergeRule);
 			}
 		});
 		
 		return rule;
+	}
+	
+	extendsRule(rule, extendsGroup){
+		const extendsGroups = this.ruleCollectExtendsRecursive(extendsGroup).reverse();
+		extendsGroups.forEach(extendGroup =>
+			extendGroup.forEach( extend => {
+				const mergeRule = this.rules[extend];
+				this._mergeRule(rule, mergeRule, false)
+			} )
+		);
+	}
+	ruleCollectExtendsRecursive(extendGroup, extendsGroups = []){
+		if(!(extendGroup instanceof Array)){
+			extendGroup = [extendGroup];
+		}
+		extendsGroups.push(extendGroup);
+		extendGroup.forEach(extend => {
+			const rule = this.rules[extend];
+			if(rule && rule.extends){
+				this.ruleCollectExtendsRecursive(rule.extends, extendsGroups);
+			}
+		});
+		return extendsGroups;
 	}
 
 	registerClass(name, target){
@@ -626,7 +651,7 @@ export default class Container{
 		this.rules[name].instanceOf = target;
 	}
 	
-	_mergeRule(extendRule, rule){
+	_mergeRule(extendRule, rule, mergeExtend = true){
 		let {
 			shared,
 			inherit,
@@ -662,6 +687,10 @@ export default class Container{
 		}
 		if(lazyCalls !== undefined){
 			extendRule.lazyCalls = ( extendRule.lazyCalls || [] ).concat(lazyCalls);
+		}
+		
+		if(mergeExtend && rule.extends !== undefined){
+			extendRule.extends = rule.extends;
 		}
 		
 		if(params !== undefined){
