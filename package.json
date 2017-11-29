@@ -10,8 +10,7 @@
     "mocha": "mocha --require babel-register",
     "test": "npm run mocha -- test",
     "test:dev": "npm run test -- --watch",
-    "test:doc:html": "npm run mocha -- test -R html > test/doc.html --recursive",
-    "test:doc:md": "npm run mocha -- test -R markdown > test/doc.md --recursive"
+    "test:doc": "npm run mocha -- test -R markdown > test/documentation.md --recursive"
   },
   "repository": {
     "type": "git",
