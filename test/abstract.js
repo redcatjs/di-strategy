@@ -11,23 +11,22 @@ import {
 	makeContainer
 } from '../src/di'
 
-class Server{
 
-}
+import A from './abstract/A'
 
 const di = makeContainer({
 	rules: {
-		'Server': {
-			classDef: Server
+		'A': {
+			classDef: A
 		}
 	}
 });
 
 describe('simple sync di call',function(){
 	
-	it('should return an instance of server',function(){
-		const instance = di.get('Server');
-		expect(instance).to.be.an.instanceof(Server);
+	it('should return an instance of A',function(){
+		const instance = di.get('A');
+		expect(instance).to.be.an.instanceof(A);
 		
 	});
 	
