@@ -49,7 +49,6 @@ export default class Container{
 	}){
 		
 		rulesDefault = {
-			interfaceName: '*',
 			
 			inheritInstanceOf: true,
 			inheritPrototype: false,
