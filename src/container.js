@@ -104,6 +104,9 @@ export default class Container{
 		this.PromiseFactory = promiseFactory;
 		
 		if(globalKey){
+			if(globalKey===true){
+				globalKey = 'di';
+			}
 			global[globalKey] = makeContainerApi(this);
 		}
 		
