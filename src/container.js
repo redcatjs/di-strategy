@@ -53,7 +53,7 @@ export default class Container{
 			
 			inheritInstanceOf: true,
 			inheritPrototype: false,
-			extends: [],
+			inheritMixins: [],
 			
 			shared: false,
 			instanceOf: null,
@@ -642,8 +642,8 @@ export default class Container{
 		fullStack.forEach((className)=>{
 			const mergeRule = this.rules[className];
 				
-			if(mergeRule.extends){
-				this.extendsRule(rule, mergeRule.extends);
+			if(mergeRule.inheritMixins){
+				this.mixinsRule(rule, mergeRule.inheritMixins);
 			}
 			
 			this.mergeRule(rule, mergeRule);
@@ -652,27 +652,27 @@ export default class Container{
 		return rule;
 	}
 	
-	extendsRule(rule, extendsGroup){
-		const extendsGroups = this.ruleCollectExtendsRecursive(extendsGroup).reverse();
-		extendsGroups.forEach(extendGroup =>
-			extendGroup.forEach( extend => {
-				const mergeRule = this.rules[extend];
+	mixinsRule(rule, mixinsGroup){
+		const mixinsGroups = this.ruleCollectExtendsRecursive(mixinsGroup).reverse();
+		mixinsGroups.forEach(mixinGroup =>
+			mixinGroup.forEach( mixin => {
+				const mergeRule = this.rules[mixin];
 				this.mergeRule(rule, mergeRule, false)
 			} )
 		);
 	}
-	ruleCollectExtendsRecursive(extendGroup, extendsGroups = []){
-		if(!(extendGroup instanceof Array)){
-			extendGroup = [extendGroup];
+	ruleCollectExtendsRecursive(mixinGroup, mixinsGroups = []){
+		if(!(mixinGroup instanceof Array)){
+			mixinGroup = [mixinGroup];
 		}
-		extendsGroups.push(extendGroup);
-		extendGroup.forEach(extend => {
-			const rule = this.rules[extend];
-			if(rule && rule.extends){
-				this.ruleCollectExtendsRecursive(rule.extends, extendsGroups);
+		mixinsGroups.push(mixinGroup);
+		mixinGroup.forEach(mixin => {
+			const rule = this.rules[mixin];
+			if(rule && rule.mixins){
+				this.ruleCollectExtendsRecursive(rule.mixins, mixinsGroups);
 			}
 		});
-		return extendsGroups;
+		return mixinsGroups;
 	}
 
 	registerClass(name, target){
@@ -728,8 +728,8 @@ export default class Container{
 			extendRule.lazyCalls = ( extendRule.lazyCalls || [] ).concat(lazyCalls);
 		}
 		
-		if(mergeExtend && rule.extends !== undefined){
-			extendRule.extends = rule.extends;
+		if(mergeExtend && rule.inheritMixins !== undefined){
+			extendRule.inheritMixins = rule.inheritMixins;
 		}
 		
 		if(params !== undefined){
