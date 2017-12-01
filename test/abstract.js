@@ -255,6 +255,19 @@ describe('di.get()',function(){
 			}
 		}
 		
+		class Z{
+			constructor(...params){
+				this.params = params;
+			}
+			getParams(){
+				return this.params;
+			}
+			setParams(params){
+				this.params = params;
+			}
+		}
+		class ZX extends Z{}
+		
 		
 		const di = makeContainer({
 			rules: (di)=>({
@@ -462,6 +475,18 @@ describe('di.get()',function(){
 				'Y2':{
 					instanceOf: 'Y',
 					inheritInstanceOf: false,
+				},
+				'Z':{
+					classDef: Z,
+					params: [di.value('z')],
+				},
+				'Z2':{
+					classDef: ZX,
+					inheritPrototype: false,
+				},
+				'Z3':{
+					classDef: ZX,
+					inheritPrototype: true,
 				},
 				
 			}),
@@ -786,6 +811,34 @@ describe('di.get()',function(){
 					const y2 = di.get('Y2');
 					expect(y2).not.eql(y);
 				});
+				
+			});
+			
+		});
+		
+		describe('inheritPrototype',function(){
+			
+			
+			describe('inheritPrototype false (default)',function(){
+				
+				it('should not be same configuration as Z',function(){
+					const z = di.get('Z');
+					const z2 = di.get('Z2');
+					expect(z2).not.eql(z);
+				});
+				
+			});
+			
+			describe('inheritPrototype true',function(){
+				
+				it('should be same configuration as Z',function(){
+					
+					const z = di.get('Z');
+					const z3 = di.get('Z3');
+					expect(z3).eql(z);
+					
+				});
+				
 				
 			});
 			
