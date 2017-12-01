@@ -857,16 +857,16 @@ describe('di.get()',function(){
 			
 		});
 		
-		describe('extends',function(){
+		describe('inheritMixins',function(){
 			
 			
 		});
 		
+		describe('asyncCallsSeries',function(){
+			
+			
+		});
 		
-		/*			
-			async: resolveAsync,
-			runCallsAsync: true,
-		*/
 		
 	});
 	
