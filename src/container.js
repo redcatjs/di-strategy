@@ -24,8 +24,9 @@ export default class Container{
 	constructor({
 		rules,
 		
+		rulesDefault = {},
+		
 		useDecorator = true,
-		autodecorate = true,
 		
 		autoload = false,
 		autoloadFailOnMissingFile = 'path',
@@ -45,25 +46,32 @@ export default class Container{
 		promiseFactory = Promise,
 		promiseInterfaces = [ Promise ],
 		
-		rulesDefault = {},
 	}){
 		
 		rulesDefault = {
 			interfaceName: '*',
+			
 			inheritInstanceOf: true,
 			inheritPrototype: false,
+			extends: [],
+			
 			shared: false,
 			instanceOf: null,
 			classDef: null,
 			params: null,
+			
 			calls: [],
 			lazyCalls: [],
+			
 			substitutions: [],
 			sharedInTree: [],
+			
 			singleton: null,
+			
 			async: false,
 			runCallsAsync: true,
-			extends: [],
+			
+			decorator: true,
 			
 			...rulesDefault,
 		};
@@ -75,7 +83,6 @@ export default class Container{
 		
 		this.requires = {};
 		this.useDecorator = useDecorator;
-		this.autodecorate = autodecorate;
 		this.autoloadExtensions = autoloadExtensions;
 		this.autoload = autoload;
 		this.autoloadDirs = autoloadDirs;
@@ -110,7 +117,7 @@ export default class Container{
 			rules = rules(this);
 		}
 		
-		this.rules = this._mergeRules(this.rules,rules);
+		this.rules = this.mergeRules(this.rules,rules);
 		
 		Object.keys(rules).forEach((interfaceName)=>{
 			const rule = rules[interfaceName];
@@ -338,10 +345,12 @@ export default class Container{
 		if(typeof r !== 'function'){
 			return;
 		}
+		const rule = this.getRuleBase(name);
 		if(this.useDecorator && r[this.symClassName]){
 			r = class extends r{};
 		}
-		if(this.useDecorator && this.autodecorate){
+		
+		if(this.useDecorator && rule.decorator){
 			this.decorator(name)(r);
 		}
 		else{
@@ -581,22 +590,21 @@ export default class Container{
 		this.instanceRegistry[name] = instance;
 	}
 	
+	getRuleBase(interfaceName){
+		const ruleBase = this.mergeRule({}, this.rules['*']);
+		ruleBase.interfaceName = interfaceName; //for info
+		this.mergeRule(ruleBase, this.rules[interfaceName]);
+		return ruleBase;
+	}
+	
 	getRule(interfaceName){
-		let rule = {};
-		
-		this._mergeRule(rule, this.rules['*']);
-		
-		let ruleBase = {};
-		this._mergeRule(ruleBase, this.rules['*']);
-		this._mergeRule(ruleBase, this.rules[interfaceName]);
-		
-		
+		const rule = this.mergeRule({}, this.rules['*']);
 		rule.interfaceName = interfaceName; //for info
-		
 		if(!interfaceName){
 			return rule;
 		}
 		
+		const ruleBase = this.getRuleBase(interfaceName);
 		
 		let stack = [];
 		this._resolveInstanceOf(interfaceName, stack);
@@ -627,6 +635,7 @@ export default class Container{
 				}
 			});
 			fullStack = Array.from(fullStack).reverse();
+			console.log(ruleBase.inheritInstanceOf, fullStack);
 		}
 		
 		
@@ -637,7 +646,7 @@ export default class Container{
 				this.extendsRule(rule, mergeRule.extends);
 			}
 			
-			this._mergeRule(rule, mergeRule);
+			this.mergeRule(rule, mergeRule);
 		});
 		
 		return rule;
@@ -648,7 +657,7 @@ export default class Container{
 		extendsGroups.forEach(extendGroup =>
 			extendGroup.forEach( extend => {
 				const mergeRule = this.rules[extend];
-				this._mergeRule(rule, mergeRule, false)
+				this.mergeRule(rule, mergeRule, false)
 			} )
 		);
 	}
@@ -673,7 +682,7 @@ export default class Container{
 		this.rules[name].instanceOf = target;
 	}
 	
-	_mergeRule(extendRule, rule, mergeExtend = true){
+	mergeRule(extendRule, rule, mergeExtend = true){
 		let {
 			shared,
 			inheritInstanceOf,
@@ -688,6 +697,7 @@ export default class Container{
 			singleton,
 			async,
 			runCallsAsync,
+			decorator,
 		} = rule;
 		if(shared !== undefined){
 			extendRule.shared = shared;
@@ -697,6 +707,9 @@ export default class Container{
 		}
 		if(inheritPrototype !== undefined){
 			extendRule.inheritPrototype = inheritPrototype;
+		}
+		if(decorator !== undefined){
+			extendRule.decorator = decorator;
 		}
 		if(instanceOf !== undefined && extendRule.instanceOf === undefined){
 			extendRule.instanceOf = instanceOf;
@@ -739,12 +752,12 @@ export default class Container{
 		return extendRule;
 	}
 	
-	_mergeRules(extendRules, rules){
+	mergeRules(extendRules, rules){
 		Object.keys(rules).forEach((k)=>{
 			if(!extendRules[k]){
 				extendRules[k] = {};
 			}
-			extendRules[k] = this._mergeRule(extendRules[k], rules[k]);
+			extendRules[k] = this.mergeRule(extendRules[k], rules[k]);
 		});
 		return extendRules;
 	}
