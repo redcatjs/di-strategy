@@ -96,7 +96,7 @@ export default class Container{
 				calls: [],
 				lazyCalls: [],
 				substitutions: [],
-				shareInstances: [],
+				sharedInTree: [],
 				singleton: null,
 				async: resolveAsync,
 				runCallsAsync: true,
@@ -410,7 +410,7 @@ export default class Container{
 			}
 			
 			sharedInstances = Object.assign({}, sharedInstances);
-			rule.shareInstances.forEach(shareInterface => {
+			rule.sharedInTree.forEach(shareInterface => {
 				if(!sharedInstances[shareInterface]){
 					sharedInstances[shareInterface] = new SharedInstance(shareInterface, this);
 				}
@@ -675,17 +675,17 @@ export default class Container{
 		let {
 			shared,
 			inheritInstanceOf,
+			inheritPrototype,
 			instanceOf,
 			params,
 			calls,
 			lazyCalls,
 			substitutions,
-			shareInstances,
+			sharedInTree,
 			classDef,
 			singleton,
 			async,
 			runCallsAsync,
-			inheritPrototype,
 		} = rule;
 		if(shared !== undefined){
 			extendRule.shared = shared;
@@ -726,11 +726,11 @@ export default class Container{
 			}
 			Object.assign(extendRule.substitutions, substitutions);
 		}
-		if(shareInstances !== undefined){
-			if(!extendRule.shareInstances){
-				extendRule.shareInstances = [];
+		if(sharedInTree !== undefined){
+			if(!extendRule.sharedInTree){
+				extendRule.sharedInTree = [];
 			}
-			extendRule.shareInstances = [...new Set([...extendRule.shareInstances, ...shareInstances])];
+			extendRule.sharedInTree = [...new Set([...extendRule.sharedInTree, ...sharedInTree])];
 		}
 		extendRule.classDef = classDef;
 		extendRule.singleton = singleton;

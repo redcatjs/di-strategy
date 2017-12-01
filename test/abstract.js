@@ -354,7 +354,7 @@ describe('di.get()',function(){
 				
 				'H':{
 					classDef: H,
-					shareInstances: ['A'],
+					sharedInTree: ['A'],
 					params: [{a: 'A', i: 'I'}],
 				},
 				'I':{
@@ -367,7 +367,7 @@ describe('di.get()',function(){
 				},
 				'K':{
 					classDef: K,
-					shareInstances: ['A'],
+					sharedInTree: ['A'],
 					params: [{i: 'I'}],
 				},
 				'L':{
@@ -655,9 +655,9 @@ describe('di.get()',function(){
 			});
 		});
 		
-		describe('shareInstances',function(){
+		describe('sharedInTree',function(){
 			
-			describe('shareInstances accross tree with direct child param dependency',function(){
+			describe('sharedInTree accross tree with direct child param dependency',function(){
 						
 				it('sharedInstances should be the sames accross the tree',function(){
 					const instance = di.get('H');
@@ -669,7 +669,7 @@ describe('di.get()',function(){
 				
 			});
 			
-			describe('shareInstances accross tree without direct child param dependency',function(){
+			describe('sharedInTree accross tree without direct child param dependency',function(){
 						
 				it('sharedInstances should be the sames accross the tree',function(){
 					const instance = di.get('K');
