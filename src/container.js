@@ -26,7 +26,7 @@ export default class Container{
 		
 		useDecorator = true,
 		autodecorate = true,
-		extendFromClassPrototype = false,
+		inheritPrototype = false,
 		
 		autoload = false,
 		autoloadFailOnMissingFile = 'path',
@@ -87,8 +87,8 @@ export default class Container{
 		this.rules = {
 			'*': {
 				interfaceName: '*',
-				inherit: true,
-				extendFromClassPrototype,
+				inheritInstanceOf: true,
+				inheritPrototype,
 				shared: false,
 				instanceOf: null,
 				classDef: null,
@@ -602,7 +602,7 @@ export default class Container{
 		
 		let fullStack;
 		
-		if(ruleBase.inherit){ 
+		if(ruleBase.inheritInstanceOf){ 
 			fullStack = new Set( stack.slice(0, -1) );
 		}
 		else{
@@ -610,9 +610,9 @@ export default class Container{
 		}
 		
 		
-		if(ruleBase.extendFromClassPrototype){
+		if(ruleBase.inheritPrototype){
 			if(!this.useDecorator){
-				throw new Error('To enable extendFromClassPrototype feature, useDecorator must be enabled');
+				throw new Error('To enable inheritPrototype feature, useDecorator must be enabled');
 			}
 			stack.reverse().forEach((c)=>{
 				if(typeof c == 'function'){
@@ -674,7 +674,7 @@ export default class Container{
 	_mergeRule(extendRule, rule, mergeExtend = true){
 		let {
 			shared,
-			inherit,
+			inheritInstanceOf,
 			instanceOf,
 			params,
 			calls,
@@ -685,16 +685,16 @@ export default class Container{
 			singleton,
 			async,
 			runCallsAsync,
-			extendFromClassPrototype,
+			inheritPrototype,
 		} = rule;
 		if(shared !== undefined){
 			extendRule.shared = shared;
 		}
-		if(inherit !== undefined){
-			extendRule.inherit = inherit;
+		if(inheritInstanceOf !== undefined){
+			extendRule.inheritInstanceOf = inheritInstanceOf;
 		}
-		if(extendFromClassPrototype !== undefined){
-			extendRule.extendFromClassPrototype = extendFromClassPrototype;
+		if(inheritPrototype !== undefined){
+			extendRule.inheritPrototype = inheritPrototype;
 		}
 		if(instanceOf !== undefined && extendRule.instanceOf === undefined){
 			extendRule.instanceOf = instanceOf;

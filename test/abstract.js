@@ -457,11 +457,11 @@ describe('di.get()',function(){
 				},
 				'X2':{
 					instanceOf: 'X',
-					inherit: true,
+					inheritInstanceOf: true,
 				},
 				'Y2':{
 					instanceOf: 'Y',
-					inherit: false,
+					inheritInstanceOf: false,
 				},
 				
 			}),
@@ -764,9 +764,9 @@ describe('di.get()',function(){
 			
 		});
 		
-		describe('inherit',function(){
+		describe('inheritInstanceOf',function(){
 			
-			describe('inherit true (default)',function(){
+			describe('inheritInstanceOf true (default)',function(){
 				
 				it('should be same configuration as X',function(){
 					
@@ -779,7 +779,7 @@ describe('di.get()',function(){
 				
 			});
 			
-			describe('inherit false',function(){
+			describe('inheritInstanceOf false',function(){
 				
 				it('should not be same configuration as Y',function(){
 					const y = di.get('Y');
