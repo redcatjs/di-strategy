@@ -269,227 +269,240 @@ describe('di.get()',function(){
 		class ZX extends Z{}
 		
 		
+		
+		
+		
+		
+		const rules = (di)=>({
+			'A': {
+				classDef: A,
+				params: [ di.value(1), di.value(2), di.value(3) ],
+			},
+			
+			'akaOfA': {
+				instanceOf: 'A'
+			},
+			'recursiveAkaOfA': {
+				instanceOf: 'akaOfA'
+			},
+			
+			
+			'Shared': {
+				classDef: A,
+				shared: true,
+			},
+			
+			'NotShared': {
+				classDef: A,
+			},
+			
+			'B': {
+				classDef: B,
+			},
+			
+			'C': {
+				classDef: C,
+				params: ['A','B'],
+			},
+			
+			'D': {
+				classDef: D,
+				params: ['C'],
+			},
+			
+			'Singleton': {
+				singleton: new A(),
+			},
+			
+			'SubstitutionsParentIndex': {
+				classDef: C,
+				params: ['A','B'],
+				substitutions: ['E','F'],
+			},
+			'SubstitutionsParentAssoc': {
+				classDef: C,
+				params: ['A','B'],
+				substitutions: {
+					B:'F',
+					A:'E',
+				},
+			},
+			
+			'SubstitutionsParentIndexWithValue': {
+				classDef: C,
+				params: ['A','B'],
+				substitutions: [di.value('E'),di.value('F')],
+			},
+			'SubstitutionsParentAssocWithValue': {
+				classDef: C,
+				params: ['A','B'],
+				substitutions: {
+					B:di.value('F'),
+					A:di.value('E'),
+				},
+			},
+			
+			'SubstitutionsParentAssocInSubkey': {
+				classDef: C,
+				params: [{
+					subkey: {
+						A:'A',
+						B:'B'
+					},
+				}],
+				substitutions: {
+					B:di.value('F'),
+					A:di.value('E'),
+				},
+			},
+			
+			'E':{
+				classDef: E,
+			},
+			'F':{
+				classDef: F,
+			},
+			
+			'G':{
+				classDef: G,
+				params: [di.factory(()=>'A'),di.factory(()=>new B())]
+			},
+			
+			'H':{
+				classDef: H,
+				sharedInTree: ['A'],
+				params: [{a: 'A', i: 'I'}],
+			},
+			'I':{
+				classDef: I,
+				params: [{a: 'A', j: 'J'}],
+			},
+			'J':{
+				classDef: J,
+				params: ['A'],
+			},
+			'K':{
+				classDef: K,
+				sharedInTree: ['A'],
+				params: [{i: 'I'}],
+			},
+			'L':{
+				classDef: L,
+				calls: [
+					[ 'setParams', [ { foo: di.value('bar') } ] ]
+				],
+			},
+			'M':{
+				classDef: M,
+				calls: [
+					[ 'setParams', [ { a: 'A' } ] ]
+				],
+			},
+			
+			'N':{
+				shared: true,
+				classDef: N,
+				params: [ { o: 'O' } ],
+			},
+			'O':{
+				shared: true,
+				classDef: O,
+				lazyCalls: [
+					[ 'setParams', [ { n: 'N' } ] ]
+				],
+			},
+			
+			
+			'P':{
+				shared: true,
+				classDef: Q,
+				params: [ { q: 'Q' } ],
+			},
+			'Q':{
+				shared: true,
+				classDef: Q,
+				calls: [
+					[ 'setParams', [ { p: 'P' } ] ]
+				],
+			},
+			
+			
+			'R':{
+				shared: true,
+				classDef: R,
+				params: [ { s: 'S' } ],
+			},
+			'S':{
+				shared: true,
+				classDef: S,
+				params: [ { t: 'T' } ],
+			},
+			'T':{
+				shared: true,
+				classDef: T,
+				calls: [
+					[ 'setParams', [ { r : 'R' } ] ]
+				],
+			},
+			
+			'U':{
+				shared: true,
+				classDef: U,
+				params: [ { v: 'V' } ],
+			},
+			'V':{
+				shared: true,
+				classDef: V,
+				params: [ { w: 'W' } ],
+			},
+			'W':{
+				shared: true,
+				classDef: W,
+				calls: [
+					[ 'setParams', [ { u : 'U' } ] ]
+				],
+			},
+			
+			'X':{
+				classDef: X,
+				params: [di.value('x')],
+			},
+			'Y':{
+				classDef: Y,
+				params: [di.value('y')],
+			},
+			'X2':{
+				instanceOf: 'X',
+				inheritInstanceOf: true,
+			},
+			'Y2':{
+				instanceOf: 'Y',
+				inheritInstanceOf: false,
+			},
+			'Z':{
+				classDef: Z,
+				params: [di.value('z')],
+			},
+			'Z2':{
+				classDef: ZX,
+				inheritPrototype: false,
+			},
+			'Z3':{
+				classDef: ZX,
+				inheritPrototype: true,
+			},
+			
+		});
+		
+		
 		const di = makeContainer({
-			rules: (di)=>({
-				'A': {
-					classDef: A,
-					params: [ di.value(1), di.value(2), di.value(3) ],
-				},
-				
-				'akaOfA': {
-					instanceOf: 'A'
-				},
-				'recursiveAkaOfA': {
-					instanceOf: 'akaOfA'
-				},
-				
-				
-				'Shared': {
-					classDef: A,
-					shared: true,
-				},
-				
-				'NotShared': {
-					classDef: A,
-				},
-				
-				'B': {
-					classDef: B,
-				},
-				
-				'C': {
-					classDef: C,
-					params: ['A','B'],
-				},
-				
-				'D': {
-					classDef: D,
-					params: ['C'],
-				},
-				
-				'Singleton': {
-					singleton: new A(),
-				},
-				
-				'SubstitutionsParentIndex': {
-					classDef: C,
-					params: ['A','B'],
-					substitutions: ['E','F'],
-				},
-				'SubstitutionsParentAssoc': {
-					classDef: C,
-					params: ['A','B'],
-					substitutions: {
-						B:'F',
-						A:'E',
-					},
-				},
-				
-				'SubstitutionsParentIndexWithValue': {
-					classDef: C,
-					params: ['A','B'],
-					substitutions: [di.value('E'),di.value('F')],
-				},
-				'SubstitutionsParentAssocWithValue': {
-					classDef: C,
-					params: ['A','B'],
-					substitutions: {
-						B:di.value('F'),
-						A:di.value('E'),
-					},
-				},
-				
-				'SubstitutionsParentAssocInSubkey': {
-					classDef: C,
-					params: [{
-						subkey: {
-							A:'A',
-							B:'B'
-						},
-					}],
-					substitutions: {
-						B:di.value('F'),
-						A:di.value('E'),
-					},
-				},
-				
-				'E':{
-					classDef: E,
-				},
-				'F':{
-					classDef: F,
-				},
-				
-				'G':{
-					classDef: G,
-					params: [di.factory(()=>'A'),di.factory(()=>new B())]
-				},
-				
-				'H':{
-					classDef: H,
-					sharedInTree: ['A'],
-					params: [{a: 'A', i: 'I'}],
-				},
-				'I':{
-					classDef: I,
-					params: [{a: 'A', j: 'J'}],
-				},
-				'J':{
-					classDef: J,
-					params: ['A'],
-				},
-				'K':{
-					classDef: K,
-					sharedInTree: ['A'],
-					params: [{i: 'I'}],
-				},
-				'L':{
-					classDef: L,
-					calls: [
-						[ 'setParams', [ { foo: di.value('bar') } ] ]
-					],
-				},
-				'M':{
-					classDef: M,
-					calls: [
-						[ 'setParams', [ { a: 'A' } ] ]
-					],
-				},
-				
-				'N':{
-					shared: true,
-					classDef: N,
-					params: [ { o: 'O' } ],
-				},
-				'O':{
-					shared: true,
-					classDef: O,
-					lazyCalls: [
-						[ 'setParams', [ { n: 'N' } ] ]
-					],
-				},
-				
-				
-				'P':{
-					shared: true,
-					classDef: Q,
-					params: [ { q: 'Q' } ],
-				},
-				'Q':{
-					shared: true,
-					classDef: Q,
-					calls: [
-						[ 'setParams', [ { p: 'P' } ] ]
-					],
-				},
-				
-				
-				'R':{
-					shared: true,
-					classDef: R,
-					params: [ { s: 'S' } ],
-				},
-				'S':{
-					shared: true,
-					classDef: S,
-					params: [ { t: 'T' } ],
-				},
-				'T':{
-					shared: true,
-					classDef: T,
-					calls: [
-						[ 'setParams', [ { r : 'R' } ] ]
-					],
-				},
-				
-				'U':{
-					shared: true,
-					classDef: U,
-					params: [ { v: 'V' } ],
-				},
-				'V':{
-					shared: true,
-					classDef: V,
-					params: [ { w: 'W' } ],
-				},
-				'W':{
-					shared: true,
-					classDef: W,
-					calls: [
-						[ 'setParams', [ { u : 'U' } ] ]
-					],
-				},
-				
-				'X':{
-					classDef: X,
-					params: [di.value('x')],
-				},
-				'Y':{
-					classDef: Y,
-					params: [di.value('y')],
-				},
-				'X2':{
-					instanceOf: 'X',
-					inheritInstanceOf: true,
-				},
-				'Y2':{
-					instanceOf: 'Y',
-					inheritInstanceOf: false,
-				},
-				'Z':{
-					classDef: Z,
-					params: [di.value('z')],
-				},
-				'Z2':{
-					classDef: ZX,
-					inheritPrototype: false,
-				},
-				'Z3':{
-					classDef: ZX,
-					inheritPrototype: true,
-				},
-				
-			}),
+			rules: rules,
+			
+			rulesDefault: {
+			
+			},
+			
+			useDecorator: true,
 			
 		});
 		describe('classDef',function(){
