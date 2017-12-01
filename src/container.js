@@ -26,6 +26,7 @@ export default class Container{
 		
 		useDecorator = true,
 		autodecorate = true,
+		extendFromClassPrototype = false,
 		
 		autoload = false,
 		autoloadFailOnMissingFile = 'path',
@@ -55,6 +56,7 @@ export default class Container{
 		this.requires = {};
 		this.useDecorator = useDecorator;
 		this.autodecorate = autodecorate;
+		this.extendFromClassPrototype = extendFromClassPrototype;
 		this.autoloadExtensions = autoloadExtensions;
 		this.autoload = autoload;
 		this.autoloadDirs = autoloadDirs;
@@ -460,7 +462,6 @@ export default class Container{
 				
 				return finalizeInstanceCreation();
 			};
-			
 			if(structuredHasPromise(params, resolvedParams, this.PromiseInterface)){
 				return structuredPromiseAllRecursive(params, resolvedParams, this.PromiseInterface, this.PromiseFactory ).then(resolvedParams=>{
 					return makeInstance(resolvedParams);
@@ -471,7 +472,8 @@ export default class Container{
 		};
 	}
 	
-	getParamSubstitution(interfaceDef, rule, index){
+	getSubstitutionParam(interfaceDef, rule, index){
+		console.log(interfaceDef, rule, index);
 		const substitutions = this._wrapVarType(rule.substitutions, this.defaultRuleVar);
 		
 		if(typeof index !== 'undefined' && substitutions[index]){
@@ -493,7 +495,7 @@ export default class Container{
 		
 		interfaceDef = this._wrapVarType(interfaceDef, defaultVar);
 		
-		interfaceDef = this.getParamSubstitution(interfaceDef, rule, index);
+		interfaceDef = this.getSubstitutionParam(interfaceDef, rule, index);
 		
 		if(interfaceDef instanceof Factory){
 			return interfaceDef.callback(sharedInstances);
@@ -526,6 +528,7 @@ export default class Container{
 			
 			const instanceRule = this.getRule(interfaceName);
 			
+			//if(!instanceRule.async && instance instanceof this.PromiseInterface){
 			if(!instanceRule.async){
 				return new Sync(instance);
 			}
@@ -592,7 +595,10 @@ export default class Container{
 		const rules = [];
 		
 		let fullStack = new Set( stack.slice(0, -1) );
-		if(this.useDecorator){
+		if(this.extendFromClassPrototype){
+			if(!this.useDecorator){
+				throw new Error('To enable extendFromClassPrototype feature, useDecorator must be enabled');
+			}
 			stack.reverse().forEach((c)=>{
 				if(typeof c == 'function'){
 					let parentProto = c;
@@ -605,6 +611,7 @@ export default class Container{
 			});
 			fullStack = Array.from(fullStack).reverse();
 		}
+		
 		
 		fullStack.forEach((className)=>{
 			const mergeRule = this.rules[className];
