@@ -634,7 +634,6 @@ export default class Container{
 				}
 			});
 			fullStack = Array.from(fullStack).reverse();
-			console.log(ruleBase.inheritInstanceOf, fullStack);
 		}
 		
 		
