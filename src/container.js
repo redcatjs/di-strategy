@@ -473,7 +473,6 @@ export default class Container{
 	}
 	
 	getSubstitutionParam(interfaceDef, rule, index){
-		console.log(interfaceDef, rule, index);
 		const substitutions = this._wrapVarType(rule.substitutions, this.defaultRuleVar);
 		
 		if(typeof index !== 'undefined' && substitutions[index]){
