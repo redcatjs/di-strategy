@@ -862,15 +862,22 @@ describe('di.get()',function(){
 			
 		});
 		
+		
+		describe('asyncResolve',function(){
+			
+			
+		});
+		
 		describe('asyncCallsSeries',function(){
 			
 			
 		});
 		
+		describe('decorator',function(){
+			
+			
+		});
 		
-	});
-	
-	describe('decorator',function(){
 		
 	});
 
