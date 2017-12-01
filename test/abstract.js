@@ -103,6 +103,17 @@ describe('di.get()',function(){
 				return this.params;
 			}
 		}
+		class L{
+			constructor(...params){
+				this.params = params;
+			}
+			getParams(){
+				return this.params;
+			}
+			setParams(params){
+				this.params = params;
+			}
+		}
 		
 		
 		const di = makeContainer({
@@ -218,6 +229,12 @@ describe('di.get()',function(){
 					classDef: K,
 					shareInstances: ['A'],
 					params: [{i: 'I'}],
+				},
+				'L':{
+					classDef: L,
+					calls: [
+						[ 'setParams', [ { foo: di.value('bar') } ] ]
+					],
 				},
 			}),
 			
@@ -438,13 +455,27 @@ describe('di.get()',function(){
 			
 		});
 		
+		describe('calls',function(){
+			
+			describe('call methods on instance',function(){
+						
+				it('should return params passed to method configured by the rule',function(){
+					const instance = di.get('L');
+					const { foo } = instance.getParams();
+					expect(foo).equal('bar');
+				});
+				
+			});
+			
+		});
+		
 		/*
-			inherit: true,
-			calls: [],
 			lazyCalls: [],
 			async: resolveAsync,
 			runCallsAsync: true,
+			
 			extends: [],
+			inherit: true,
 		*/
 		
 	});
