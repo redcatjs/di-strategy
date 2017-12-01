@@ -68,7 +68,7 @@ export default class Container{
 			
 			singleton: null,
 			
-			async: false,
+			resolveAsync: false,
 			runCallsAsync: true,
 			
 			decorator: true,
@@ -538,8 +538,8 @@ export default class Container{
 			
 			const instanceRule = this.getRule(interfaceName);
 			
-			//if(!instanceRule.async && instance instanceof this.PromiseInterface){
-			if(!instanceRule.async){
+			//if(!instanceRule.resolveAsync && instance instanceof this.PromiseInterface){
+			if(!instanceRule.resolveAsync){
 				return new Sync(instance);
 			}
 			
@@ -695,7 +695,7 @@ export default class Container{
 			sharedInTree,
 			classDef,
 			singleton,
-			async,
+			resolveAsync,
 			runCallsAsync,
 			decorator,
 		} = rule;
@@ -714,8 +714,8 @@ export default class Container{
 		if(instanceOf !== undefined && extendRule.instanceOf === undefined){
 			extendRule.instanceOf = instanceOf;
 		}
-		if(async !== undefined){
-			extendRule.async = async;
+		if(resolveAsync !== undefined){
+			extendRule.resolveAsync = resolveAsync;
 		}
 		if(runCallsAsync !== undefined){
 			extendRule.runCallsAsync = runCallsAsync;
@@ -769,7 +769,7 @@ export default class Container{
 			if(typeof c == 'function'){
 				c = [c];
 			}
-			const [ method, params = [], resolveAsync = rule.async  ] = c;
+			const [ method, params = [], resolveAsync = rule.resolveAsync  ] = c;
 			
 			let resolvedParams = params.map(param => {
 				return this.getParam(param, rule, sharedInstances, this.defaultRuleVar);
