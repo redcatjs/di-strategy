@@ -71,7 +71,7 @@ describe('di.get()',function(){
 				return this.params;
 			}
 		}
-		class Z{
+		class H{
 			constructor(...params){
 				this.params = params;
 			}
@@ -79,6 +79,31 @@ describe('di.get()',function(){
 				return this.params;
 			}
 		}
+		class I{
+			constructor(...params){
+				this.params = params;
+			}
+			getParams(){
+				return this.params;
+			}
+		}
+		class J{
+			constructor(...params){
+				this.params = params;
+			}
+			getParams(){
+				return this.params;
+			}
+		}
+		class K{
+			constructor(...params){
+				this.params = params;
+			}
+			getParams(){
+				return this.params;
+			}
+		}
+		
 		
 		const di = makeContainer({
 			rules: (di)=>({
@@ -123,12 +148,12 @@ describe('di.get()',function(){
 				},
 				
 				'SubstitutionsParentIndex': {
-					classDef: Z,
+					classDef: C,
 					params: ['A','B'],
 					substitutions: ['E','F'],
 				},
 				'SubstitutionsParentAssoc': {
-					classDef: Z,
+					classDef: C,
 					params: ['A','B'],
 					substitutions: {
 						B:'F',
@@ -137,12 +162,12 @@ describe('di.get()',function(){
 				},
 				
 				'SubstitutionsParentIndexWithValue': {
-					classDef: Z,
+					classDef: C,
 					params: ['A','B'],
 					substitutions: [di.value('E'),di.value('F')],
 				},
 				'SubstitutionsParentAssocWithValue': {
-					classDef: Z,
+					classDef: C,
 					params: ['A','B'],
 					substitutions: {
 						B:di.value('F'),
@@ -151,7 +176,7 @@ describe('di.get()',function(){
 				},
 				
 				'SubstitutionsParentAssocInSubkey': {
-					classDef: Z,
+					classDef: C,
 					params: [{
 						subkey: {
 							A:'A',
@@ -174,6 +199,25 @@ describe('di.get()',function(){
 				'G':{
 					classDef: G,
 					params: [di.factory(()=>'A'),di.factory(()=>new B())]
+				},
+				
+				'H':{
+					classDef: H,
+					shareInstances: ['A'],
+					params: [{a: 'A', i: 'I'}],
+				},
+				'I':{
+					classDef: I,
+					params: [{a: 'A', j: 'J'}],
+				},
+				'J':{
+					classDef: J,
+					params: ['A'],
+				},
+				'K':{
+					classDef: K,
+					shareInstances: ['A'],
+					params: [{i: 'I'}],
 				},
 			}),
 			
@@ -365,7 +409,44 @@ describe('di.get()',function(){
 				
 			});
 		});
-	
+		
+		describe('shareInstances',function(){
+			
+			describe('shareInstances accross tree with direct child param dependency',function(){
+						
+				it('sharedInstances should be the sames accross the tree',function(){
+					const instance = di.get('H');
+					const [ {a, i} ] = instance.getParams();
+					const [ {a: a2, j} ] = i.getParams();
+					const [ a3 ] = j.getParams();
+					expect(a).equal(a2).equal(a3);
+				});
+				
+			});
+			
+			describe('shareInstances accross tree without direct child param dependency',function(){
+						
+				it('sharedInstances should be the sames accross the tree',function(){
+					const instance = di.get('K');
+					const [ {i} ] = instance.getParams();
+					const [ {a, j} ] = i.getParams();
+					const [ a2 ] = j.getParams();
+					expect(a).equal(a2);
+				});
+				
+			});
+			
+		});
+		
+		/*
+			inherit: true,
+			calls: [],
+			lazyCalls: [],
+			async: resolveAsync,
+			runCallsAsync: true,
+			extends: [],
+		*/
+		
 	});
 	
 	describe('decorator',function(){
