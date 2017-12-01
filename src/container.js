@@ -601,7 +601,16 @@ export default class Container{
 		this._resolveInstanceOf(interfaceName, stack);
 		const rules = [];
 		
-		let fullStack = new Set( stack.slice(0, -1) );
+		let fullStack;
+		
+		const ruleBase = this.rules[interfaceName];
+		
+		if(ruleBase.inherit){ 
+			fullStack = new Set( stack.slice(0, -1) );
+		}
+		else{
+			fullStack = new Set( stack.slice(0, 1) );
+		}
 		if(this.extendFromClassPrototype){
 			if(!this.useDecorator){
 				throw new Error('To enable extendFromClassPrototype feature, useDecorator must be enabled');
@@ -622,14 +631,12 @@ export default class Container{
 		
 		fullStack.forEach((className)=>{
 			const mergeRule = this.rules[className];
-			if(mergeRule && mergeRule.inherit !== false){
 				
-				if(mergeRule.extends){
-					this.extendsRule(rule, mergeRule.extends);
-				}
-				
-				this._mergeRule(rule, mergeRule);
+			if(mergeRule.extends){
+				this.extendsRule(rule, mergeRule.extends);
 			}
+			
+			this._mergeRule(rule, mergeRule);
 		});
 		
 		return rule;
