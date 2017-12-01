@@ -232,6 +232,28 @@ describe('di.get()',function(){
 				this.params = params;
 			}
 		}
+		class X{
+			constructor(...params){
+				this.params = params;
+			}
+			getParams(){
+				return this.params;
+			}
+			setParams(params){
+				this.params = params;
+			}
+		}
+		class Y{
+			constructor(...params){
+				this.params = params;
+			}
+			getParams(){
+				return this.params;
+			}
+			setParams(params){
+				this.params = params;
+			}
+		}
 		
 		
 		const di = makeContainer({
@@ -423,6 +445,23 @@ describe('di.get()',function(){
 					calls: [
 						[ 'setParams', [ { u : 'U' } ] ]
 					],
+				},
+				
+				'X':{
+					classDef: X,
+					params: [di.value('x')],
+				},
+				'Y':{
+					classDef: Y,
+					params: [di.value('y')],
+				},
+				'X2':{
+					instanceOf: 'X',
+					inherit: true,
+				},
+				'Y2':{
+					instanceOf: 'Y',
+					inherit: false,
 				},
 				
 			}),
@@ -725,13 +764,42 @@ describe('di.get()',function(){
 			
 		});
 		
+		describe('inherit',function(){
+			
+			describe('inherit true (default)',function(){
+				
+				it('should be same configuration as X',function(){
+					
+					const x = di.get('X');
+					const x2 = di.get('X2');
+					expect(x2).eql(x);
+					
+				});
+				
+				
+			});
+			
+			describe('inherit false',function(){
+				
+				it('should not be same configuration as Y',function(){
+					const y = di.get('Y');
+					const y2 = di.get('Y2');
+					expect(y2).not.eql(y);
+				});
+				
+			});
+			
+		});
 		
-		/*
+		describe('extends',function(){
+			
+			
+		});
+		
+		
+		/*			
 			async: resolveAsync,
 			runCallsAsync: true,
-			
-			extends: [],
-			inherit: true,
 		*/
 		
 	});
