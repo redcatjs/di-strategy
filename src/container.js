@@ -95,10 +95,10 @@ export default class Container{
 		this.defaultArgsVar = defaultArgsVar || defaultVar;
 		
 		this.allowedDefaultVars = ['interface','value'];
-		this._validateDefaultVar(defaultVar, 'defaultVar');
-		this._validateDefaultVar(this.defaultRuleVar, 'defaultRuleVar');
-		this._validateDefaultVar(this.defaultDecoratorVar, 'defaultDecoratorVar');
-		this._validateDefaultVar(this.defaultArgsVar, 'defaultArgsVar');
+		this.validateDefaultVar(defaultVar, 'defaultVar');
+		this.validateDefaultVar(this.defaultRuleVar, 'defaultRuleVar');
+		this.validateDefaultVar(this.defaultDecoratorVar, 'defaultDecoratorVar');
+		this.validateDefaultVar(this.defaultArgsVar, 'defaultArgsVar');
 		
 		if(promiseInterfaces.indexOf(promiseFactory) === -1){
 			promiseInterfaces.unshift(promiseFactory);
@@ -133,7 +133,7 @@ export default class Container{
 		this.appRootStrLen = appRoot.length;
 	}
 	
-	_validateDefaultVar(value, property){
+	validateDefaultVar(value, property){
 		if(this.allowedDefaultVars.indexOf(value)===-1){
 			throw new Error('invalid type "'+value+'" specified for '+property+', possibles values: '+this.allowedDefaultVars.join(' | '));
 		}
@@ -200,7 +200,7 @@ export default class Container{
 	ruleCheckCyclicLoad(params, stack=[]){		
 		return Object.keys(params).some(k=>{
 			const param = params[k];
-			const v = this._wrapVarType(param, this.defaultRuleVar);
+			const v = this.wrapVarType(param, this.defaultRuleVar);
 			if(v instanceof Interface){
 				const interfaceName = v.getName();
 				const paramRule = this.getRule(interfaceName);
@@ -365,19 +365,19 @@ export default class Container{
 		
 		return (target)=>{
 			
-			this._defineSym(target, this.symClassName, className);
+			this.defineSym(target, this.symClassName, className);
 			
 			this.registerClass(className, target);
 			
 			if(typeof types == 'function'){
 				types = types();
 			}
-			types = types.map(type => this._wrapVarType(type, this.defaultDecoratorVar));
+			types = types.map(type => this.wrapVarType(type, this.defaultDecoratorVar));
 			
 			if (target[this.symInterfaces]) {
 				types = types.concat(target[this.symInterfaces]);
 			}
-			this._defineSym(target, this.symInterfaces, types);
+			this.defineSym(target, this.symInterfaces, types);
 			
 			return target;
 		};
@@ -404,14 +404,14 @@ export default class Container{
 		}
 		
 		if(!this.providerRegistry[interfaceName]){
-			this.providerRegistry[interfaceName] = this._makeProvider(interfaceName);
+			this.providerRegistry[interfaceName] = this.makeProvider(interfaceName);
 		}
 		return this.providerRegistry[interfaceName];
 	}
 	
-	_makeProvider(interfaceName){
+	makeProvider(interfaceName){
 		const rule = this.getRule(interfaceName);
-		const classDef = this._resolveInstanceOf(interfaceName);
+		const classDef = this.resolveInstanceOf(interfaceName);
 		return (args, sharedInstances, stack)=>{
 			
 			//check for shared after params load
@@ -457,7 +457,7 @@ export default class Container{
 						this.registerInstance(interfaceName, instance);
 					}
 					
-					const callsReturn = this._runCalls(rule.lazyCalls, instance, rule, sharedInstances);
+					const callsReturn = this.runCalls(rule.lazyCalls, instance, rule, sharedInstances);
 					if(callsReturn instanceof this.PromiseInterface){
 						return callsReturn.then(()=>instance);
 					}
@@ -465,7 +465,7 @@ export default class Container{
 					return instance;
 				};
 				
-				const callsReturn = this._runCalls(rule.calls, instance, rule, sharedInstances);
+				const callsReturn = this.runCalls(rule.calls, instance, rule, sharedInstances);
 				if(callsReturn instanceof this.PromiseInterface){
 					return callsReturn.then(()=>finalizeInstanceCreation());
 				}
@@ -483,18 +483,18 @@ export default class Container{
 	}
 	
 	getSubstitutionParam(interfaceDef, rule, index){
-		const substitutions = this._wrapVarType(rule.substitutions, this.defaultRuleVar);
+		const substitutions = this.wrapVarType(rule.substitutions, this.defaultRuleVar);
 		
 		if(typeof index !== 'undefined' && substitutions[index]){
 			interfaceDef = substitutions[index];
-			interfaceDef = this._wrapVarType(interfaceDef, this.defaultRuleVar, true);
+			interfaceDef = this.wrapVarType(interfaceDef, this.defaultRuleVar, true);
 		}
 		
 		if(interfaceDef instanceof Interface){
 			const interfaceName = interfaceDef.getName();
 			if(substitutions[interfaceName]){
 				interfaceDef = substitutions[interfaceName];
-				interfaceDef = this._wrapVarType(interfaceDef, this.defaultRuleVar, true);
+				interfaceDef = this.wrapVarType(interfaceDef, this.defaultRuleVar, true);
 			}
 			
 		}
@@ -502,7 +502,7 @@ export default class Container{
 	}
 	getParam(interfaceDef, rule, sharedInstances, defaultVar = 'interface', index = undefined, stack = []){
 		
-		interfaceDef = this._wrapVarType(interfaceDef, defaultVar);
+		interfaceDef = this.wrapVarType(interfaceDef, defaultVar);
 		
 		interfaceDef = this.getSubstitutionParam(interfaceDef, rule, index);
 		
@@ -556,7 +556,7 @@ export default class Container{
 		return interfaceDef;
 	}
 	
-	_wrapVarType(type, defaultVar, resolveFunction){
+	wrapVarType(type, defaultVar, resolveFunction){
 		if(resolveFunction && typeof type == 'function'){
 			type = type();
 		}
@@ -569,7 +569,7 @@ export default class Container{
 					const o = {};
 					Object.keys(type).forEach(key=>{
 						const v = type[key];
-						o[key] = typeof v == 'object' && v !== null && !(v instanceof Var) ? this._wrapVarType(v, defaultVar) : v;
+						o[key] = typeof v == 'object' && v !== null && !(v instanceof Var) ? this.wrapVarType(v, defaultVar) : v;
 					});
 					return o;
 				}
@@ -606,7 +606,7 @@ export default class Container{
 		const ruleBase = this.getRuleBase(interfaceName);
 		
 		let stack = [];
-		this._resolveInstanceOf(interfaceName, stack);
+		this.resolveInstanceOf(interfaceName, stack);
 		const rules = [];
 		
 		let fullStack;
@@ -761,7 +761,7 @@ export default class Container{
 		return extendRules;
 	}
 	
-	_runCalls(calls, instance, rule, sharedInstances){
+	runCalls(calls, instance, rule, sharedInstances){
 		let hasAsync;
 		const callers = calls.map((c)=>{
 			
@@ -831,7 +831,7 @@ export default class Container{
 		return callersReturn;
 	}
 		
-	_defineSym(target, symname, value){
+	defineSym(target, symname, value){
 		Object.defineProperty(target, symname, {
 			value: value,
 			enumerable: false,
@@ -839,7 +839,7 @@ export default class Container{
 		});
 	}
 	
-	_resolveInstanceOf(str, stack = []){
+	resolveInstanceOf(str, stack = []){
 		if(typeof str == 'string'){
 			if(stack.indexOf(str)!==-1){
 				throw new Error('Cyclic interface definition error in '+JSON.stringify(stack.concat(str),null,2));
@@ -850,7 +850,7 @@ export default class Container{
 			if(!resolved){
 				throw new Error('Interface definition "'+str+'" not found, di load stack: '+JSON.stringify(stack, null, 2));
 			}
-			return this._resolveInstanceOf(resolved, stack);
+			return this.resolveInstanceOf(resolved, stack);
 		}
 		stack.push(str);
 		return str;
