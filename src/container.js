@@ -26,7 +26,6 @@ export default class Container{
 		
 		useDecorator = true,
 		autodecorate = true,
-		inheritPrototype = false,
 		
 		autoload = false,
 		autoloadFailOnMissingFile = 'path',
@@ -42,11 +41,32 @@ export default class Container{
 		defaultArgsVar = null,
 		
 		globalKey = false,
-		resolveAsync = false,
 		
 		promiseFactory = Promise,
 		promiseInterfaces = [ Promise ],
+		
+		rulesDefault = {},
 	}){
+		
+		rulesDefault = {
+			interfaceName: '*',
+			inheritInstanceOf: true,
+			inheritPrototype: false,
+			shared: false,
+			instanceOf: null,
+			classDef: null,
+			params: null,
+			calls: [],
+			lazyCalls: [],
+			substitutions: [],
+			sharedInTree: [],
+			singleton: null,
+			async: false,
+			runCallsAsync: true,
+			extends: [],
+			
+			...rulesDefault,
+		};
 		
 		this.symClassName = Symbol('className');
 		this.symInterfaces = Symbol('types');
@@ -84,25 +104,7 @@ export default class Container{
 			global[globalKey] = makeContainerApi(this);
 		}
 		
-		this.rules = {
-			'*': {
-				interfaceName: '*',
-				inheritInstanceOf: true,
-				inheritPrototype,
-				shared: false,
-				instanceOf: null,
-				classDef: null,
-				params: null,
-				calls: [],
-				lazyCalls: [],
-				substitutions: [],
-				sharedInTree: [],
-				singleton: null,
-				async: resolveAsync,
-				runCallsAsync: true,
-				extends: [],
-			}
-		};
+		this.rules = { '*': rulesDefault };
 		
 		if(typeof rules == 'function'){
 			rules = rules(this);
