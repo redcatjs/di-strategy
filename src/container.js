@@ -56,7 +56,6 @@ export default class Container{
 		this.requires = {};
 		this.useDecorator = useDecorator;
 		this.autodecorate = autodecorate;
-		this.extendFromClassPrototype = extendFromClassPrototype;
 		this.autoloadExtensions = autoloadExtensions;
 		this.autoload = autoload;
 		this.autoloadDirs = autoloadDirs;
@@ -88,8 +87,9 @@ export default class Container{
 		this.rules = {
 			'*': {
 				interfaceName: '*',
-				shared: false,
 				inherit: true,
+				extendFromClassPrototype,
+				shared: false,
 				instanceOf: null,
 				classDef: null,
 				params: null,
@@ -582,13 +582,12 @@ export default class Container{
 	getRule(interfaceName){
 		let rule = {};
 		
-		const rootRule = this.rules['*'];
-		Object.keys(rootRule).forEach( k => {
-			rule[k] =
-				rootRule[k] instanceof Array ? rootRule[k].slice(0)
-				: ( typeof rootRule[k] == 'object' && rootRule[k] !== null ? Object.assign({}, rootRule[k])
-					: rootRule[k] )
-		});
+		this._mergeRule(rule, this.rules['*']);
+		
+		let ruleBase = {};
+		this._mergeRule(ruleBase, this.rules['*']);
+		this._mergeRule(ruleBase, this.rules[interfaceName]);
+		
 		
 		rule.interfaceName = interfaceName; //for info
 		
@@ -603,15 +602,15 @@ export default class Container{
 		
 		let fullStack;
 		
-		const ruleBase = this.rules[interfaceName];
-		
 		if(ruleBase.inherit){ 
 			fullStack = new Set( stack.slice(0, -1) );
 		}
 		else{
 			fullStack = new Set( stack.slice(0, 1) );
 		}
-		if(this.extendFromClassPrototype){
+		
+		
+		if(ruleBase.extendFromClassPrototype){
 			if(!this.useDecorator){
 				throw new Error('To enable extendFromClassPrototype feature, useDecorator must be enabled');
 			}
@@ -686,12 +685,16 @@ export default class Container{
 			singleton,
 			async,
 			runCallsAsync,
+			extendFromClassPrototype,
 		} = rule;
 		if(shared !== undefined){
 			extendRule.shared = shared;
 		}
 		if(inherit !== undefined){
 			extendRule.inherit = inherit;
+		}
+		if(extendFromClassPrototype !== undefined){
+			extendRule.extendFromClassPrototype = extendFromClassPrototype;
 		}
 		if(instanceOf !== undefined && extendRule.instanceOf === undefined){
 			extendRule.instanceOf = instanceOf;
