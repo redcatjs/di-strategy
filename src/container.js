@@ -26,8 +26,6 @@ export default class Container{
 		
 		rulesDefault = {},
 		
-		useDecorator = true,
-		
 		autoload = false,
 		autoloadFailOnMissingFile = 'path',
 		autoloadDirs = [],
@@ -81,7 +79,6 @@ export default class Container{
 		this.instanceRegistry = {};
 		
 		this.requires = {};
-		this.useDecorator = useDecorator;
 		this.autoloadExtensions = autoloadExtensions;
 		this.autoload = autoload;
 		this.autoloadDirs = autoloadDirs;
@@ -345,11 +342,11 @@ export default class Container{
 			return;
 		}
 		const rule = this.getRuleBase(name);
-		if(this.useDecorator && r[this.symClassName]){
+		if(rule.decorator && r[this.symClassName]){
 			r = class extends r{};
 		}
 		
-		if(this.useDecorator && rule.decorator){
+		if(rule.decorator){
 			this.decorator(name)(r);
 		}
 		else{
@@ -359,10 +356,6 @@ export default class Container{
 	
 	
 	decorator(className, types = []){
-		if(!this.useDecorator){
-			throw new Error("You're trying to use decorator but your config specify useDecorator: false, turn it to useDecorator: true, to enable this feature");
-		}
-		
 		return (target)=>{
 			
 			this.defineSym(target, this.symClassName, className);
@@ -393,7 +386,7 @@ export default class Container{
 	provider(interfaceName){
 		
 		if(typeof interfaceName == 'function'){
-			interfaceName = this.useDecorator ? interfaceName[this.symClassName] : false;
+			interfaceName = interfaceName[this.symClassName];
 			if(!interfaceName){
 				throw new Error('Unregistred class '+interfaceName.constructor.name);
 			}
@@ -620,9 +613,6 @@ export default class Container{
 		
 		
 		if(ruleBase.inheritPrototype){
-			if(!this.useDecorator){
-				throw new Error('To enable inheritPrototype feature, useDecorator must be enabled');
-			}
 			stack.reverse().forEach((c)=>{
 				if(typeof c == 'function'){
 					let parentProto = c;
