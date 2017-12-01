@@ -110,7 +110,9 @@ export default class Container{
 			global[globalKey] = makeContainerApi(this);
 		}
 		
-		this.rules = { '*': rulesDefault };
+		this.rulesDefault = rulesDefault;
+		
+		this.rules = {};
 		
 		if(typeof rules == 'function'){
 			rules = rules(this);
@@ -234,7 +236,7 @@ export default class Container{
 	}
 	
 	processRule(key, stack = []){
-		const rule = this.rules[key] || this.rules['*'];
+		const rule = this.rules[key] || this.rulesDefault;
 		if(rule.instanceOf){
 			if(stack.indexOf(key)!==-1){
 				throw new Error('Cyclic interface definition error in '+JSON.stringify(stack.concat(key),null,2));
@@ -270,9 +272,6 @@ export default class Container{
 	}
 	
 	validateAutoloadFileName(name){
-		if(name=='*'){
-			return false;
-		}
 		if(name.substr(0,1)==='#'){
 			return false;
 		}
@@ -586,14 +585,14 @@ export default class Container{
 	}
 	
 	getRuleBase(interfaceName){
-		const ruleBase = this.mergeRule({}, this.rules['*']);
+		const ruleBase = this.mergeRule({}, this.rulesDefault);
 		ruleBase.interfaceName = interfaceName; //for info
 		this.mergeRule(ruleBase, this.rules[interfaceName]);
 		return ruleBase;
 	}
 	
 	getRule(interfaceName){
-		const rule = this.mergeRule({}, this.rules['*']);
+		const rule = this.mergeRule({}, this.rulesDefault);
 		rule.interfaceName = interfaceName; //for info
 		if(!interfaceName){
 			return rule;
