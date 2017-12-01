@@ -69,7 +69,7 @@ export default class Container{
 			singleton: null,
 			
 			resolveAsync: false,
-			runCallsAsync: true,
+			callsAsyncSerie: false,
 			
 			decorator: true,
 			
@@ -696,7 +696,7 @@ export default class Container{
 			classDef,
 			singleton,
 			resolveAsync,
-			runCallsAsync,
+			callsAsyncSerie,
 			decorator,
 		} = rule;
 		if(shared !== undefined){
@@ -717,8 +717,8 @@ export default class Container{
 		if(resolveAsync !== undefined){
 			extendRule.resolveAsync = resolveAsync;
 		}
-		if(runCallsAsync !== undefined){
-			extendRule.runCallsAsync = runCallsAsync;
+		if(callsAsyncSerie !== undefined){
+			extendRule.callsAsyncSerie = callsAsyncSerie;
 		}
 
 		if(calls !== undefined){
@@ -802,11 +802,11 @@ export default class Container{
 			
 		});
 		
-		const runCallsAsync = rule.runCallsAsync;
+		const callsAsyncSerie = rule.callsAsyncSerie;
 		
 		let callersReturn;
 		if(hasAsync){
-			if(!runCallsAsync){
+			if(callsAsyncSerie){
 				callersReturn = mapSerie(callers, (caller)=>{
 					return caller();
 				}, this.PromiseInterface, this.PromiseFactory);
