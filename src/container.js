@@ -67,8 +67,8 @@ export default class Container{
 			
 			singleton: null,
 			
-			resolveAsync: false,
-			callsAsyncSerie: false,
+			asyncResolve: false,
+			asyncCallsSerie: false,
 			
 			decorator: true,
 			
@@ -537,8 +537,8 @@ export default class Container{
 			
 			const instanceRule = this.getRule(interfaceName);
 			
-			//if(!instanceRule.resolveAsync && instance instanceof this.PromiseInterface){
-			if(!instanceRule.resolveAsync){
+			//if(!instanceRule.asyncResolve && instance instanceof this.PromiseInterface){
+			if(!instanceRule.asyncResolve){
 				return new Sync(instance);
 			}
 			
@@ -694,8 +694,8 @@ export default class Container{
 			sharedInTree,
 			classDef,
 			singleton,
-			resolveAsync,
-			callsAsyncSerie,
+			asyncResolve,
+			asyncCallsSerie,
 			decorator,
 		} = rule;
 		if(shared !== undefined){
@@ -713,11 +713,11 @@ export default class Container{
 		if(instanceOf !== undefined && extendRule.instanceOf === undefined){
 			extendRule.instanceOf = instanceOf;
 		}
-		if(resolveAsync !== undefined){
-			extendRule.resolveAsync = resolveAsync;
+		if(asyncResolve !== undefined){
+			extendRule.asyncResolve = asyncResolve;
 		}
-		if(callsAsyncSerie !== undefined){
-			extendRule.callsAsyncSerie = callsAsyncSerie;
+		if(asyncCallsSerie !== undefined){
+			extendRule.asyncCallsSerie = asyncCallsSerie;
 		}
 
 		if(calls !== undefined){
@@ -768,7 +768,7 @@ export default class Container{
 			if(typeof c == 'function'){
 				c = [c];
 			}
-			const [ method, params = [], resolveAsync = rule.resolveAsync  ] = c;
+			const [ method, params = [], asyncResolve = rule.asyncResolve  ] = c;
 			
 			let resolvedParams = params.map(param => {
 				return this.getParam(param, rule, sharedInstances, this.defaultRuleVar);
@@ -783,7 +783,7 @@ export default class Container{
 				else{
 					callReturn = instance[method](...resolvedParams);
 				}
-				if(!resolveAsync){
+				if(!asyncResolve){
 					callReturn = new Sync(callReturn);
 				}
 				return callReturn;
@@ -801,11 +801,11 @@ export default class Container{
 			
 		});
 		
-		const callsAsyncSerie = rule.callsAsyncSerie;
+		const asyncCallsSerie = rule.asyncCallsSerie;
 		
 		let callersReturn;
 		if(hasAsync){
-			if(callsAsyncSerie){
+			if(asyncCallsSerie){
 				callersReturn = mapSerie(callers, (caller)=>{
 					return caller();
 				}, this.PromiseInterface, this.PromiseFactory);
