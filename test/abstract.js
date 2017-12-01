@@ -114,6 +114,17 @@ describe('di.get()',function(){
 				this.params = params;
 			}
 		}
+		class M{
+			constructor(...params){
+				this.params = params;
+			}
+			getParams(){
+				return this.params;
+			}
+			setParams(params){
+				this.params = params;
+			}
+		}
 		
 		
 		const di = makeContainer({
@@ -234,6 +245,12 @@ describe('di.get()',function(){
 					classDef: L,
 					calls: [
 						[ 'setParams', [ { foo: di.value('bar') } ] ]
+					],
+				},
+				'M':{
+					classDef: M,
+					calls: [
+						[ 'setParams', [ { a: 'A' } ] ]
 					],
 				},
 			}),
@@ -457,12 +474,22 @@ describe('di.get()',function(){
 		
 		describe('calls',function(){
 			
-			describe('call methods on instance',function(){
+			describe('pass value to method on instance',function(){
 						
 				it('should return params passed to method configured by the rule',function(){
 					const instance = di.get('L');
 					const { foo } = instance.getParams();
 					expect(foo).equal('bar');
+				});
+				
+			});
+			
+			describe('pass instance to method on instance',function(){
+				
+				it('should return params passed to method configured by the rule',function(){
+					const instance = di.get('M');
+					const { a } = instance.getParams();
+					expect(a).instanceof(A);
 				});
 				
 			});
