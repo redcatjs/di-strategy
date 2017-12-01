@@ -580,7 +580,15 @@ export default class Container{
 	}
 	
 	getRule(interfaceName){
-		let rule = Object.assign({}, this.rules['*']);
+		let rule = {};
+		
+		const rootRule = this.rules['*'];
+		Object.keys(rootRule).forEach( k => {
+			rule[k] =
+				rootRule[k] instanceof Array ? rootRule[k].slice(0)
+				: ( typeof rootRule[k] == 'object' && rootRule[k] !== null ? Object.assign({}, rootRule[k])
+					: rootRule[k] )
+		});
 		
 		rule.interfaceName = interfaceName; //for info
 		
