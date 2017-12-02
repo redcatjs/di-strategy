@@ -268,7 +268,22 @@ describe('di.get()',function(){
 		}
 		class ZX extends Z{}
 		
-		
+		class One{
+			constructor(...params){
+				this.params = params;
+			}
+			getParams(){
+				return this.params;
+			}
+		}
+		class Two{
+			constructor(...params){
+				this.params = params;
+			}
+			getParams(){
+				return this.params;
+			}
+		}
 		
 		
 		
@@ -490,6 +505,15 @@ describe('di.get()',function(){
 			'Z3':{
 				classDef: ZX,
 				inheritPrototype: true,
+			},
+			
+			'One':{
+				classDef: One,
+				params: [di.value('one')],
+			},
+			'Two':{
+				classDef: Two,
+				inheritMixins: [ 'One' ],
 			},
 			
 		});
@@ -859,6 +883,13 @@ describe('di.get()',function(){
 		
 		describe('inheritMixins',function(){
 			
+			it('should be same configuration as One',function(){
+				
+				const one = di.get('One').getParams();
+				const two = di.get('Two').getParams();
+				expect(two).eql(one);
+				
+			});
 			
 		});
 		
