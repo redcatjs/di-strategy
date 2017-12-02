@@ -11,303 +11,19 @@ import {
 	makeContainer
 } from '../src/di'
 
+import * as classes from './abstract/classes'
+
 describe('di.get()',function(){
 	
 	describe('rules',function(){
 		
-		class A{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-		}
-		class B{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-		}
-		class C{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-		}
-		class D{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-		}
-		class E{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-		}
-		class F{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-		}
-		class G{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-		}
-		class H{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-		}
-		class I{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-		}
-		class J{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-		}
-		class K{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-		}
-		class L{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-			setParams(params){
-				this.params = params;
-			}
-		}
-		class M{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-			setParams(params){
-				this.params = params;
-			}
-		}
-		class N{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-		}
-		class O{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-			setParams(params){
-				this.params = params;
-			}
-		}
-		
-		class P{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-		}
-		class Q{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-			setParams(params){
-				this.params = params;
-			}
-		}
-		
-		class R{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-			setParams(params){
-				this.params = params;
-			}
-		}
-		class S{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-			setParams(params){
-				this.params = params;
-			}
-		}
-		class T{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-			setParams(params){
-				this.params = params;
-			}
-		}
-		
-		class U{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-			setParams(params){
-				this.params = params;
-			}
-		}
-		class V{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-			setParams(params){
-				this.params = params;
-			}
-		}
-		class W{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-			setParams(params){
-				this.params = params;
-			}
-		}
-		class X{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-			setParams(params){
-				this.params = params;
-			}
-		}
-		class Y{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-			setParams(params){
-				this.params = params;
-			}
-		}
-		
-		class Z{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-			setParams(params){
-				this.params = params;
-			}
-		}
-		class ZX extends Z{}
-		
-		class One{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-		}
-		class Two extends One{
-			constructor(...params){
-				super(params);
-			}
-			getParams(){
-				return this.params;
-			}
-		}
-		
-		class Three{
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-		}
-		class Four {
-			constructor(...params){
-				this.params = params;
-			}
-			getParams(){
-				return this.params;
-			}
-		}
 		
 		
 		
 		
 		const rules = (di)=>({
 			'A': {
-				classDef: A,
+				classDef: classes.A,
 				params: [ di.value(1), di.value(2), di.value(3) ],
 			},
 			
@@ -320,39 +36,39 @@ describe('di.get()',function(){
 			
 			
 			'Shared': {
-				classDef: A,
+				classDef: classes.A,
 				shared: true,
 			},
 			
 			'NotShared': {
-				classDef: A,
+				classDef: classes.A,
 			},
 			
 			'B': {
-				classDef: B,
+				classDef: classes.B,
 			},
 			
 			'C': {
-				classDef: C,
+				classDef: classes.C,
 				params: ['A','B'],
 			},
 			
 			'D': {
-				classDef: D,
+				classDef: classes.D,
 				params: ['C'],
 			},
 			
 			'Singleton': {
-				singleton: new A(),
+				singleton: new classes.A(),
 			},
 			
 			'SubstitutionsParentIndex': {
-				classDef: C,
+				classDef: classes.C,
 				params: ['A','B'],
 				substitutions: ['E','F'],
 			},
 			'SubstitutionsParentAssoc': {
-				classDef: C,
+				classDef: classes.C,
 				params: ['A','B'],
 				substitutions: {
 					B:'F',
@@ -361,12 +77,12 @@ describe('di.get()',function(){
 			},
 			
 			'SubstitutionsParentIndexWithValue': {
-				classDef: C,
+				classDef: classes.C,
 				params: ['A','B'],
 				substitutions: [di.value('E'),di.value('F')],
 			},
 			'SubstitutionsParentAssocWithValue': {
-				classDef: C,
+				classDef: classes.C,
 				params: ['A','B'],
 				substitutions: {
 					B:di.value('F'),
@@ -375,7 +91,7 @@ describe('di.get()',function(){
 			},
 			
 			'SubstitutionsParentAssocInSubkey': {
-				classDef: C,
+				classDef: classes.C,
 				params: [{
 					subkey: {
 						A:'A',
@@ -389,43 +105,43 @@ describe('di.get()',function(){
 			},
 			
 			'E':{
-				classDef: E,
+				classDef: classes.E,
 			},
 			'F':{
-				classDef: F,
+				classDef: classes.F,
 			},
 			
 			'G':{
-				classDef: G,
-				params: [di.factory(()=>'A'),di.factory(()=>new B())]
+				classDef: classes.G,
+				params: [di.factory(()=>'A'),di.factory(()=>new classes.B())]
 			},
 			
 			'H':{
-				classDef: H,
+				classDef: classes.H,
 				sharedInTree: ['A'],
 				params: [{a: 'A', i: 'I'}],
 			},
 			'I':{
-				classDef: I,
+				classDef: classes.I,
 				params: [{a: 'A', j: 'J'}],
 			},
 			'J':{
-				classDef: J,
+				classDef: classes.J,
 				params: ['A'],
 			},
 			'K':{
-				classDef: K,
+				classDef: classes.K,
 				sharedInTree: ['A'],
 				params: [{i: 'I'}],
 			},
 			'L':{
-				classDef: L,
+				classDef: classes.L,
 				calls: [
 					[ 'setParams', [ { foo: di.value('bar') } ] ]
 				],
 			},
 			'M':{
-				classDef: M,
+				classDef: classes.M,
 				calls: [
 					[ 'setParams', [ { a: 'A' } ] ]
 				],
@@ -433,12 +149,12 @@ describe('di.get()',function(){
 			
 			'N':{
 				shared: true,
-				classDef: N,
+				classDef: classes.N,
 				params: [ { o: 'O' } ],
 			},
 			'O':{
 				shared: true,
-				classDef: O,
+				classDef: classes.O,
 				lazyCalls: [
 					[ 'setParams', [ { n: 'N' } ] ]
 				],
@@ -447,12 +163,12 @@ describe('di.get()',function(){
 			
 			'P':{
 				shared: true,
-				classDef: Q,
+				classDef: classes.Q,
 				params: [ { q: 'Q' } ],
 			},
 			'Q':{
 				shared: true,
-				classDef: Q,
+				classDef: classes.Q,
 				calls: [
 					[ 'setParams', [ { p: 'P' } ] ]
 				],
@@ -461,17 +177,17 @@ describe('di.get()',function(){
 			
 			'R':{
 				shared: true,
-				classDef: R,
+				classDef: classes.R,
 				params: [ { s: 'S' } ],
 			},
 			'S':{
 				shared: true,
-				classDef: S,
+				classDef: classes.S,
 				params: [ { t: 'T' } ],
 			},
 			'T':{
 				shared: true,
-				classDef: T,
+				classDef: classes.T,
 				calls: [
 					[ 'setParams', [ { r : 'R' } ] ]
 				],
@@ -479,28 +195,28 @@ describe('di.get()',function(){
 			
 			'U':{
 				shared: true,
-				classDef: U,
+				classDef: classes.U,
 				params: [ { v: 'V' } ],
 			},
 			'V':{
 				shared: true,
-				classDef: V,
+				classDef: classes.V,
 				params: [ { w: 'W' } ],
 			},
 			'W':{
 				shared: true,
-				classDef: W,
+				classDef: classes.W,
 				calls: [
 					[ 'setParams', [ { u : 'U' } ] ]
 				],
 			},
 			
 			'X':{
-				classDef: X,
+				classDef: classes.X,
 				params: [di.value('x')],
 			},
 			'Y':{
-				classDef: Y,
+				classDef: classes.Y,
 				params: [di.value('y')],
 			},
 			'X2':{
@@ -513,35 +229,35 @@ describe('di.get()',function(){
 			},
 			
 			'Z':{
-				classDef: Z,
+				classDef: classes.Z,
 				params: [di.value('z')],
 				decorator: true, //needed for parent class by extended using inheritPrototype
 			},
 			'Z2':{
-				classDef: ZX,
+				classDef: classes.ZX,
 				inheritPrototype: false,
 			},
 			'Z3':{
-				classDef: ZX,
+				classDef: classes.ZX,
 				inheritPrototype: true,
 			},
 			
 			'One':{
-				classDef: One,
+				classDef: classes.One,
 				params: [di.value('one')],
 				decorator: false,
 			},
 			'Two':{
-				classDef: Two,
+				classDef: classes.Two,
 				inheritPrototype: true,
 			},
 			
 			'Three':{
-				classDef: Three,
+				classDef: classes.Three,
 				params: [di.value('three')],
 			},
 			'Four':{
-				classDef: Four,
+				classDef: classes.Four,
 				inheritMixins: [ 'Three' ],
 			},
 		});
@@ -560,7 +276,7 @@ describe('di.get()',function(){
 		describe('classDef',function(){
 			it('should return an instance of A',function(){
 				const instance = di.get('A');
-				expect(instance).instanceof(A);
+				expect(instance).instanceof(classes.A);
 			});
 		});
 		
@@ -569,13 +285,13 @@ describe('di.get()',function(){
 			describe('instanceOf',function(){
 				it('should return an instance of A',function(){
 					const instance = di.get('akaOfA');
-					expect(instance).instanceof(A);
+					expect(instance).instanceof(classes.A);
 				});
 			});
 			describe('instanceOf recursive',function(){
 				it('should return an instance of A',function(){
 					const instance = di.get('recursiveAkaOfA');
-					expect(instance).instanceof(A);
+					expect(instance).instanceof(classes.A);
 				});
 			});
 		
@@ -622,8 +338,8 @@ describe('di.get()',function(){
 				it('sould return instances from rule\'s params',function(){
 					const instance = di.get('C');
 					const [ a, b ] = instance.getParams();
-					expect(a).instanceof(A);
-					expect(b).instanceof(B);
+					expect(a).instanceof(classes.A);
+					expect(b).instanceof(classes.B);
 				});
 			});
 			
@@ -631,8 +347,8 @@ describe('di.get()',function(){
 				it('sould return instances from call\'s params',function(){
 					const instance = di.get('C', ['A','B']);
 					const [ a, b ] = instance.getParams();
-					expect(a).instanceof(A);
-					expect(b).instanceof(B);
+					expect(a).instanceof(classes.A);
+					expect(b).instanceof(classes.B);
 				});
 			});
 			
@@ -641,8 +357,8 @@ describe('di.get()',function(){
 					const instance = di.get('D');
 					const [ c ] = instance.getParams();
 					const [ a, b ] = c.getParams();
-					expect(a).instanceof(A);
-					expect(b).instanceof(B);
+					expect(a).instanceof(classes.A);
+					expect(b).instanceof(classes.B);
 				});
 			});
 			
@@ -651,8 +367,8 @@ describe('di.get()',function(){
 					const instance = di.get('D', ['C']);
 					const [ c ] = instance.getParams();
 					const [ a, b ] = c.getParams();
-					expect(a).instanceof(A);
-					expect(b).instanceof(B);
+					expect(a).instanceof(classes.A);
+					expect(b).instanceof(classes.B);
 				});
 			});
 			
@@ -661,15 +377,15 @@ describe('di.get()',function(){
 					const instance = di.get('G');
 					const [ a, b ] = instance.getParams();
 					expect(a).equal('A');
-					expect(b).instanceof(B);
+					expect(b).instanceof(classes.B);
 				});
 			});
 			
 			describe('factory from manual call',function(){
 				it('sould return values from factories from call\'s params',function(){
-					const instance = di.get('G', [di.factory(()=>new A()),di.factory(()=>'B')]);
+					const instance = di.get('G', [di.factory(()=>new classes.A()),di.factory(()=>'B')]);
 					const [ a, b ] = instance.getParams();
-					expect(a).instanceof(A);
+					expect(a).instanceof(classes.A);
 					expect(b).equal('B');
 				});
 			});
@@ -694,8 +410,8 @@ describe('di.get()',function(){
 				it('should return substituted instances',function(){
 					const instance = di.get('SubstitutionsParentIndex');
 					const [ e, f ] = instance.getParams();
-					expect(e).instanceof(E);
-					expect(f).instanceof(F);
+					expect(e).instanceof(classes.E);
+					expect(f).instanceof(classes.F);
 				});
 				
 			});
@@ -705,8 +421,8 @@ describe('di.get()',function(){
 				it('should return substituted instances',function(){
 					const instance = di.get('SubstitutionsParentAssoc');
 					const [ e, f ] = instance.getParams();
-					expect(e).instanceof(E);
-					expect(f).instanceof(F);
+					expect(e).instanceof(classes.E);
+					expect(f).instanceof(classes.F);
 				});
 				
 			});
@@ -790,7 +506,7 @@ describe('di.get()',function(){
 				it('should return params passed to method configured by the rule',function(){
 					const instance = di.get('M');
 					const { a } = instance.getParams();
-					expect(a).instanceof(A);
+					expect(a).instanceof(classes.A);
 				});
 				
 			});
@@ -804,7 +520,7 @@ describe('di.get()',function(){
 				it('should return params passed to method configured by the rule',function(){
 					const instance = di.get('N');
 					const [{ o }] = instance.getParams();
-					expect(o).instanceof(O);
+					expect(o).instanceof(classes.O);
 					const { n } = o.getParams();
 					expect(n).equal(instance);
 				});
@@ -816,7 +532,7 @@ describe('di.get()',function(){
 				it('should return params passed to method configured by the rule',function(){
 					const instance = di.get('P');
 					const [{ q }] = instance.getParams();
-					expect(q).instanceof(Q);
+					expect(q).instanceof(classes.Q);
 					const { p } = q.getParams();
 					expect(p).equal(instance);
 				});
@@ -829,9 +545,9 @@ describe('di.get()',function(){
 				it('should return params passed to method configured by the rule',function(){
 					const instance = di.get('R');
 					const [{ s }] = instance.getParams();
-					expect(s).instanceof(S);
+					expect(s).instanceof(classes.S);
 					const [{ t }] = s.getParams();
-					expect(t).instanceof(T);
+					expect(t).instanceof(classes.T);
 					const { r } = t.getParams();
 					expect(r).equal(instance);
 				});
@@ -843,9 +559,9 @@ describe('di.get()',function(){
 				it('should return params passed to method configured by the rule',function(){
 					const instance = di.get('U');
 					const [{ v }] = instance.getParams();
-					expect(v).instanceof(V);
+					expect(v).instanceof(classes.V);
 					const [{ w }] = v.getParams();
-					expect(w).instanceof(W);
+					expect(w).instanceof(classes.W);
 					const { u } = w.getParams();
 					expect(u).equal(instance);
 				});
