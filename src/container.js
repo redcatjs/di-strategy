@@ -111,15 +111,22 @@ export default class Container{
 		}
 		
 		this.rulesDefault = rulesDefault;
-		
 		this.rules = {};
 		
+		this.addRules(rules);
+	}
+	
+	addRules(rules){
 		if(typeof rules == 'function'){
 			rules = rules(this);
 		}
-		
-		this.rules = this.mergeRules(this.rules,rules);
-		
+		Object.keys(rules).forEach(interfaceName => this.addRule(interfaceName, rules[interfaceName]));
+	}
+	addRule(interfaceName, rule){
+		if(typeof rule == 'function'){
+			rule = rule(this);
+		}
+		this.rules[interfaceName] = this.mergeRule(this.rules[interfaceName] || {}, rule);
 	}
 	
 	setAppRoot(appRoot){
