@@ -9,5 +9,7 @@ export default function makeContainerApi(container){
 	di.value = container.value.bind(container);
 	di.interface = container.interface.bind(container);
 	di.require = container.require.bind(container);
+	di.addRule = container.addRule.bind(container);
+	di.addRules = container.addRules.bind(container);
 	return di;
 }
