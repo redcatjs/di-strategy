@@ -276,7 +276,24 @@ describe('di.get()',function(){
 				return this.params;
 			}
 		}
-		class Two{
+		class Two extends One{
+			constructor(...params){
+				super(params);
+			}
+			getParams(){
+				return this.params;
+			}
+		}
+		
+		class Three{
+			constructor(...params){
+				this.params = params;
+			}
+			getParams(){
+				return this.params;
+			}
+		}
+		class Four {
 			constructor(...params){
 				this.params = params;
 			}
@@ -498,7 +515,7 @@ describe('di.get()',function(){
 			'Z':{
 				classDef: Z,
 				params: [di.value('z')],
-				decorator: true,
+				decorator: true, //needed for parent class by extended using inheritPrototype
 			},
 			'Z2':{
 				classDef: ZX,
@@ -512,12 +529,21 @@ describe('di.get()',function(){
 			'One':{
 				classDef: One,
 				params: [di.value('one')],
+				decorator: false,
 			},
 			'Two':{
 				classDef: Two,
-				inheritMixins: [ 'One' ],
+				inheritPrototype: true,
 			},
 			
+			'Three':{
+				classDef: Three,
+				params: [di.value('three')],
+			},
+			'Four':{
+				classDef: Four,
+				inheritMixins: [ 'Three' ],
+			},
 		});
 		
 		
@@ -855,26 +881,39 @@ describe('di.get()',function(){
 			
 		});
 		
-		describe('inheritPrototype',function(){
+		describe('inheritPrototype + decorator',function(){
 			
 			
-			describe('inheritPrototype false (default)',function(){
+			describe('inheritPrototype false (default) + parent decorator true',function(){
 				
 				it('should not be same configuration as Z',function(){
-					const z = di.get('Z');
-					const z2 = di.get('Z2');
+					const z = di.get('Z').getParams();
+					const z2 = di.get('Z2').getParams();
 					expect(z2).not.eql(z);
 				});
 				
 			});
 			
-			describe('inheritPrototype true',function(){
+			describe('inheritPrototype true + parent decorator true',function(){
 				
 				it('should be same configuration as Z',function(){
 					
-					const z = di.get('Z');
-					const z3 = di.get('Z3');
+					const z = di.get('Z').getParams();
+					const z3 = di.get('Z3').getParams();
 					expect(z3).eql(z);
+					
+				});
+				
+				
+			});
+			
+			describe('inheritPrototype true + parent decorator false (default)',function(){
+				
+				it('should not be same configuration as One',function(){
+					
+					const one = di.get('One').getParams();
+					const two = di.get('Two').getParams();
+					expect(two).not.eql(one);
 					
 				});
 				
@@ -885,17 +924,17 @@ describe('di.get()',function(){
 		
 		describe('inheritMixins',function(){
 			
-			it('should be same configuration as One',function(){
+			it('should be same configuration as Three',function(){
 				
-				const one = di.get('One').getParams();
-				const two = di.get('Two').getParams();
-				expect(two).eql(one);
+				const three = di.get('Three').getParams();
+				const four = di.get('Four').getParams();
+				expect(four).eql(three);
 				
 			});
 			
 		});
 		
-		
+
 		describe('asyncResolve',function(){
 			
 			
@@ -906,10 +945,6 @@ describe('di.get()',function(){
 			
 		});
 		
-		describe('decorator',function(){
-			
-			
-		});
 		
 		
 	});
