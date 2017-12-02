@@ -587,7 +587,7 @@ export default class Container{
 	getRuleBase(interfaceName){
 		const ruleBase = this.mergeRule({}, this.rulesDefault);
 		ruleBase.interfaceName = interfaceName; //for info
-		this.mergeRule(ruleBase, this.rules[interfaceName]);
+		this.mergeRule(ruleBase, this.rules[interfaceName] || {});
 		return ruleBase;
 	}
 	
