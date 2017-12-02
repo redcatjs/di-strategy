@@ -112,21 +112,33 @@ export default class Container{
 		
 		this.rulesDefault = rulesDefault;
 		this.rules = {};
-		
-		this.addRules(rules);
 	}
 	
 	addRules(rules){
 		if(typeof rules == 'function'){
 			rules = rules(this);
 		}
-		Object.keys(rules).forEach(interfaceName => this.addRule(interfaceName, rules[interfaceName]));
+		Object.keys(rules).forEach(interfaceName => this.addRule(interfaceName, rules[interfaceName], false));
+		this.rulesDetectLazyLoad();
 	}
-	addRule(interfaceName, rule){
+	addRule(interfaceName, rule, detectLazyLoad = true){
 		if(typeof rule == 'function'){
 			rule = rule(this);
 		}
 		this.rules[interfaceName] = this.mergeRule(this.rules[interfaceName] || {}, rule);
+		this.processRule(interfaceName);
+		
+		let { classDef } = rule;
+		if(classDef){
+			if(classDef instanceof ClassDef){
+				classDef = classDef.getClassDef();
+			}
+			this.registerRequire(interfaceName, classDef);
+		}
+		
+		if(detectLazyLoad){
+			this.rulesDetectLazyLoad();
+		}
 	}
 	
 	setAppRoot(appRoot){
@@ -140,35 +152,13 @@ export default class Container{
 		}
 	}
 	
-	runAutoloader(){
+	runAutoloadDirs(){
 		this.loadDirs(this.autoloadDirs);
-		this.processRules();
-		
 		this.registerRequireMap(this.requires);
-		
-		this.registerClassDefs();
-		
+	}
+	rulesDetectLazyLoad(){
 		Object.keys(this.rules).forEach(key=>{
 			this.ruleLazyLoad(key);
-		});
-	}
-	
-	registerClassDefs(){
-		const classDefinitions = {};
-		Object.entries(this.rules).forEach( ( [name, {classDef}] ) => {
-			if(classDef){
-				if(classDef instanceof ClassDef){
-					classDef = classDef.getClassDef();
-				}
-				classDefinitions[name] = classDef;
-			}
-		});
-		this.registerRequireMap(classDefinitions);
-	}
-	
-	processRules(){
-		Object.keys(this.rules).forEach(key=>{
-			this.processRule(key);
 		});
 	}
 	
@@ -204,6 +194,12 @@ export default class Container{
 			const v = this.wrapVarType(param, this.defaultRuleVar);
 			if(v instanceof Interface){
 				const interfaceName = v.getName();
+				
+				if(!this.resolveInstanceOf(interfaceName, [], false)){
+					//not found, unable to check now
+					return false;
+				}
+				
 				const paramRule = this.getRule(interfaceName);
 				
 				if(stack.indexOf(interfaceName)!==-1){
@@ -600,7 +596,9 @@ export default class Container{
 		const ruleBase = this.getRuleBase(interfaceName);
 		
 		let stack = [];
+		
 		this.resolveInstanceOf(interfaceName, stack);
+		
 		const rules = [];
 		
 		let fullStack;
@@ -671,7 +669,7 @@ export default class Container{
 		if(!this.rules[name]){
 			this.rules[name] = {};
 		}
-		this.rules[name].instanceOf = target;
+		this.rules[name].classDef = target;
 	}
 	
 	mergeRule(extendRule, rule, mergeExtend = true){
@@ -832,18 +830,29 @@ export default class Container{
 		});
 	}
 	
-	resolveInstanceOf(str, stack = []){
+	resolveInstanceOf(str, stack = [], required = true){
 		if(typeof str == 'string'){
 			if(stack.indexOf(str)!==-1){
 				throw new Error('Cyclic interface definition error in '+JSON.stringify(stack.concat(str),null,2));
 			}
 			stack.push(str);
 			const rule = this.rules[str];
-			let resolved = rule && rule.instanceOf ? rule.instanceOf : false;
+			let resolved = false;
+			if(rule){
+				if(rule.instanceOf){
+					resolved = rule.instanceOf;
+				}
+				else if(rule.classDef){
+					resolved = rule.classDef;
+				}
+			}
 			if(!resolved){
+				if(!required){
+					return false;
+				}
 				throw new Error('Interface definition "'+str+'" not found, di load stack: '+JSON.stringify(stack, null, 2));
 			}
-			return this.resolveInstanceOf(resolved, stack);
+			return this.resolveInstanceOf(resolved, stack, required);
 		}
 		stack.push(str);
 		return str;

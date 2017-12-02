@@ -14,7 +14,15 @@ export class WebpackContainer extends Container{
 
 	constructor(config){
 		super(config);
-		this.runAutoloader();
+		
+		const {
+			autoloadDirsRecursive = true,
+			rules = {},
+		} = config;
+		
+		this.runAutoloadDirs();
+		
+		this.addRules(rules);
 	}
 	
 	depExists(requirePath){

@@ -19,8 +19,9 @@ export class NodeContainer extends Container {
 	constructor(config){
 		super(config);
 		
-		let {
+		const {
 			autoloadDirsRecursive = true,
+			rules = {},
 		} = config;
 		
 		let rootPath = this.rootPath;
@@ -29,7 +30,9 @@ export class NodeContainer extends Container {
 		}
 		this.rootPath = rootPath;
 		
-		this.runAutoloader();
+		this.runAutoloadDirs();
+		
+		this.addRules(rules);
 	}
 	
 	depExists(requirePath){

@@ -140,17 +140,17 @@ export default (di)=>({
 	},
 	
 	
-	'P':{
-		shared: true,
-		classDef: classes.Q,
-		params: [ { q: 'Q' } ],
-	},
 	'Q':{
 		shared: true,
 		classDef: classes.Q,
 		calls: [
 			[ 'setParams', [ { p: 'P' } ] ]
 		],
+	},
+	'P':{
+		shared: true,
+		classDef: classes.Q,
+		params: [ { q: 'Q' } ],
 	},
 	
 	
