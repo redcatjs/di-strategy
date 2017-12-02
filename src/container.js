@@ -120,14 +120,6 @@ export default class Container{
 		
 		this.rules = this.mergeRules(this.rules,rules);
 		
-		Object.keys(rules).forEach((interfaceName)=>{
-			const rule = rules[interfaceName];
-			const { instance, params } = rule;
-			if(instance){
-				this.registerInstance(interfaceName, instance);
-			}
-		});
-		
 	}
 	
 	setAppRoot(appRoot){
