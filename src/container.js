@@ -44,7 +44,7 @@ export default class Container{
 		promiseFactory = Promise,
 		promiseInterfaces = [ Promise ],
 		
-	}){
+	} = {}){
 		
 		rulesDefault = {
 			

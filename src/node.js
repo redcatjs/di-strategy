@@ -16,13 +16,15 @@ export function makeContainer(config){
 
 export class NodeContainer extends Container {
 
-	constructor(config){
+	constructor(config = {}){
 		super(config);
 		
 		const {
 			autoloadDirsRecursive = true,
 			rules = {},
 		} = config;
+		
+		this.autoloadDirsRecursive = autoloadDirsRecursive;
 		
 		let rootPath = this.rootPath;
 		if(!rootPath){

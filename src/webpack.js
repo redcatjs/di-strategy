@@ -12,11 +12,10 @@ export function makeWebpackContainer(config){
 
 export class WebpackContainer extends Container{
 
-	constructor(config){
+	constructor(config = {}){
 		super(config);
 		
 		const {
-			autoloadDirsRecursive = true,
 			rules = {},
 		} = config;
 		
