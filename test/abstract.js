@@ -494,9 +494,11 @@ describe('di.get()',function(){
 				instanceOf: 'Y',
 				inheritInstanceOf: false,
 			},
+			
 			'Z':{
 				classDef: Z,
 				params: [di.value('z')],
+				decorator: true,
 			},
 			'Z2':{
 				classDef: ZX,

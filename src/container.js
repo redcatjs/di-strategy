@@ -68,7 +68,7 @@ export default class Container{
 			asyncResolve: false,
 			asyncCallsSerie: false,
 			
-			decorator: true,
+			decorator: false,
 			
 			...rulesDefault,
 		};
