@@ -619,8 +619,11 @@ export default class Container{
 				if(typeof c == 'function'){
 					let parentProto = c;
 					let className;
-					while(className = parentProto[this.symClassName] ){
-						fullStack.add(className);
+					while(parentProto){
+						className = parentProto[this.symClassName];
+						if(className){
+							fullStack.add(className);
+						}
 						parentProto = Reflect.getPrototypeOf(parentProto);
 					}
 				}
