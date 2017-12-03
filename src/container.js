@@ -686,6 +686,7 @@ export default class Container{
 			singleton,
 			asyncResolve,
 			asyncCallsSerie,
+			asyncCallsParamsSerie,
 			decorator,
 		} = rule;
 		if(shared !== undefined){
@@ -708,6 +709,9 @@ export default class Container{
 		}
 		if(asyncCallsSerie !== undefined){
 			extendRule.asyncCallsSerie = asyncCallsSerie;
+		}
+		if(asyncCallsParamsSerie !== undefined){
+			extendRule.asyncCallsParamsSerie = asyncCallsParamsSerie;
 		}
 
 		if(calls !== undefined){
@@ -753,16 +757,13 @@ export default class Container{
 	
 	runCalls(calls, instance, rule, sharedInstances){
 		let hasAsync;
-		const callers = calls.map((c)=>{
+		
+		let callers = calls.map((c)=> ()=> {
 			
 			if(typeof c == 'function'){
 				c = [c];
 			}
 			const [ method, params = [], asyncResolve = rule.asyncResolve  ] = c;
-			
-			let resolvedParams = params.map(param => {
-				return this.getParam(param, rule, sharedInstances, this.defaultRuleVar);
-			});
 			
 			const makeCall = (resolvedParams)=>{				
 				resolvedParams = structuredResolveParamsInterface(params, resolvedParams);
@@ -778,10 +779,13 @@ export default class Container{
 				}
 				return callReturn;
 			};
-			
+						
+			const resolvedParams = params.map(param => {
+				return this.getParam(param, rule, sharedInstances, this.defaultRuleVar);
+			});
 			if(structuredHasPromise(params, resolvedParams, this.PromiseInterface)){
 				hasAsync = true;
-				return () => structuredPromiseAllRecursive(params, resolvedParams, this.PromiseInterface, this.PromiseFactory ).then(resolvedParams=>{
+				return () => structuredPromiseAllRecursive(params, resolvedParams, this.PromiseInterface, this.PromiseFactory).then(resolvedParams=>{
 					return makeCall(resolvedParams);
 				});
 			}
@@ -791,34 +795,51 @@ export default class Container{
 			
 		});
 		
-		const asyncCallsSerie = rule.asyncCallsSerie;
+		const asyncCallsParamsSerie = rule.asyncCallsParamsSerie;
+		const asyncCallsSerie = rule.asyncCallsSerie || asyncCallsParamsSerie;
 		
-		let callersReturn;
-		if(hasAsync){
-			if(asyncCallsSerie){
-				callersReturn = mapSerie(callers, (caller)=>{
-					return caller();
-				}, this.PromiseInterface, this.PromiseFactory);
+		const makeCalls = (callers)=>{
+			
+			let callersReturn;
+			if(hasAsync){
+				if(asyncCallsSerie){
+					callersReturn = mapSerie(callers, (caller)=>{
+						return caller();
+					}, this.PromiseInterface, this.PromiseFactory);
+				}
+				else{
+					callersReturn = this.PromiseFactory.all( callers.map((caller)=>{
+						return caller();
+					}) );
+				}
 			}
 			else{
-				callersReturn = this.PromiseFactory.all( callers.map((caller)=>{
-					return caller();
-				}) );
+				callersReturn = callers.map((caller)=>{
+					const callerReturn = caller();
+					if(callerReturn instanceof this.PromiseInterface){
+						hasAsync = true;
+					}
+					return callerReturn;
+				});
+				if(hasAsync){
+					callersReturn = this.PromiseFactory.all(callersReturn);
+				}
 			}
+			return callersReturn;
+		}
+		
+		if(asyncCallsParamsSerie){
+			callers = mapSerie(callers, (caller)=>{
+				caller = caller()();
+				return caller;
+			}, this.PromiseInterface, this.PromiseFactory);
+			return callers.then( callers => makeCalls( callers.map(caller => () => caller ) ) ) ;
 		}
 		else{
-			callersReturn = callers.map((caller)=>{
-				const callerReturn = caller();
-				if(callerReturn instanceof this.PromiseInterface){
-					hasAsync = true;
-				}
-				return callerReturn;
-			});
-			if(hasAsync){
-				callersReturn = this.PromiseFactory.all(callersReturn);
-			}
+			callers = callers.map((caller)=>caller());
+			return makeCalls(callers);
 		}
-		return callersReturn;
+		
 	}
 		
 	defineSym(target, symname, value){
