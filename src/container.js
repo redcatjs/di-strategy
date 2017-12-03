@@ -625,9 +625,8 @@ export default class Container{
 					}
 				}
 			});
-			fullStack = Array.from(fullStack).reverse();
 		}
-		
+		fullStack = Array.from(fullStack).reverse();
 		
 		fullStack.forEach((className)=>{
 			const mergeRule = this.rules[className];
