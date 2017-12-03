@@ -139,6 +139,7 @@ export default class Container{
 		if(detectLazyLoad){
 			this.rulesDetectLazyLoad();
 		}
+		
 	}
 	
 	setAppRoot(appRoot){
@@ -676,6 +677,7 @@ export default class Container{
 			shared,
 			inheritInstanceOf,
 			inheritPrototype,
+			inheritMixins,
 			instanceOf,
 			params,
 			calls,
@@ -689,6 +691,9 @@ export default class Container{
 			asyncCallsParamsSerie,
 			decorator,
 		} = rule;
+		if(classDef !== undefined){
+			extendRule.classDef = classDef;
+		}
 		if(shared !== undefined){
 			extendRule.shared = shared;
 		}
@@ -721,8 +726,8 @@ export default class Container{
 			extendRule.lazyCalls = ( extendRule.lazyCalls || [] ).concat(lazyCalls);
 		}
 		
-		if(mergeExtend && rule.inheritMixins !== undefined){
-			extendRule.inheritMixins = rule.inheritMixins.slice(0);
+		if(mergeExtend && inheritMixins !== undefined){
+			extendRule.inheritMixins = inheritMixins.slice(0);
 		}
 		
 		if(params !== undefined){
@@ -740,7 +745,6 @@ export default class Container{
 			}
 			extendRule.sharedInTree = Array.from( new Set([...extendRule.sharedInTree, ...sharedInTree]) );
 		}
-		extendRule.classDef = classDef;
 		extendRule.singleton = singleton;
 		return extendRule;
 	}
