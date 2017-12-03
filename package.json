@@ -37,6 +37,7 @@
   "homepage": "https://github.com/redcatjs/di-strategy#readme",
   "devDependencies": {
     "babel-cli": "^7.0.0-beta.3",
+    "babel-loader": "^7.1.2",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-decorators": "^7.0.0-beta.3",
     "babel-plugin-transform-runtime": "^7.0.0-beta.3",
@@ -48,7 +49,7 @@
     "express": "^4.16.2",
     "mocha": "^4.0.1",
     "sinon": "^4.1.2",
-    "webpack": "^3.8.1"
+    "webpack": "^3.9.1"
   },
   "dependencies": {
     "postinstall-build": "^5.0.1"
