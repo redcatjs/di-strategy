@@ -4,6 +4,7 @@
 		"env",
 	],
 	"plugins": [
+		"transform-export-extensions",
 		"transform-decorators",
 		"syntax-decorators",
 		"transform-class-properties",
