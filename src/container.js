@@ -735,7 +735,7 @@ export default class Container{
 			if(!extendRule.sharedInTree){
 				extendRule.sharedInTree = [];
 			}
-			extendRule.sharedInTree = [...new Set([...extendRule.sharedInTree, ...sharedInTree])];
+			extendRule.sharedInTree = Array.from( new Set([...extendRule.sharedInTree, ...sharedInTree]) );
 		}
 		extendRule.classDef = classDef;
 		extendRule.singleton = singleton;
