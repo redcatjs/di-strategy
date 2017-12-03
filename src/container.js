@@ -26,7 +26,6 @@ export default class Container{
 		
 		rulesDefault = {},
 		
-		autoload = false,
 		autoloadFailOnMissingFile = 'path',
 		autoloadDirs = [],
 		autoloadExtensions = ['js'],
@@ -70,6 +69,8 @@ export default class Container{
 			
 			decorator: false,
 			
+			autoload: false,
+			
 			...rulesDefault,
 		};
 		
@@ -80,7 +81,6 @@ export default class Container{
 		
 		this.requires = {};
 		this.autoloadExtensions = autoloadExtensions;
-		this.autoload = autoload;
 		this.autoloadDirs = autoloadDirs;
 		this.loadExtensionRegex = new RegExp('\.('+this.autoloadExtensions.join('|')+')$');
 		
@@ -253,14 +253,7 @@ export default class Container{
 			};
 		}
 		if(this.validateAutoloadFileName(key)){
-			let autoload = this.autoload;
-			if(typeof rule.autoload !== 'undefined'){
-				autoload = rule.autoload;
-			}
-			if(autoload === 'path'){
-				autoload = Boolean(rule.path);
-			}
-			if(autoload){
+			if(rule.autoload){
 				const path = rule.path || key;
 				this.requireDep(key, path);
 			}
@@ -690,6 +683,7 @@ export default class Container{
 			asyncCallsSerie,
 			asyncCallsParamsSerie,
 			decorator,
+			autoload,
 		} = rule;
 		if(classDef !== undefined){
 			extendRule.classDef = classDef;
@@ -705,6 +699,9 @@ export default class Container{
 		}
 		if(decorator !== undefined){
 			extendRule.decorator = decorator;
+		}
+		if(autoload !== undefined){
+			extendRule.autoload = autoload;
 		}
 		if(instanceOf !== undefined && extendRule.instanceOf === undefined){
 			extendRule.instanceOf = instanceOf;
