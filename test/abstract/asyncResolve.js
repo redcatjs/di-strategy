@@ -29,22 +29,20 @@ export default ({di, expect})=>{
 			},
 		});
 		
-		describe('simple async',async function(){
+		describe('simple async',function(){
 			
-			const waitA = di.get('A');
-			
-			it('waitA sould be promise',function(){
-				expect(waitA).instanceof(Promise);
+			it('waitA sould be promise',async function(){
+				const waitA = di.get('A');
+				return expect(waitA).instanceof(Promise);
 			});
 			
-			const a = await waitA;
-			
-			it('a.b sould be promise',function(){
-				expect(a.b).instanceof(Promise);
+			it('a.b sould be promise',async function(){
+				const a = await di.get('A');
+				return expect(a.b).instanceof(Promise);
 			});
-			it('a.c should be resolved value of promise',function(){
-				expect(a.c).not.instanceof(Promise);
-				expect(a.c).equal('c');
+			it('a.c should be resolved value of promise',async function(){
+				const a = await di.get('A');
+				return expect(a.c).equal('c');
 			});
 			
 		});
