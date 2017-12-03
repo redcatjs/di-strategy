@@ -719,7 +719,7 @@ export default class Container{
 		}
 		
 		if(mergeExtend && rule.inheritMixins !== undefined){
-			extendRule.inheritMixins = rule.inheritMixins;
+			extendRule.inheritMixins = rule.inheritMixins.slice(0);
 		}
 		
 		if(params !== undefined){
