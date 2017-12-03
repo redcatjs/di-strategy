@@ -1,27 +1,9 @@
 import './abstract'
 
-/*
-import {
-	expect,
-	should,
-	assert,
-	
-} from 'chai'
+import loadTestFactory from './utils/loadTestFactory'
 
-import sinon from 'sinon'
+const loadTest = loadTestFactory('node');
 
-import di from './node/composition-root'
+describe('autoloadDirs',function(){
 
-
-import server from './node/server'
-
-describe('',function(){
-	
-	it('',function(){
-		const server = di.get('server');
-		
-		
-	});
-	
 });
-*/

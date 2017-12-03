@@ -1,22 +1,7 @@
-import './abstract'
+import loadTestFactory from './utils/loadTestFactory'
 
-import {
-	expect,
-	should,
-	assert,
-	
-} from 'chai'
+const loadTest = loadTestFactory('browser');
 
-import sinon from 'sinon'
+describe('autoloadDirs',function(){
 
-import di from './browser/composition-root'
-
-
-describe('',function(){
-	
-	it('',function(){
-		
-		
-	});
-	
 });
