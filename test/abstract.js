@@ -19,6 +19,7 @@ describe('di.get()',function(){
 		loadTest('inheritMixins');
 		loadTest('asyncResolve');
 		loadTest('asyncCallsSeries');
+		loadTest('asyncCallsParamsSerie');
 
 	});
 
