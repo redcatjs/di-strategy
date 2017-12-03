@@ -41,12 +41,7 @@ export default ({di, expect})=>{
 				asyncCallsSerie: false, //default
 			},
 			'A2': {
-				classDef: A,
-				calls: [
-					['setB', ['B'] ],
-					['setC', ['C'] ],
-				],
-				sharedInTree: ['D'],
+				instanceOf: 'A',
 				asyncCallsSerie: true,
 			},
 			
