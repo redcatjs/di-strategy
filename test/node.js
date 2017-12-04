@@ -26,6 +26,8 @@ describe('rules',function(){
 	loadTest('rules/asyncResolve');
 	loadTest('rules/asyncCallsSeries');
 	loadTest('rules/asyncCallsParamsSerie');
+	
+	loadTest('rules/autoload');
 
 });
 
