@@ -28,6 +28,8 @@ describe('rules',function(){
 	loadTest('rules/asyncCallsParamsSerie');
 	
 	loadTest('rules/autoload');
+	
+	loadTest('decorator');
 
 });
 

@@ -12,6 +12,9 @@ const loadTest = loadTestFactory(container,(name)=>{
 		case 'rules':
 			return require('./rules/'+path).default;
 		break;
+		case 'decorator':
+			return require('./decorator').default;
+		break;
 	}
 });
 
@@ -33,6 +36,8 @@ describe('rules',function(){
 	loadTest('rules/asyncResolve');
 	loadTest('rules/asyncCallsSeries');
 	loadTest('rules/asyncCallsParamsSerie');
+	
+	loadTest('decorator');
 
 });
 
