@@ -1,3 +1,5 @@
+//waiting for https://github.com/sinonjs/lolex/pull/105#pullrequestreview-49708156
+
 export default ({di, expect, sinon})=>{
 	
 	return function(){
