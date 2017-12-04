@@ -1,6 +1,16 @@
-export default ({di, expect})=>{
+export default ({di, expect, sinon})=>{
 	
 	return function(){
+		
+		let clock;
+		before(function(){
+			clock = sinon.useFakeTimers({
+				//shouldAdvanceTime: true,
+			});
+		});
+		after(function(){
+			clock.restore();
+		});
 		
 		class A{
 			setB(b){
@@ -59,12 +69,25 @@ export default ({di, expect})=>{
 		describe('run async calls params in serie',function(){
 			
 			it('a.c should be equal to 1',async function(){
-				const a = await di.get('A');
+				let a = di.get('A');
+				
+				//clock.runAllAsync();
+				clock.runAll();
+				clock.restore();
+				
+				a = await a;
+				
 				return expect(a.b).equal(1);
 			});
 			
 			it('a.c should be equal to 2',async function(){
-				const a = await di.get('A');
+				let a = di.get('A');
+				a = await a;
+				
+				//clock.runAllAsync();
+				clock.runAll();
+				clock.restore();
+				
 				return expect(a.c).equal(2);
 			});
 			

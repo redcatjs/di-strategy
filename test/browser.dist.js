@@ -13449,7 +13449,8 @@ var _createClass2 = _interopRequireDefault(__webpack_require__(3));
 
 var _default = function _default(_ref) {
   var di = _ref.di,
-      expect = _ref.expect;
+      expect = _ref.expect,
+      sinon = _ref.sinon;
   return function () {
     var B = function () {
       var _ref2 = (0, _asyncToGenerator2.default)(
@@ -13504,6 +13505,15 @@ var _default = function _default(_ref) {
         return _ref3.apply(this, arguments);
       };
     }();
+
+    var clock;
+    before(function () {
+      clock = sinon.useFakeTimers({//shouldAdvanceTime: true,
+      });
+    });
+    after(function () {
+      clock.restore();
+    });
 
     var A =
     /*#__PURE__*/
@@ -13561,14 +13571,18 @@ var _default = function _default(_ref) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                _context3.next = 2;
-                return di.get('A');
+                a = di.get('A'); //clock.runAllAsync();
 
-              case 2:
+                clock.runAll();
+                clock.restore();
+                _context3.next = 5;
+                return a;
+
+              case 5:
                 a = _context3.sent;
                 return _context3.abrupt("return", expect(a.b).equal(1));
 
-              case 4:
+              case 7:
               case "end":
                 return _context3.stop();
             }
@@ -13583,14 +13597,18 @@ var _default = function _default(_ref) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
-                _context4.next = 2;
-                return di.get('A');
+                a = di.get('A');
+                _context4.next = 3;
+                return a;
 
-              case 2:
+              case 3:
                 a = _context4.sent;
+                //clock.runAllAsync();
+                clock.runAll();
+                clock.restore();
                 return _context4.abrupt("return", expect(a.c).equal(2));
 
-              case 4:
+              case 7:
               case "end":
                 return _context4.stop();
             }
@@ -13629,7 +13647,8 @@ var _createClass2 = _interopRequireDefault(__webpack_require__(3));
 
 var _default = function _default(_ref) {
   var di = _ref.di,
-      expect = _ref.expect;
+      expect = _ref.expect,
+      sinon = _ref.sinon;
   return function () {
     var B = function () {
       var _ref2 = (0, _asyncToGenerator2.default)(
@@ -13643,7 +13662,7 @@ var _default = function _default(_ref) {
                 return new _promise.default(function (resolve) {
                   setTimeout(function () {
                     resolve(d);
-                  }, 20);
+                  }, 200);
                 });
 
               case 2:
@@ -13674,7 +13693,7 @@ var _default = function _default(_ref) {
                 return new _promise.default(function (resolve) {
                   setTimeout(function () {
                     resolve(d);
-                  }, 10);
+                  }, 100);
                 });
 
               case 2:
@@ -13692,6 +13711,14 @@ var _default = function _default(_ref) {
         return _ref3.apply(this, arguments);
       };
     }();
+
+    var clock;
+    before(function () {
+      clock = sinon.useFakeTimers();
+    });
+    after(function () {
+      clock.restore();
+    });
 
     var A =
     /*#__PURE__*/
@@ -13753,14 +13780,16 @@ var _default = function _default(_ref) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                _context3.next = 2;
-                return di.get('A');
+                a = di.get('A');
+                clock.runAll();
+                _context3.next = 4;
+                return a;
 
-              case 2:
+              case 4:
                 a = _context3.sent;
                 return _context3.abrupt("return", expect(a.b).equal(2));
 
-              case 4:
+              case 6:
               case "end":
                 return _context3.stop();
             }
@@ -13775,14 +13804,16 @@ var _default = function _default(_ref) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
-                _context4.next = 2;
-                return di.get('A');
+                a = di.get('A');
+                clock.runAll();
+                _context4.next = 4;
+                return a;
 
-              case 2:
+              case 4:
                 a = _context4.sent;
                 return _context4.abrupt("return", expect(a.c).equal(1));
 
-              case 4:
+              case 6:
               case "end":
                 return _context4.stop();
             }
@@ -13799,14 +13830,16 @@ var _default = function _default(_ref) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
-                _context5.next = 2;
-                return di.get('A2');
+                a = di.get('A2');
+                clock.runAll();
+                _context5.next = 4;
+                return a;
 
-              case 2:
+              case 4:
                 a = _context5.sent;
                 return _context5.abrupt("return", expect(a.b).equal(1));
 
-              case 4:
+              case 6:
               case "end":
                 return _context5.stop();
             }
@@ -13821,14 +13854,16 @@ var _default = function _default(_ref) {
           while (1) {
             switch (_context6.prev = _context6.next) {
               case 0:
-                _context6.next = 2;
-                return di.get('A2');
+                a = di.get('A2');
+                clock.runAll();
+                _context6.next = 4;
+                return a;
 
-              case 2:
+              case 4:
                 a = _context6.sent;
                 return _context6.abrupt("return", expect(a.c).equal(2));
 
-              case 4:
+              case 6:
               case "end":
                 return _context6.stop();
             }

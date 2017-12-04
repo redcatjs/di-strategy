@@ -7,11 +7,15 @@ export default function loadTestFactory(container, requireCaller){
 		
 		const di = container();
 		const factory = requireCaller(test);
+		
 		const fn = factory({
 			di,
 			expect,
 			sinon,
 		});
+		
+		
 		describe( test, fn );
+		
 	};
 };

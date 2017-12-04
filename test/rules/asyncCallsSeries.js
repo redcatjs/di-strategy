@@ -1,6 +1,14 @@
-export default ({di, expect})=>{
+export default ({di, expect, sinon})=>{
 	
 	return function(){
+		
+		let clock;
+		before(function(){
+			clock = sinon.useFakeTimers();
+		});
+		after(function(){
+			clock.restore();
+		});
 		
 		class A{
 			setB(d){
@@ -15,14 +23,14 @@ export default ({di, expect})=>{
 			return await new Promise((resolve)=>{
 				setTimeout(()=>{
 					resolve(d)
-				}, 20);
+				}, 200);
 			});
 		}
 		async function C(d){
 			return await new Promise((resolve)=>{
 				setTimeout(()=>{
 					resolve(d);
-				}, 10);
+				}, 100);
 			});
 		}
 		
@@ -64,13 +72,18 @@ export default ({di, expect})=>{
 		
 		describe('run async calls in parallel (default)',function(){
 			
+			
 			it('a.c should be equal to 1',async function(){
-				const a = await di.get('A');
+				let a = di.get('A');
+				clock.runAll();
+				a = await a;
 				return expect(a.b).equal(2);
 			});
 			
 			it('a.c should be equal to 2',async function(){
-				const a = await di.get('A');
+				let a = di.get('A');
+				clock.runAll();
+				a = await a;
 				return expect(a.c).equal(1);
 			});
 			
@@ -79,12 +92,16 @@ export default ({di, expect})=>{
 		describe('run async calls in serie',function(){
 			
 			it('a.c should be equal to 1',async function(){
-				const a = await di.get('A2');
+				let a = di.get('A2');
+				clock.runAll();
+				a = await a;
 				return expect(a.b).equal(1);
 			});
 			
 			it('a.c should be equal to 2',async function(){
-				const a = await di.get('A2');
+				let a = di.get('A2');
+				clock.runAll();
+				a = await a;
 				return expect(a.c).equal(2);
 			});
 			
