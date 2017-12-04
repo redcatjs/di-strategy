@@ -29,6 +29,7 @@ export default class Container{
 		autoloadFailOnMissingFile = 'path',
 		autoloadDirs = [],
 		autoloadExtensions = ['js'],
+		resolveAutoloadPath = (path)=>path,
 		
 		defaultVar = 'interface',
 		defaultRuleVar = null,
@@ -81,6 +82,7 @@ export default class Container{
 		this.autoloadExtensions = autoloadExtensions;
 		this.autoloadFailOnMissingFile = autoloadFailOnMissingFile;
 		this.autoloadDirs = autoloadDirs;
+		this.resolveAutoloadPath = resolveAutoloadPath;
 		this.loadExtensionRegex = new RegExp('\.('+this.autoloadExtensions.join('|')+')$');
 		
 		this.defaultRuleVar = defaultRuleVar || defaultVar;
@@ -283,8 +285,10 @@ export default class Container{
 	
 	requireDep(key, requirePath){
 		if(this.requires[key]){
-			return;
+			return this.requires[key];
 		}
+		
+		requirePath = this.resolveAutoloadPath(requirePath);
 		
 		const found = this.autoloadExtensions.concat('').some( ext => {
 			
@@ -318,6 +322,8 @@ export default class Container{
 		if( ! found && ((this.autoloadFailOnMissingFile==='path' && requirePath) || this.autoloadFailOnMissingFile===true) ){
 			throw new Error('Missing expected dependency injection file "'+requirePath+'"');
 		}
+		
+		return this.requires[key];
 	}
 	
 	
