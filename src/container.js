@@ -22,16 +22,13 @@ import promiseInterface from './promiseInterface'
 export default class Container{
 
 	constructor({
-		rules,
+		rules = {},
 		
 		rulesDefault = {},
 		
 		autoloadFailOnMissingFile = 'path',
 		autoloadDirs = [],
 		autoloadExtensions = ['js'],
-		
-		rootPath = null,
-		appRoot = '/',
 		
 		defaultVar = 'interface',
 		defaultRuleVar = null,
@@ -84,9 +81,6 @@ export default class Container{
 		this.autoloadDirs = autoloadDirs;
 		this.loadExtensionRegex = new RegExp('\.('+this.autoloadExtensions.join('|')+')$');
 		
-		this.rootPath = rootPath;
-		this.setAppRoot(appRoot);
-		
 		this.defaultRuleVar = defaultRuleVar || defaultVar;
 		this.defaultDecoratorVar = defaultDecoratorVar || defaultVar;
 		this.defaultArgsVar = defaultArgsVar || defaultVar;
@@ -112,6 +106,29 @@ export default class Container{
 		
 		this.rulesDefault = rulesDefault;
 		this.rules = {};
+		
+		this.runAutoloadDirs();
+		this.addRules(rules);
+		
+	}
+	
+	loadDirs(dirs){
+		Object.keys(dirs).forEach(dirKey=>{
+			const context = dirs[dirKey];
+			context.keys().forEach((filename)=>{
+				
+				let key = filename;
+				if(key.substr(0,2)=='./'){
+					key = key.substr(2);
+				}
+				
+				key = dirKey+'/'+key.substr(0, key.lastIndexOf('.') || key.length);
+				if(key.split('/').pop()=='index'){
+					key = key.substr(0, key.lastIndexOf('/'));
+				}
+				this.requires[key] = context(filename);
+			});
+		});
 	}
 	
 	addRules(rules){
@@ -140,11 +157,6 @@ export default class Container{
 			this.rulesDetectLazyLoad();
 		}
 		
-	}
-	
-	setAppRoot(appRoot){
-		this.appRoot = appRoot;
-		this.appRootStrLen = appRoot.length;
 	}
 	
 	validateDefaultVar(value, property){
@@ -307,18 +319,6 @@ export default class Container{
 		}
 	}
 	
-	isAppRoot(path){
-		return path.substr(0,this.appRootStrLen)==this.appRoot;
-	}
-	replaceAppRootByAbsolute(path){
-		return this.rootPath+path.substr(this.appRootStrLen);
-	}
-	resolveAppRoot(path){
-		if(this.isAppRoot(path)){
-			return this.replaceAppRootByAbsolute(path);
-		}
-		return path;
-	}
 	
 	registerRequireMap(requires){
 		Object.keys(requires).forEach((name)=>{

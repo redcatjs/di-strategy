@@ -11,41 +11,12 @@ export function makeWebpackContainer(config){
 }
 
 export class WebpackContainer extends Container{
-
-	constructor(config = {}){
-		super(config);
-		
-		const {
-			rules = {},
-		} = config;
-		
-		this.runAutoloadDirs();
-		
-		this.addRules(rules);
-	}
 	
 	depExists(requirePath){
 		return !!this.requires[requirePath];
 	}
 	depRequire(requirePath){
 		return this.requires[requirePath];
-	}
-	
-	loadDirs(dirs){
-		Object.keys(dirs).forEach(dirKey=>{
-			const context = dirs[dirKey];
-			context.keys().forEach((filename)=>{
-				let key = filename;
-				if(key.substr(0,2)=='./'){
-					key = key.substr(2);
-				}
-				key = dirKey+'/'+key.substr(0, key.lastIndexOf('.') || key.length);
-				if(key.split('/').pop()=='index'){
-					key = key.substr(0, key.lastIndexOf('/'));
-				}
-				this.requires[key] = context(filename);
-			});
-		});
 	}
 	
 	require(dep){
