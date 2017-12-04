@@ -29,7 +29,7 @@ export default class Container{
 		autoloadFailOnMissingFile = 'path',
 		autoloadDirs = [],
 		autoloadExtensions = ['js'],
-		resolveAutoloadPath = (path)=>path,
+		autoloadPathResolver = (path)=>path,
 		
 		defaultVar = 'interface',
 		defaultRuleVar = null,
@@ -82,7 +82,7 @@ export default class Container{
 		this.autoloadExtensions = autoloadExtensions;
 		this.autoloadFailOnMissingFile = autoloadFailOnMissingFile;
 		this.autoloadDirs = autoloadDirs;
-		this.resolveAutoloadPath = resolveAutoloadPath;
+		this.autoloadPathResolver = autoloadPathResolver;
 		this.loadExtensionRegex = new RegExp('\.('+this.autoloadExtensions.join('|')+')$');
 		
 		this.defaultRuleVar = defaultRuleVar || defaultVar;
@@ -102,10 +102,7 @@ export default class Container{
 		this.PromiseFactory = promiseFactory;
 		
 		if(globalKey){
-			if(globalKey===true){
-				globalKey = 'di';
-			}
-			global[globalKey] = makeContainerApi(this);
+			this.setGlobalKey(globalKey);
 		}
 		
 		this.rulesDefault = rulesDefault;
@@ -114,6 +111,35 @@ export default class Container{
 		this.runAutoloadDirs();
 		this.addRules(rules);
 		
+	}
+	
+	config(key, value){
+		if(typeof key === 'object'){
+			Object.keys(key).forEach(k=>this.config(k, key[k]));
+			return;
+		}
+		switch(key){
+			case 'rulesDefault':
+			case 'autoloadFailOnMissingFile ':
+			case 'autoloadExtensions':
+			case 'autoloadPathResolver':
+			case 'defaultVar':
+			case 'defaultRuleVar':
+			case 'defaultDecoratorVar':
+			case 'defaultArgsVar':
+				this[key] = value;
+			break;
+			default:
+				throw new Error('Unexpected config key '+key);
+			break;
+		}
+	}
+	
+	setGlobalKey(globalKey){
+		if(globalKey===true){
+			globalKey = 'di';
+		}
+		global[globalKey] = makeContainerApi(this);
 	}
 	
 	loadDirs(dirs){
@@ -291,7 +317,7 @@ export default class Container{
 			return this.requires[key];
 		}
 		
-		requirePath = this.resolveAutoloadPath(requirePath);
+		requirePath = this.autoloadPathResolver(requirePath);
 		
 		const found = this.autoloadExtensions.concat('').some( ext => {
 			
