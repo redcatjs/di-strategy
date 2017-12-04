@@ -43,36 +43,6 @@ export default class Container{
 		
 	} = {}){
 		
-		rulesDefault = {
-			
-			inheritInstanceOf: true,
-			inheritPrototype: false,
-			inheritMixins: [],
-			
-			shared: false,
-			instanceOf: null,
-			classDef: null,
-			params: null,
-			
-			calls: [],
-			lazyCalls: [],
-			
-			substitutions: [],
-			sharedInTree: [],
-			
-			singleton: null,
-			
-			asyncResolve: false,
-			asyncCallsSerie: false,
-			
-			decorator: false,
-			
-			autoload: false,
-			path: undefined,
-			
-			...rulesDefault,
-		};
-		
 		this.symClassName = Symbol('className');
 		this.symInterfaces = Symbol('types');
 		this.providerRegistry = {};
@@ -105,7 +75,35 @@ export default class Container{
 			this.setGlobalKey(globalKey);
 		}
 		
-		this.rulesDefault = rulesDefault;
+		this.rulesDefault = {
+			
+			inheritInstanceOf: true,
+			inheritPrototype: false,
+			inheritMixins: [],
+			
+			shared: false,
+			instanceOf: null,
+			classDef: null,
+			params: null,
+			
+			calls: [],
+			lazyCalls: [],
+			
+			substitutions: [],
+			sharedInTree: [],
+			
+			singleton: null,
+			
+			asyncResolve: false,
+			asyncCallsSerie: false,
+			
+			decorator: false,
+			
+			autoload: false,
+			path: undefined,
+			
+		};
+		this.setRulesDefault(rulesDefault);
 		this.rules = {};
 		
 		this.runAutoloadDirs();
@@ -119,7 +117,6 @@ export default class Container{
 			return;
 		}
 		switch(key){
-			case 'rulesDefault':
 			case 'autoloadFailOnMissingFile ':
 			case 'autoloadExtensions':
 			case 'defaultVar':
@@ -134,11 +131,21 @@ export default class Container{
 			case 'autoloadPathResolver':
 				this.setAutoloadPathResolver(value);
 			break;
+			case 'rulesDefault':
+				this.setRulesDefault(value);
+			break;
 			break;
 			default:
 				throw new Error('Unexpected config key '+key);
 			break;
 		}
+	}
+	
+	setRulesDefault(rulesDefault){
+		this.rulesDefault = {
+			...this.rulesDefault,
+			...rulesDefault,
+		};
 	}
 	
 	setAutoloadPathResolver(autoloadPathResolver){
