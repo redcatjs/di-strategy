@@ -271,7 +271,10 @@ export default class Container{
 		if(this.validateAutoloadFileName(key)){
 			if(rule.autoload){
 				const path = rule.path || key;
-				this.requireDep(key, path);
+				const req = this.requireDep(key, path);
+				if(req){
+					this.registerRequire(key, req);
+				}
 			}
 		}
 	}
