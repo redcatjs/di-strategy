@@ -67,6 +67,7 @@ export default class Container{
 			decorator: false,
 			
 			autoload: false,
+			path: undefined,
 			
 			...rulesDefault,
 		};
@@ -78,6 +79,7 @@ export default class Container{
 		
 		this.requires = {};
 		this.autoloadExtensions = autoloadExtensions;
+		this.autoloadFailOnMissingFile = autoloadFailOnMissingFile;
 		this.autoloadDirs = autoloadDirs;
 		this.loadExtensionRegex = new RegExp('\.('+this.autoloadExtensions.join('|')+')$');
 		
@@ -284,7 +286,6 @@ export default class Container{
 			return;
 		}
 		
-		requirePath = this.resolveAppRoot(requirePath);
 		const found = this.autoloadExtensions.concat('').some( ext => {
 			
 			const pathFragments = requirePath.split(':');
@@ -314,7 +315,7 @@ export default class Container{
 			}
 			
 		});
-		if( ! found && ((this.autoloadFailOnMissingFile==='path' && rule.path) || this.autoloadFailOnMissingFile===true) ){
+		if( ! found && ((this.autoloadFailOnMissingFile==='path' && requirePath) || this.autoloadFailOnMissingFile===true) ){
 			throw new Error('Missing expected dependency injection file "'+requirePath+'"');
 		}
 	}
@@ -684,6 +685,7 @@ export default class Container{
 			asyncCallsParamsSerie,
 			decorator,
 			autoload,
+			path,
 		} = rule;
 		if(classDef !== undefined){
 			extendRule.classDef = classDef;
@@ -702,6 +704,9 @@ export default class Container{
 		}
 		if(autoload !== undefined){
 			extendRule.autoload = autoload;
+		}
+		if(path !== undefined){
+			extendRule.path = path;
 		}
 		if(instanceOf !== undefined && extendRule.instanceOf === undefined){
 			extendRule.instanceOf = instanceOf;
