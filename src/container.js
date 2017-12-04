@@ -82,7 +82,7 @@ export default class Container{
 		this.autoloadExtensions = autoloadExtensions;
 		this.autoloadFailOnMissingFile = autoloadFailOnMissingFile;
 		this.autoloadDirs = autoloadDirs;
-		this.autoloadPathResolver = autoloadPathResolver;
+		this.setAutoloadPathResolver(autoloadPathResolver);
 		this.loadExtensionRegex = new RegExp('\.('+this.autoloadExtensions.join('|')+')$');
 		
 		this.defaultRuleVar = defaultRuleVar || defaultVar;
@@ -122,17 +122,45 @@ export default class Container{
 			case 'rulesDefault':
 			case 'autoloadFailOnMissingFile ':
 			case 'autoloadExtensions':
-			case 'autoloadPathResolver':
 			case 'defaultVar':
 			case 'defaultRuleVar':
 			case 'defaultDecoratorVar':
 			case 'defaultArgsVar':
 				this[key] = value;
 			break;
+			case 'globalkey':
+				this.setGlobalKey(value);
+			break;
+			case 'autoloadPathResolver':
+				this.setAutoloadPathResolver(value);
+			break;
+			break;
 			default:
 				throw new Error('Unexpected config key '+key);
 			break;
 		}
+	}
+	
+	setAutoloadPathResolver(autoloadPathResolver){
+		
+		if(typeof autoloadPathResolver == 'object'){
+			
+			const aliasMap = autoloadPathResolver;
+			autoloadPathResolver = (path)=>{
+				Object.keys(aliasMap).forEach(alias=>{
+					const realPath = aliasMap[alias];
+					if(path == alias){
+						path = realPath;
+					}
+					else if(path.substr(0,alias.length+1)==alias+'/'){
+						path = realPath+path.substr(alias.length);
+					}
+				});
+				return path;
+			};
+		}
+		
+		this.autoloadPathResolver = autoloadPathResolver;
 	}
 	
 	setGlobalKey(globalKey){
