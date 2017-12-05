@@ -27,7 +27,7 @@ export default class Container{
 		rulesDefault = {},
 		
 		autoloadFailOnMissingFile = 'path',
-		autoloadDirs = [],
+		autoloadDirs = {},
 		autoloadExtensions = ['js'],
 		autoloadPathResolver = (path)=>path,
 		
