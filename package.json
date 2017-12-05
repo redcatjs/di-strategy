@@ -4,7 +4,6 @@
   "description": "high level dependency injector",
   "main": "dist/di.js",
   "scripts": {
-    "postinstall": "postinstall-build dist",
     "build": "babel src --out-dir dist --source-maps inline",
     "dev": "babel src --out-dir dist --source-maps inline --watch",
     "mocha": "mocha --require babel-register",
@@ -52,7 +51,5 @@
     "sinon": "^4.1.2",
     "webpack": "^3.9.1"
   },
-  "dependencies": {
-    "postinstall-build": "^5.0.1"
-  }
+  "dependencies": {}
 }
