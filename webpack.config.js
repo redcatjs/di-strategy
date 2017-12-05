@@ -2,13 +2,12 @@ const webpack = require('webpack');
 const path = require('path');
 
 module.exports = {
-	context: path.resolve(__dirname, 'test'),
 	entry:{
-		'browser':['./browser.js'],
+		'webpack':['./src/webpack.js'],
+		'test/browser.dist':['./test/browser.js'],
 	},
 	output: {
-		path: path.resolve('test'),
-		filename: '[name].dist.js',
+		filename: '[name].js',
 	},
     module: {
 		rules : [
