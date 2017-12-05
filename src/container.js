@@ -82,9 +82,9 @@ export default class Container{
 			inheritMixins: [],
 			
 			shared: false,
-			instanceOf: null,
-			classDef: null,
-			params: null,
+			instanceOf: undefined,
+			classDef: undefined,
+			params: undefined,
 			
 			calls: [],
 			lazyCalls: [],
@@ -92,7 +92,7 @@ export default class Container{
 			substitutions: [],
 			sharedInTree: [],
 			
-			singleton: null,
+			singleton: undefined,
 			
 			asyncResolve: false,
 			asyncCallsSerie: false,
@@ -207,8 +207,15 @@ export default class Container{
 		if(typeof rule == 'function'){
 			rule = rule(this);
 		}
-		this.rules[interfaceName] = this.mergeRule(this.rules[interfaceName] || {}, rule);
+		
+		if(this.rules[interfaceName] === undefined){
+			this.rules[interfaceName] = this.mergeRule({}, this.rulesDefault);
+		}
+		
+		this.rules[interfaceName] = this.mergeRule(this.rules[interfaceName], rule);
 		this.processRule(interfaceName);
+		
+		rule = this.rules[interfaceName];
 		
 		let { classDef } = rule;
 		if(classDef){
@@ -309,7 +316,10 @@ export default class Container{
 	}
 	
 	processRule(key, stack = []){
-		const rule = this.rules[key] || this.rulesDefault;
+		if(this.rules[key] === undefined){
+			this.rules[key] = this.mergeRule({}, this.rulesDefault);
+		}
+		const rule = this.rules[key];
 		if(rule.instanceOf){
 			if(stack.indexOf(key)!==-1){
 				throw new Error('Cyclic interface definition error in '+JSON.stringify(stack.concat(key),null,2));
@@ -778,7 +788,8 @@ export default class Container{
 		if(path !== undefined){
 			extendRule.path = path;
 		}
-		if(instanceOf !== undefined && extendRule.instanceOf === undefined){
+		//if(instanceOf !== undefined && extendRule.instanceOf === undefined){
+		if(instanceOf !== undefined){
 			extendRule.instanceOf = instanceOf;
 		}
 		if(asyncResolve !== undefined){
