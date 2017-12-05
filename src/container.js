@@ -271,7 +271,7 @@ export default class Container{
 		});
 		
 		rule.calls = calls;
-		rule.lazyCalls = (rule.lazyCalls || []).concat(lazyCalls);		
+		rule.lazyCalls = (rule.lazyCalls || []).concat(lazyCalls);
 	}
 	ruleCheckCyclicLoad(params, stack=[]){		
 		return Object.keys(params).some(k=>{
@@ -298,7 +298,7 @@ export default class Container{
 				if(paramRule.params){
 					cyclic = this.ruleCheckCyclicLoad(paramRule.params, stack);
 				}
-				
+
 				if(!cyclic){
 					cyclic = paramRule.calls.some(callV=>{
 						const [method, params = [] ] = callV;
@@ -788,7 +788,6 @@ export default class Container{
 		if(path !== undefined){
 			extendRule.path = path;
 		}
-		//if(instanceOf !== undefined && extendRule.instanceOf === undefined){
 		if(instanceOf !== undefined){
 			extendRule.instanceOf = instanceOf;
 		}
