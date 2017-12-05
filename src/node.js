@@ -13,7 +13,7 @@ export function makeContainer(config){
 	const container = new NodeContainer(config);
 	return makeContainerApi(container);
 }
-makeContainer.requireContext = (folder, recursive, pattern, mod = module.parent) => nodeRequireContext(folder, recursive, pattern, mod);
+makeContainer.requireContext = nodeRequireContext;
 
 export class NodeContainer extends Container {
 	
