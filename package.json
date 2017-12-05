@@ -51,5 +51,7 @@
     "sinon": "^4.1.2",
     "webpack": "^3.9.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "stack-trace": "0.0.10"
+  }
 }

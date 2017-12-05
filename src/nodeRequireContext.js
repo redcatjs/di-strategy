@@ -2,6 +2,7 @@
 
 import path from 'path'
 import fs from 'fs'
+import stackTrace from 'stack-trace'
 
 function getFolderContents(folder, recursive) {
 
@@ -14,8 +15,10 @@ function getFolderContents(folder, recursive) {
 	}, []);
 };
 
-export default function(folder, recursive, pattern, mod = module.parent) {
-	const parentDir = path.dirname(mod.filename);
+export default function(folder, recursive, pattern, parentDir) {
+	if(!parentDir){
+		parentDir = path.dirname(stackTrace.get()[1].getFileName());
+	}
 	const contextDir = path.join(parentDir, folder);
 	const contextDirLen = contextDir.length+1;
 	const normalizedFolder = path.resolve(parentDir, folder);
