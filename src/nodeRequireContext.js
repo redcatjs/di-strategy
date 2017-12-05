@@ -15,7 +15,7 @@ function getFolderContents(folder, recursive) {
 	}, []);
 };
 
-export default function(folder, recursive, pattern, parentDir) {
+export default function(folder, recursive = false, pattern =  /^\.\//, parentDir = undefined) {
 	if(!parentDir){
 		parentDir = path.dirname(stackTrace.get()[1].getFileName());
 	}

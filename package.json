@@ -2,9 +2,12 @@
   "name": "di-strategy",
   "version": "5.12.1",
   "description": "high level dependency injector",
-  "main": "dist/di.js",
+  "main": "node.js",
+  "module": "webpack.js",
+  "browser": "webpack.js",
   "scripts": {
     "build": "babel src --out-dir dist --source-maps inline",
+    "prepublishOnly": "npm run build",
     "dev": "babel src --out-dir dist --source-maps inline --watch",
     "mocha": "mocha --require babel-register",
     "test": "npm run mocha -- test/node.js",
