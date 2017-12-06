@@ -9,7 +9,6 @@
     "build": "npm run build:node & npm run build:browser",
     "build:node": "babel src --out-dir dist --source-maps inline",
     "build:browser": "webpack",
-    "prepublishOnly": "npm run build",
     "dev": "npm run build -- --watch",
     "mocha": "mocha --require babel-register",
     "test": "npm run mocha -- test/node.js",
