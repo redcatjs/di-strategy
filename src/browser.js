@@ -1,16 +1,15 @@
 import Container from './container'
 import makeContainerApi from './makeContainerApi'
 
-import WebpackRequire from './webpackRequire'
+import BrowserRequire from './browserRequire'
 
-export default makeWebpackContainer;
 
-export function makeWebpackContainer(config){
-	const container = new WebpackContainer(config);
+function makeBrowserContainer(config){
+	const container = new BrowserContainer(config);
 	return makeContainerApi(container);
 }
 
-export class WebpackContainer extends Container{
+class BrowserContainer extends Container{
 	
 	depExists(requirePath){
 		return !!this.requires[requirePath];
@@ -20,7 +19,9 @@ export class WebpackContainer extends Container{
 	}
 	
 	require(dep){
-		return new WebpackRequire(dep, this.requires);
+		return new BrowserRequire(dep, this.requires);
 	}
 	
 }
+
+export default makeBrowserContainer;

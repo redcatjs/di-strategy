@@ -1,7 +1,8 @@
 import { expect } from 'chai'
 
 import loadTestFactory from './utils/loadTestFactory'
-import container from '../src/webpack'
+//import container from '../src/browser'
+import container from '../browser'
 
 const requires = {};
 
