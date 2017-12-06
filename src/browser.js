@@ -20,7 +20,7 @@ function dependency(dep){
 }
 
 makeContainer.dependency = dependency;
-makeContainer.context = nodeRequireContext;
+makeContainer.context = requireContext;
 makeContainer.require = requireFile;
 
 class BrowserContainer extends Container{
