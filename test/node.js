@@ -49,7 +49,7 @@ describe('dependencies',function(){
 		},
 		
 		dependencies: {
-			'app' : container.requireContext('./autoload', true, /\.js$/),
+			'app' : container.context('./autoload', true, /\.js$/),
 		},
 		
 	});
