@@ -7,13 +7,23 @@ import makeContainerApi from './makeContainerApi'
 import NodeRequire from './nodeRequire'
 import nodeRequireContext from './nodeRequireContext'
 
+import Dependency from './dependency'
+import requireFile from './nodeRequireFile'
+
 export default makeContainer;
 
 export function makeContainer(config){
 	const container = new NodeContainer(config);
 	return makeContainerApi(container);
 }
-makeContainer.requireContext = nodeRequireContext;
+
+function dependency(dep){
+	return new Dependency(dep);
+}
+
+makeContainer.dependency = dependency;
+makeContainer.context = nodeRequireContext;
+makeContainer.require = requireFile;
 
 export class NodeContainer extends Container {
 	

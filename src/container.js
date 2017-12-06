@@ -10,6 +10,8 @@ import SharedInstance from './sharedInstance'
 
 import ClassDef from './classDef'
 
+import Dependency from './dependency'
+
 import makeContainerApi from './makeContainerApi'
 
 import Sync from './sync'
@@ -27,7 +29,7 @@ export default class Container{
 		rulesDefault = {},
 		
 		autoloadFailOnMissingFile = 'path',
-		autoloadDirs = {},
+		dependencies = {},
 		autoloadExtensions = ['js'],
 		autoloadPathResolver = (path)=>path,
 		
@@ -51,7 +53,7 @@ export default class Container{
 		this.requires = {};
 		this.autoloadExtensions = autoloadExtensions;
 		this.autoloadFailOnMissingFile = autoloadFailOnMissingFile;
-		this.autoloadDirs = autoloadDirs;
+		this.dependencies = dependencies;
 		this.setAutoloadPathResolver(autoloadPathResolver);
 		this.loadExtensionRegex = new RegExp('\.('+this.autoloadExtensions.join('|')+')$');
 		
@@ -106,7 +108,7 @@ export default class Container{
 		this.setRulesDefault(rulesDefault);
 		this.rules = {};
 		
-		this.runAutoloadDirs();
+		this.loadDependencies();
 		this.addRules(rules);
 		
 	}
@@ -177,9 +179,15 @@ export default class Container{
 		global[globalKey] = makeContainerApi(this);
 	}
 	
-	loadDirs(dirs){
+	loadPaths(dirs){
 		Object.keys(dirs).forEach(dirKey=>{
 			const context = dirs[dirKey];
+			
+			if(context instanceof Dependency){
+				this.requires[dirKey] = context.getDependency();
+				return;
+			}
+						
 			context.keys().forEach((filename)=>{
 				
 				let key = filename;
@@ -195,6 +203,7 @@ export default class Container{
 			});
 		});
 	}
+	
 	
 	addRules(rules){
 		if(typeof rules == 'function'){
@@ -237,8 +246,8 @@ export default class Container{
 		}
 	}
 	
-	runAutoloadDirs(){
-		this.loadDirs(this.autoloadDirs);
+	loadDependencies(){
+		this.loadPaths(this.dependencies);
 		this.registerRequireMap(this.requires);
 	}
 	rulesDetectLazyLoad(){
@@ -975,6 +984,10 @@ export default class Container{
 	}
 	require(dep){
 		return new Require(dep);
+	}
+	
+	dependency(dep){
+		return new Dependency(dep);
 	}
 	
 	classDef(callback){

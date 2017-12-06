@@ -42,7 +42,7 @@ describe('rules',function(){
 
 });
 
-describe('autoloadDirs',function(){
+describe('dependencies',function(){
 	
 	
 	const di = container({
@@ -57,7 +57,7 @@ describe('autoloadDirs',function(){
 				
 			},
 		},
-		autoloadDirs: {
+		dependencies: {
 			'app' : require.context('./autoload', true, /\.js$/),
 		},
 	});

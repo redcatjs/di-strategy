@@ -33,7 +33,7 @@ describe('rules',function(){
 
 });
 
-describe('autoloadDirs',function(){
+describe('dependencies',function(){
 	
 	const di = container({
 		rules:{
@@ -48,7 +48,7 @@ describe('autoloadDirs',function(){
 			},
 		},
 		
-		autoloadDirs: {
+		dependencies: {
 			'app' : container.requireContext('./autoload', true, /\.js$/),
 		},
 		
