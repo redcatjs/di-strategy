@@ -2877,7 +2877,8 @@ $export($export.S, 'Promise', { 'try': function (callbackfn) {
 /* 159 */,
 /* 160 */,
 /* 161 */,
-/* 162 */
+/* 162 */,
+/* 163 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(9);
@@ -2888,7 +2889,7 @@ module.exports = function (it, TYPE) {
 
 
 /***/ }),
-/* 163 */
+/* 164 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2937,7 +2938,7 @@ function (_Var) {
 exports.default = Require;
 
 /***/ }),
-/* 164 */
+/* 165 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2974,7 +2975,7 @@ function () {
 exports.default = Dependency;
 
 /***/ }),
-/* 165 */
+/* 166 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3004,7 +3005,7 @@ function makeContainerApi(container) {
 }
 
 /***/ }),
-/* 166 */
+/* 167 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3041,7 +3042,6 @@ function () {
 exports.default = Sync;
 
 /***/ }),
-/* 167 */,
 /* 168 */,
 /* 169 */,
 /* 170 */,
@@ -3109,11 +3109,11 @@ var _inherits2 = _interopRequireDefault(__webpack_require__(34));
 
 var _container = _interopRequireDefault(__webpack_require__(205));
 
-var _makeContainerApi = _interopRequireDefault(__webpack_require__(165));
+var _makeContainerApi = _interopRequireDefault(__webpack_require__(166));
 
 var _browserRequire = _interopRequireDefault(__webpack_require__(236));
 
-var _dependency = _interopRequireDefault(__webpack_require__(164));
+var _dependency = _interopRequireDefault(__webpack_require__(165));
 
 function makeContainer(config) {
   var container = new BrowserContainer(config);
@@ -3228,17 +3228,17 @@ var _value2 = _interopRequireDefault(__webpack_require__(228));
 
 var _interface2 = _interopRequireDefault(__webpack_require__(229));
 
-var _require = _interopRequireDefault(__webpack_require__(163));
+var _require = _interopRequireDefault(__webpack_require__(164));
 
 var _sharedInstance = _interopRequireDefault(__webpack_require__(230));
 
 var _classDef = _interopRequireDefault(__webpack_require__(231));
 
-var _dependency = _interopRequireDefault(__webpack_require__(164));
+var _dependency = _interopRequireDefault(__webpack_require__(165));
 
-var _makeContainerApi = _interopRequireDefault(__webpack_require__(165));
+var _makeContainerApi = _interopRequireDefault(__webpack_require__(166));
 
-var _sync = _interopRequireDefault(__webpack_require__(166));
+var _sync = _interopRequireDefault(__webpack_require__(167));
 
 var _structuredHasPromise = _interopRequireDefault(__webpack_require__(232));
 
@@ -4476,7 +4476,7 @@ module.exports = __webpack_require__(0).Set;
 "use strict";
 
 var strong = __webpack_require__(212);
-var validate = __webpack_require__(162);
+var validate = __webpack_require__(163);
 var SET = 'Set';
 
 // 23.2 Set Objects
@@ -4507,7 +4507,7 @@ var step = __webpack_require__(91);
 var setSpecies = __webpack_require__(95);
 var DESCRIPTORS = __webpack_require__(10);
 var fastKey = __webpack_require__(60).fastKey;
-var validate = __webpack_require__(162);
+var validate = __webpack_require__(163);
 var SIZE = DESCRIPTORS ? '_s' : 'size';
 
 var getEntry = function (that, key) {
@@ -5340,7 +5340,7 @@ var _typeof2 = _interopRequireDefault(__webpack_require__(25));
 
 var _var = _interopRequireDefault(__webpack_require__(42));
 
-var _sync = _interopRequireDefault(__webpack_require__(166));
+var _sync = _interopRequireDefault(__webpack_require__(167));
 
 function structuredResolveParamsInterface(structure, value) {
   if (value instanceof _sync.default) {
@@ -5452,7 +5452,7 @@ var _possibleConstructorReturn2 = _interopRequireDefault(__webpack_require__(33)
 
 var _inherits2 = _interopRequireDefault(__webpack_require__(34));
 
-var _require = _interopRequireDefault(__webpack_require__(163));
+var _require = _interopRequireDefault(__webpack_require__(164));
 
 var BrowserRequire =
 /*#__PURE__*/
@@ -5464,15 +5464,15 @@ function (_Require) {
 
     var requires = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
     (0, _classCallCheck2.default)(this, BrowserRequire);
-    _this = (0, _possibleConstructorReturn2.default)(this, (BrowserRequire.__proto__ || (0, _getPrototypeOf.default)(BrowserRequire)).call(this));
-    _this.dep = dep;
+    _this = (0, _possibleConstructorReturn2.default)(this, (BrowserRequire.__proto__ || (0, _getPrototypeOf.default)(BrowserRequire)).call(this, dep));
+    _this.requires = requires;
     return _this;
   }
 
   (0, _createClass2.default)(BrowserRequire, [{
     key: "require",
     value: function require() {
-      return requires[this.dep];
+      return this.requires[this.dep];
     }
   }]);
   return BrowserRequire;
