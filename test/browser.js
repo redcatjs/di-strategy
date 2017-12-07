@@ -46,7 +46,7 @@ describe('dependencies',function(){
 	
 	
 	const di = container({
-		rules:{
+		rules:(di)=>({
 			'app/A': {
 				
 			},
@@ -56,7 +56,12 @@ describe('dependencies',function(){
 			'app/B/C': {
 				
 			},
-		},
+			
+			'requireA' : {
+				instanceOf: 'app/A',
+				params: [ di.require('app/B') ],
+			},
+		}),
 		dependencies: {
 			'app' : require.context('./autoload', true, /\.js$/),
 		},
@@ -78,5 +83,9 @@ describe('dependencies',function(){
 		expect(C).instanceof( require('./autoload/B/C').default );
 	});
 	
+	it('sould be equal to B',function(){
+		const A = di.get('requireA');
+		expect(A.params[0]).equal( require('./autoload/B') );
+	});
 	
 });
