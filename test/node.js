@@ -49,7 +49,13 @@ describe('dependencies',function(){
 		},
 		
 		dependencies: {
+			
 			'app' : container.context('./autoload', true, /\.js$/),
+			
+			'A': container.require('./autoload/A'),
+			
+			'B': container.dependency(require('./autoload/B')),
+			
 		},
 		
 	});
@@ -70,5 +76,16 @@ describe('dependencies',function(){
 		expect(C).instanceof( require('./autoload/B/C').default );
 	});
 	
+	
+	
+	it('sould be instance of A',function(){
+		const A = di.get('A');
+		expect(A).instanceof( require('./autoload/A').default );
+	});
+	
+	it('sould be instance of B',function(){
+		const B = di.get('B');
+		expect(B).instanceof( require('./autoload/B').default );
+	});
 	
 });
