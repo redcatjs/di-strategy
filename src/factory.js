@@ -1,10 +1,8 @@
 import Var from './var'
 export default class Factory extends Var {
-	constructor(callback){
+	constructor(callback, shareInstances = false){
 		super();
-		this.callback = callback;
-	}
-	callback(args, shareInstances){
-		return this.callback(args, shareInstances);
+		this.callbackDef = callback;
+		this.shareInstances = shareInstances;
 	}
 }

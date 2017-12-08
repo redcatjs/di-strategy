@@ -41,6 +41,14 @@ export default ({di, expect})=>{
 				return this.params;
 			}
 		}
+		class F{
+			constructor(...params){
+				this.params = params;
+			}
+			getParams(){
+				return this.params;
+			}
+		}
 
 		
 		di.addRules({
@@ -64,7 +72,12 @@ export default ({di, expect})=>{
 			},
 			'E':{
 				classDef: E,
-				params: [di.factory(()=>'A'),di.factory(()=>new B())]
+				params: [di.valueFactory(()=>'A'),di.valueFactory(()=>new B())]
+			},
+			
+			'F':{
+				classDef: F,
+				params: ['A']
 			},
 		});
 		
@@ -122,7 +135,7 @@ export default ({di, expect})=>{
 			});
 		});
 		
-		describe('factory from rule',function(){
+		describe('valueFactory from rule',function(){
 			it('sould return values from factories from call\'s params',function(){
 				const instance = di.get('E');
 				const [ a, b ] = instance.getParams();
@@ -131,12 +144,27 @@ export default ({di, expect})=>{
 			});
 		});
 		
-		describe('factory from manual call',function(){
+		describe('valueFactory from manual call',function(){
 			it('sould return values from factories from call\'s params',function(){
-				const instance = di.get('E', [di.factory(()=>new A()),di.factory(()=>'B')]);
+				const instance = di.get('E', [di.valueFactory(()=>new A()),di.valueFactory(()=>'B')]);
 				const [ a, b ] = instance.getParams();
 				expect(a).instanceof(A);
 				expect(b).equal('B');
+			});
+		});
+		
+		describe('direct class definition from rule',function(){
+			it('sould return instance of class definition',function(){
+				const instance = di.get('F');
+				const [ a ] = instance.getParams();
+				expect(a).instanceof(A);
+			});
+		});
+		describe('direct class definition from manual call',function(){
+			it('sould return instance of class definition',function(){
+				const instance = di.get('F', [ ()=>new A ]);
+				const [ a ] = instance.getParams();
+				expect(a).instanceof(A);
 			});
 		});
 	

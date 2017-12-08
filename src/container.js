@@ -2,6 +2,8 @@ import mapSerie from './mapSerie'
 
 import Var from './var'
 import Factory from './factory'
+import ValueFactory from './valueFactory'
+import ClassFactory from './classFactory'
 import Value from './value'
 import Interface from './interface'
 import Require from './require'
@@ -38,6 +40,9 @@ export default class Container{
 		defaultDecoratorVar = null,
 		defaultArgsVar = null,
 		
+		defaultFactory = ValueFactory,
+		defaultFunctionWrapper = ClassFactory,
+		
 		globalKey = false,
 		
 		promiseFactory = Promise,
@@ -60,6 +65,9 @@ export default class Container{
 		this.defaultRuleVar = defaultRuleVar || defaultVar;
 		this.defaultDecoratorVar = defaultDecoratorVar || defaultVar;
 		this.defaultArgsVar = defaultArgsVar || defaultVar;
+		
+		this.defaultFactory = defaultFactory;
+		this.defaultFunctionWrapper = defaultFunctionWrapper;
 		
 		this.allowedDefaultVars = ['interface','value'];
 		this.validateDefaultVar(defaultVar, 'defaultVar');
@@ -581,6 +589,7 @@ export default class Container{
 		interfaceDef = this.getSubstitutionParam(interfaceDef, rule, index);
 		
 		if(interfaceDef instanceof Factory){
+			console.log('Factory !!!!!!!!!!!!!!');
 			return interfaceDef.callback(sharedInstances);
 		}
 		if(interfaceDef instanceof Value){
@@ -648,7 +657,7 @@ export default class Container{
 					return o;
 				}
 				if(typeof type == 'function'){
-					return this.factory(type);
+					return new this.defaultFunctionWrapper(type);
 				}
 				return this.interface(type);
 			break;
@@ -974,7 +983,13 @@ export default class Container{
 	}
 	
 	factory(callback){
-		return new Factory(callback);
+		return new this.defaultFactory(callback);
+	}
+	valueFactory(callback){
+		return new ValueFactory(callback);
+	}
+	classFactory(callback){
+		return new ClassFactory(callback);
 	}
 	interface(name){
 		return new Interface(name);
