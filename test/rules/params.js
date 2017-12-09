@@ -162,7 +162,7 @@ export default ({di, expect})=>{
 		});
 		describe('direct class definition from manual call',function(){
 			it('sould return instance of class definition',function(){
-				const instance = di.get('F', [ ()=>new A ]);
+				const instance = di.get('F', [ A ]);
 				const [ a ] = instance.getParams();
 				expect(a).instanceof(A);
 			});
