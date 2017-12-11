@@ -217,7 +217,9 @@ export default class Container{
 		if(typeof rules == 'function'){
 			rules = rules(this);
 		}
-		Object.keys(rules).forEach(interfaceName => this.addRule(interfaceName, rules[interfaceName], false));
+		//Object.keys(rules).forEach(interfaceName => this.addRule(interfaceName, rules[interfaceName], false));
+		Object.getOwnPropertyNames(rules).forEach(interfaceName => this.addRule(interfaceName, rules[interfaceName], false));
+		Object.getOwnPropertySymbols(rules).forEach(interfaceName => this.addRule(interfaceName, rules[interfaceName], false));
 		this.rulesDetectLazyLoad();
 	}
 	addRule(interfaceName, rule, detectLazyLoad = true){
@@ -368,7 +370,7 @@ export default class Container{
 	}
 	
 	validateAutoloadFileName(name){
-		if(name.substr(0,1)==='#'){
+		if(typeof name == 'string' && name.substr(0,1)==='#'){
 			return false;
 		}
 		return true;
@@ -485,6 +487,7 @@ export default class Container{
 			interfaceName = interfaceName.getName();
 		}
 		
+		
 		if(!this.providerRegistry[interfaceName]){
 			this.providerRegistry[interfaceName] = this.makeProvider(interfaceName);
 		}
@@ -589,7 +592,6 @@ export default class Container{
 		interfaceDef = this.getSubstitutionParam(interfaceDef, rule, index);
 		
 		if(interfaceDef instanceof Factory){
-			console.log('Factory !!!!!!!!!!!!!!');
 			return interfaceDef.callback(sharedInstances);
 		}
 		if(interfaceDef instanceof Value){
@@ -602,6 +604,7 @@ export default class Container{
 		if(interfaceDef instanceof Interface){
 			
 			const interfaceName = interfaceDef.getName();
+			
 			
 			stack = stack.slice(0);
 			if(stack.indexOf(interfaceName)!==-1){
@@ -955,7 +958,7 @@ export default class Container{
 	}
 	
 	resolveInstanceOf(str, stack = [], required = true){
-		if(typeof str == 'string'){
+		if(typeof str == 'string' || typeof str == 'symbol'){
 			if(stack.indexOf(str)!==-1){
 				throw new Error('Cyclic interface definition error in '+JSON.stringify(stack.concat(str),null,2));
 			}
@@ -974,7 +977,7 @@ export default class Container{
 				if(!required){
 					return false;
 				}
-				throw new Error('Interface definition "'+str+'" not found, di load stack: '+JSON.stringify(stack, null, 2));
+				throw new Error('Interface definition '+(typeof str == 'symbol' ? 'symbol' : '"'+str+'"' )+' not found, di load stack: '+JSON.stringify(stack, null, 2));
 			}
 			return this.resolveInstanceOf(resolved, stack, required);
 		}
