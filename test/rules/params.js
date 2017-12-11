@@ -49,9 +49,12 @@ export default ({di, expect})=>{
 				return this.params;
 			}
 		}
-
 		
-		di.addRules({
+		
+		//class I {}
+		const I = Symbol();
+		
+		const rules = {
 			'A': {
 				classDef: A,
 				params: [ di.value(1), di.value(2), di.value(3) ],
@@ -79,7 +82,13 @@ export default ({di, expect})=>{
 				classDef: F,
 				params: ['A']
 			},
-		});
+			
+			[I]: {
+				classDef: A,
+			}
+		};
+		
+		di.addRules(rules);
 		
 		describe('values from rule',function(){
 			it('sould return params from rule',function(){
@@ -163,6 +172,15 @@ export default ({di, expect})=>{
 		describe('direct class definition from manual call',function(){
 			it('sould return instance of class definition',function(){
 				const instance = di.get('F', [ A ]);
+				const [ a ] = instance.getParams();
+				expect(a).instanceof(A);
+			});
+		});
+		
+		
+		describe('direct interface definition by symbol from manual call',function(){
+			it('sould return instance of class definition',function(){
+				const instance = di.get('F', [ I ]);
 				const [ a ] = instance.getParams();
 				expect(a).instanceof(A);
 			});
