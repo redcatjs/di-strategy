@@ -247,6 +247,7 @@ export default ({di, expect})=>{
 				}
 				expect(b).not.instanceof(B);
 				expect(error instanceof Error).equal(true);
+				expect(error instanceof TypeError).equal(true);
 				
 				//expect(error instanceof InterfaceTypeError).equal(true);
 				expect(error.errorName).equal('interfaceTypeError');
