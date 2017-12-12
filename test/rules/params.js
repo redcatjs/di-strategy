@@ -55,6 +55,14 @@ export default ({di, expect})=>{
 			}
 		}
 		
+		class G{
+			constructor(...params){
+				this.params = params;
+			}
+			getParams(){
+				return this.params;
+			}
+		}
 		
 		//di.config('interfacePrototype',InterfacePrototype);
 		const I = Interface();
@@ -87,6 +95,11 @@ export default ({di, expect})=>{
 			'F':{
 				classDef: F,
 				params: ['A']
+			},
+			
+			'G':{
+				classDef: G,
+				params: [I],
 			},
 			
 			[I]: {
@@ -186,6 +199,13 @@ export default ({di, expect})=>{
 		describe('direct interface definition by symbol from manual call',function(){
 			it('sould return instance of class definition',function(){
 				const instance = di.get('F', [ I ]);
+				const [ a ] = instance.getParams();
+				expect(a).instanceof(A);
+			});
+		});
+		describe('direct interface definition by symbol from rules',function(){
+			it('sould return instance of class definition',function(){
+				const instance = di.get('G');
 				const [ a ] = instance.getParams();
 				expect(a).instanceof(A);
 			});
