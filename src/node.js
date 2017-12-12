@@ -24,6 +24,8 @@ function dependency(dep){
 makeContainer.dependency = dependency;
 makeContainer.context = nodeRequireContext;
 makeContainer.require = requireFile;
+makeContainer.setInterfacePrototypeDefault = Container.setInterfacePrototypeDefault;
+makeContainer.getInterfacePrototypeDefault = Container.getInterfacePrototypeDefault;
 
 export class NodeContainer extends Container {
 	

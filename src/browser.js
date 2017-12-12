@@ -22,6 +22,8 @@ function dependency(dep){
 makeContainer.dependency = dependency;
 makeContainer.context = requireContext;
 makeContainer.require = requireFile;
+makeContainer.setInterfacePrototypeDefault = Container.setInterfacePrototypeDefault;
+makeContainer.getInterfacePrototypeDefault = Container.getInterfacePrototypeDefault;
 
 class BrowserContainer extends Container{
 	
