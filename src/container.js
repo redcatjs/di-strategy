@@ -61,6 +61,7 @@ export default class Container{
 		promiseInterfaces = [ Promise ],
 		
 		interfacePrototype = undefined,
+		interfaceTypeCheck = false,
 		
 	} = {}){
 		
@@ -150,6 +151,7 @@ export default class Container{
 			case 'defaultDecoratorVar':
 			case 'defaultArgsVar':
 			case 'interfacePrototype':
+			case 'interfaceTypeCheck':
 				this[key] = value;
 			break;
 			case 'globalkey':
@@ -551,8 +553,8 @@ export default class Container{
 				
 				resolvedParams = structuredResolveParamsInterface(params, resolvedParams);
 				
-				if(this.interfacePrototype){
-					structuredInterfacePrototype(rule.params || classDef[this.symInterfaces] || [], resolvedParams, this);
+				if(this.interfaceTypeCheck){
+					structuredInterfacePrototype(rule.params || classDef[this.symInterfaces] || [], resolvedParams);
 				}
 				
 				

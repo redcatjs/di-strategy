@@ -68,6 +68,7 @@ export default ({di, expect})=>{
 		
 		
 		//di.config('interfacePrototype',InterfacePrototype);
+		di.config('interfaceTypeCheck',true);
 		const I = Interface();
 		I.implementClass(A);
 		
