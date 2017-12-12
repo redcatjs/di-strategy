@@ -2,7 +2,6 @@ import{
 	Interface,
 	InterfacePrototype,
 } from 'interface-prototype'
-import interfaceDef from '../../src/interface'
 
 export default ({di, expect})=>{
 	return function(){
@@ -58,7 +57,7 @@ export default ({di, expect})=>{
 		
 		
 		di.config('interfacePrototype',InterfacePrototype);
-		const I = Interface(interfaceDef);
+		const I = Interface();
 		
 		
 		di.addRules({
