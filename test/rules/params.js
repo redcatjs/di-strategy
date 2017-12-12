@@ -1,3 +1,9 @@
+import{
+	Interface,
+	InterfacePrototype,
+} from 'interface-prototype'
+import interfaceDef from '../../src/interface'
+
 export default ({di, expect})=>{
 	return function(){
 		
@@ -51,10 +57,11 @@ export default ({di, expect})=>{
 		}
 		
 		
-		//class I {}
-		const I = Symbol();
+		di.config('interfacePrototype',InterfacePrototype);
+		const I = Interface(interfaceDef);
 		
-		const rules = {
+		
+		di.addRules({
 			'A': {
 				classDef: A,
 				params: [ di.value(1), di.value(2), di.value(3) ],
@@ -85,10 +92,9 @@ export default ({di, expect})=>{
 			
 			[I]: {
 				classDef: A,
-			}
-		};
-		
-		di.addRules(rules);
+			},
+			
+		});
 		
 		describe('values from rule',function(){
 			it('sould return params from rule',function(){
