@@ -222,7 +222,6 @@ export default class Container{
 		if(typeof rules == 'function'){
 			rules = rules(this);
 		}
-		//Object.keys(rules).forEach(interfaceName => this.addRule(interfaceName, rules[interfaceName], false));
 		Object.getOwnPropertyNames(rules).forEach(interfaceName => this.addRule(interfaceName, rules[interfaceName], false));
 		Object.getOwnPropertySymbols(rules).forEach(interfaceName => this.addRule(interfaceName, rules[interfaceName], false));
 		this.rulesDetectLazyLoad();
