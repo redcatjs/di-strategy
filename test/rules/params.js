@@ -64,9 +64,19 @@ export default ({di, expect})=>{
 			}
 		}
 		
+		
 		//di.config('interfacePrototype',InterfacePrototype);
 		const I = Interface();
 		
+		@di('H',[I])
+		class H{
+			constructor(...params){
+				this.params = params;
+			}
+			getParams(){
+				return this.params;
+			}
+		}
 		
 		di.addRules({
 			'A': {
@@ -206,6 +216,14 @@ export default ({di, expect})=>{
 		describe('direct interface definition by symbol from rules',function(){
 			it('sould return instance of class definition',function(){
 				const instance = di.get('G');
+				const [ a ] = instance.getParams();
+				expect(a).instanceof(A);
+			});
+		});
+		
+		describe('direct interface definition by symbol from decorator',function(){
+			it('sould return instance of class definition',function(){
+				const instance = di.get('H');
 				const [ a ] = instance.getParams();
 				expect(a).instanceof(A);
 			});
