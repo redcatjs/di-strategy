@@ -6,6 +6,7 @@ import ValueFactory from './valueFactory'
 import ClassFactory from './classFactory'
 import Value from './value'
 import Interface from './interface'
+import InterfaceClass from './interfaceClass'
 import Require from './require'
 
 import SharedInstance from './sharedInstance'
@@ -20,6 +21,8 @@ import Sync from './sync'
 import structuredHasPromise from './structuredHasPromise'
 import structuredPromiseAllRecursive from './structuredPromiseAllRecursive'
 import structuredResolveParamsInterface from './structuredResolveParamsInterface'
+
+import structuredInterfacePrototype from './structuredInterfacePrototype'
 
 import promiseInterface from './promiseInterface'
 
@@ -548,6 +551,11 @@ export default class Container{
 				
 				resolvedParams = structuredResolveParamsInterface(params, resolvedParams);
 				
+				if(this.interfacePrototype){
+					structuredInterfacePrototype(rule.params || classDef[this.symInterfaces] || [], resolvedParams, this);
+				}
+				
+				
 				const instance = new classDef(...resolvedParams);
 				
 				const finalizeInstanceCreation = ()=>{
@@ -663,7 +671,7 @@ export default class Container{
 			return type;
 		}
 		if(this.isInterfacePrototype(type)){
-			return this.interface( type.toString() );
+			return this.interfaceClass( type.toString(), type );
 		}
 		switch(defaultVar){
 			case 'interface':
@@ -1016,6 +1024,9 @@ export default class Container{
 	}
 	interface(name){
 		return new Interface(name);
+	}
+	interfaceClass(name,interfaceClass){
+		return new InterfaceClass(name, interfaceClass);
 	}
 	value(value){
 		return new Value(value);

@@ -3,6 +3,8 @@ import{
 	//InterfacePrototype,
 } from 'interface-prototype'
 
+import InterfaceTypeError from '../../src/interfaceTypeError'
+
 export default ({di, expect})=>{
 	return function(){
 		
@@ -67,6 +69,7 @@ export default ({di, expect})=>{
 		
 		//di.config('interfacePrototype',InterfacePrototype);
 		const I = Interface();
+		I.implementClass(A);
 		
 		@di('H',[I])
 		class H{
@@ -226,6 +229,24 @@ export default ({di, expect})=>{
 				const instance = di.get('H');
 				const [ a ] = instance.getParams();
 				expect(a).instanceof(A);
+			});
+		});
+		
+		describe('direct interface definition by symbol from manual call with decorator specification',function(){
+			it('sould throw an interfaceTypeError',function(){
+				let error;
+				let instance;
+				let b;
+				try{
+					instance = di.get('H', [B]);
+					[ b ] = instance.getParams();
+				}
+				catch(e){
+					error = e;
+				}
+				expect(b).not.instanceof(B);
+				expect(error).instanceof(Error);
+				expect(error instanceof InterfaceTypeError).equal(true);
 			});
 		});
 	
