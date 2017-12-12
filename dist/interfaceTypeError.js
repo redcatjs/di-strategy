@@ -7,14 +7,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _create = _interopRequireDefault(require("babel-runtime/core-js/object/create"));
-
-var _setPrototypeOf = _interopRequireDefault(require("babel-runtime/core-js/object/set-prototype-of"));
-
-var _from = _interopRequireDefault(require("babel-runtime/core-js/array/from"));
-
-var _construct = _interopRequireDefault(require("babel-runtime/core-js/reflect/construct"));
-
 var _getPrototypeOf = _interopRequireDefault(require("babel-runtime/core-js/object/get-prototype-of"));
 
 var _classCallCheck2 = _interopRequireDefault(require("babel-runtime/helpers/classCallCheck"));
@@ -23,35 +15,10 @@ var _possibleConstructorReturn2 = _interopRequireDefault(require("babel-runtime/
 
 var _inherits2 = _interopRequireDefault(require("babel-runtime/helpers/inherits"));
 
-function _extendableBuiltin(cls) {
-  function ExtendableBuiltin() {
-    var instance = (0, _construct.default)(cls, (0, _from.default)(arguments));
-    (0, _setPrototypeOf.default)(instance, (0, _getPrototypeOf.default)(this));
-    return instance;
-  }
-
-  ExtendableBuiltin.prototype = (0, _create.default)(cls.prototype, {
-    constructor: {
-      value: cls,
-      enumerable: false,
-      writable: true,
-      configurable: true
-    }
-  });
-
-  if (_setPrototypeOf.default) {
-    (0, _setPrototypeOf.default)(ExtendableBuiltin, cls);
-  } else {
-    ExtendableBuiltin.__proto__ = cls;
-  }
-
-  return ExtendableBuiltin;
-}
-
 var interfaceTypeError =
 /*#__PURE__*/
-function (_extendableBuiltin2) {
-  (0, _inherits2.default)(interfaceTypeError, _extendableBuiltin2);
+function (_TypeError) {
+  (0, _inherits2.default)(interfaceTypeError, _TypeError);
 
   function interfaceTypeError() {
     var _ref;
@@ -68,7 +35,7 @@ function (_extendableBuiltin2) {
   }
 
   return interfaceTypeError;
-}(_extendableBuiltin(Error));
+}(TypeError);
 
 exports.default = interfaceTypeError;
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uL3NyYy9pbnRlcmZhY2VUeXBlRXJyb3IuanMiXSwibmFtZXMiOlsiaW50ZXJmYWNlVHlwZUVycm9yIiwiZXJyb3JOYW1lIiwiRXJyb3IiXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBQXFCQSxrQjs7Ozs7Ozs7Ozs7Ozs7OzttUUFDcEJDLFMsR0FBWSxvQjs7OztxQkFEbUNDLEsiLCJmaWxlIjoiaW50ZXJmYWNlVHlwZUVycm9yLmpzIiwic291cmNlc0NvbnRlbnQiOlsiZXhwb3J0IGRlZmF1bHQgY2xhc3MgaW50ZXJmYWNlVHlwZUVycm9yIGV4dGVuZHMgRXJyb3J7XG5cdGVycm9yTmFtZSA9ICdpbnRlcmZhY2VUeXBlRXJyb3InO1xufVxuIl19
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uL3NyYy9pbnRlcmZhY2VUeXBlRXJyb3IuanMiXSwibmFtZXMiOlsiaW50ZXJmYWNlVHlwZUVycm9yIiwiZXJyb3JOYW1lIiwiVHlwZUVycm9yIl0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7OztJQUFxQkEsa0I7Ozs7Ozs7Ozs7Ozs7Ozs7bVFBQ3BCQyxTLEdBQVksb0I7Ozs7RUFEbUNDLFMiLCJmaWxlIjoiaW50ZXJmYWNlVHlwZUVycm9yLmpzIiwic291cmNlc0NvbnRlbnQiOlsiZXhwb3J0IGRlZmF1bHQgY2xhc3MgaW50ZXJmYWNlVHlwZUVycm9yIGV4dGVuZHMgVHlwZUVycm9ye1xuXHRlcnJvck5hbWUgPSAnaW50ZXJmYWNlVHlwZUVycm9yJztcbn1cbiJdfQ==
