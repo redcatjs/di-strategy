@@ -48,6 +48,8 @@ export default class Container{
 		promiseFactory = Promise,
 		promiseInterfaces = [ Promise ],
 		
+		interfacePrototype = undefined,
+		
 	} = {}){
 		
 		this.symClassName = Symbol('className');
@@ -80,6 +82,8 @@ export default class Container{
 		}
 		this.PromiseInterface = promiseInterface(promiseInterfaces);
 		this.PromiseFactory = promiseFactory;
+		
+		this.interfacePrototype = interfacePrototype;
 		
 		if(globalKey){
 			this.setGlobalKey(globalKey);
@@ -133,6 +137,7 @@ export default class Container{
 			case 'defaultRuleVar':
 			case 'defaultDecoratorVar':
 			case 'defaultArgsVar':
+			case 'interfacePrototype':
 				this[key] = value;
 			break;
 			case 'globalkey':
@@ -649,6 +654,9 @@ export default class Container{
 		if(type instanceof Var){
 			return type;
 		}
+		if(this.isInterfacePrototype(type)){
+			return this.interface( type.toString() );
+		}
 		switch(defaultVar){
 			case 'interface':
 				if(typeof type == 'object' && type !== null){
@@ -669,6 +677,10 @@ export default class Container{
 			break;
 		}
 		return type;
+	}
+	
+	isInterfacePrototype(type){
+		return this.interfacePrototype !== undefined && type.prototype instanceof this.interfacePrototype;
 	}
 	
 	registerInstance(name, instance){
