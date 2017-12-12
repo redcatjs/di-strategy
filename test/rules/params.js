@@ -1,6 +1,6 @@
 import{
 	Interface,
-	InterfacePrototype,
+	//InterfacePrototype,
 } from 'interface-prototype'
 
 export default ({di, expect})=>{
@@ -56,7 +56,7 @@ export default ({di, expect})=>{
 		}
 		
 		
-		di.config('interfacePrototype',InterfacePrototype);
+		//di.config('interfacePrototype',InterfacePrototype);
 		const I = Interface();
 		
 		
