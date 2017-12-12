@@ -23,8 +23,17 @@ import structuredResolveParamsInterface from './structuredResolveParamsInterface
 
 import promiseInterface from './promiseInterface'
 
-export default class Container{
+let interfacePrototypeDefault;
 
+export default class Container{
+	
+	static setInterfacePrototypeDefault(interfacePrototype){
+		interfacePrototypeDefault = interfacePrototype;
+	}
+	static getInterfacePrototypeDefault(interfacePrototype){
+		return interfacePrototypeDefault;
+	}
+	
 	constructor({
 		rules = {},
 		
@@ -83,7 +92,7 @@ export default class Container{
 		this.PromiseInterface = promiseInterface(promiseInterfaces);
 		this.PromiseFactory = promiseFactory;
 		
-		this.interfacePrototype = interfacePrototype;
+		this.interfacePrototype = interfacePrototype || interfacePrototypeDefault;
 		
 		if(globalKey){
 			this.setGlobalKey(globalKey);
