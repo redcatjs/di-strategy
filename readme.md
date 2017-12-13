@@ -48,7 +48,11 @@ di.get('A')
 #### with direct class definition
 ```javascript
 @di('A',[ B ])
-class A{ }
+class A{
+	constructor(b){
+		this.b = b;
+	}
+}
 
 di.get('A')
 ```
@@ -59,7 +63,11 @@ di.addRule('B',{
 })
 
 @di('A',[ 'B' ])
-class A{ }
+class A{
+	constructor(b){
+		this.b = b;
+	}
+}
 
 di.get('A')
 ```
