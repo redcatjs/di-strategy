@@ -11,7 +11,7 @@ $ npm i di-strategy
 Implement [Composition Root](http://blog.ploeh.dk/2011/07/28/CompositionRoot/) and [IoC](https://en.wikipedia.org/wiki/Inversion_of_control) design patterns, helping developers to keep all things decoupled and wire application components and config at one root place.
 
 Allowing developers to write good [SOLID](https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)) Object Oriented (OO) design
-and encouraging [Composite Reuse](https://en.wikipedia.org/wiki/Composition_over_inheritance).
+and encouraging [Composite Reuse](https://en.wikipedia.org/wiki/Composition_over_inheritance) without needing TypeScript (because I prefer Babel) or other transpiller dependency.
 
 ## Documentation
 
@@ -49,9 +49,9 @@ di.get('A')
 ```javascript
 @di('A',[ B ])
 class A{
-	constructor(b){
-		this.b = b;
-	}
+  constructor(b){
+    this.b = b;
+  }
 }
 
 di.get('A')
@@ -64,9 +64,9 @@ di.addRule('B',{
 
 @di('A',[ 'B' ])
 class A{
-	constructor(b){
-		this.b = b;
-	}
+  constructor(b){
+    this.b = b;
+  }
 }
 
 di.get('A')
