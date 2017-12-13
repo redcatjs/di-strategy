@@ -15,9 +15,55 @@ and encouraging [Composite Reuse](https://en.wikipedia.org/wiki/Composition_over
 
 ## Documentation
 
+### Getting started
+```javascript
+import container from 'di-strategy'
+
+const di = container();
+
+di.addRules(rules);
+
+di.get('MyClassName');
+```
+
+
 ### Composition Root
 
+```javascript
+di.addRules({
+    'A': {
+      classDef: A,
+      params: [ 'B' ],
+    },
+    'B': {
+      classDef: B,
+    },
+  }
+})
+
+di.get('A')
+```
+
 ### Iversion of Control (IoC)
+#### with direct class definition
+```javascript
+@di('A',[ B ])
+class A{ }
+
+di.get('A')
+```
+#### with abstract class definition based on rules
+```javascript
+di.addRule('B',{
+  classDef: B,
+})
+
+@di('A',[ 'B' ])
+class A{ }
+
+di.get('A')
+```
+
 
 ### Rules config
 
