@@ -20,11 +20,5 @@ module.exports = {
 			},
 		],
     },
-    externals: {
-		'stack-trace': {
-			commonjs: 'stack-trace',
-			commonjs2: 'stack-trace',
-		},
-    },
     devtool: 'source-map',
 };
