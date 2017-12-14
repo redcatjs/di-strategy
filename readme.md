@@ -83,3 +83,4 @@ di.get('A')
 Built with babel but use is unopinionated. Browser usage is optimized for webpack.
 Can be used with [interface-prototype](https://github.com/redcatjs/interface-prototype),
 you can get pre-wired implementation from [omniverse](https://github.com/redcatjs/omniverse) library.
+Same design approach as [php-strategy](https://github.com/redcatphp/strategy) itself inspired by [Dice](https://r.je/dice.html).
