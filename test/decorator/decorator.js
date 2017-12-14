@@ -15,6 +15,14 @@ export default ({di, expect})=>{
 		di('A',['B'])(A);
 		
 		
+		@di('C')
+		class C{
+			@di(['B'])
+			method(b){
+				this.B = b;
+			}
+		}
+		
 		di.addRules({
 			'A':{
 				classDef: A,
@@ -22,10 +30,25 @@ export default ({di, expect})=>{
 			'B':{
 				classDef: B,
 			},
+			'C':{
+				calls:[
+					[ 'method' ],
+				],
+			},
 		});
 		
 		it('should return an instance of B',function(){
 			const instance = di.get('A');
+			expect(instance.B).instanceof( B );
+		});
+		
+		
+		
+		
+		
+		it('should return an instance of B',function(){
+			const instance = di.get('C');
+			//instance.method();
 			expect(instance.B).instanceof( B );
 		});
 		
