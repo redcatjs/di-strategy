@@ -183,19 +183,19 @@ di.get('A')
 #### 3.2 Recursive params
 ...
 
-#### 3.3 Types of params
+#### 3.3. Types of params
 ...
 
-##### 3.1 interface
+##### 3.3.1 interface
 ...
 
-##### 3.2 value
+##### 3.3.2 value
 ...
 
-##### 3.3 factory
+##### 3.3.3 factory
 ...
 
-##### 3.4 require
+##### 3.3.4 require
 ...
 
 
