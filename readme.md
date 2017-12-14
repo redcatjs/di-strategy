@@ -177,156 +177,156 @@ di.get('A')
 ### 3. Dependencies Resolution
 ...
 
-#### 1. Recursive classes or factories
+#### 3.1 Recursive classes or factories
 ...
 
-#### 2. Recursive params
+#### 3.2 Recursive params
 ...
 
-#### 3. Types of params
+#### 3.3 Types of params
 ...
 
-##### 1. interface
+##### 3.1 interface
 ...
 
-##### 2. value
+##### 3.2 value
 ...
 
-##### 3. factory
+##### 3.3 factory
 ...
 
-##### 4. require
+##### 3.4 require
 ...
 
 
 ### 4. Rules
 ...
 
-#### 1. dependencies
+#### 4.1. dependencies
 ...
 
-##### 1. params
+##### 4.1.1 params
 ...
 
-##### 2. calls
+##### 4.1.2 calls
 ...
 
-##### 3. lazyCalls
-...
-
-
-#### 2. instance
-...
-
-##### 1. classDef
-...
-
-##### 2. instanceOf
-...
-
-##### 3. substitutions
+##### 4.1.3 lazyCalls
 ...
 
 
-#### 3. single instance
+#### 4.2. instance
 ...
 
-##### 1. shared
+##### 4.2.1 classDef
 ...
 
-##### 2. singleton
+##### 4.2.2 instanceOf
 ...
 
-##### 3. sharedInTree
+##### 4.2.3 substitutions
 ...
 
 
-#### 4. rule inheritance
+#### 4.3. single instance
 ...
 
-##### 1. inheritInstanceOf
+##### 4.3.1 shared
 ...
 
-##### 2. inheritPrototype
+##### 4.3.2 singleton
 ...
 
-##### 3. inheritMixins
+##### 4.3.3 sharedInTree
 ...
 
-##### 4. decorator
+
+#### 4.4. rule inheritance
 ...
 
-#### 5. asynchrone dependencies resolution
+##### 4.4.1 inheritInstanceOf
 ...
 
-##### 1. asyncResolve
+##### 4.4.2 inheritPrototype
 ...
 
-##### 2. asyncCallsSerie
+##### 4.4.3 inheritMixins
 ...
 
-#### 6. dependency file location
+##### 4.4.4 decorator
 ...
 
-##### 1. autoload
+#### 4.5. asynchrone dependencies resolution
 ...
 
-##### 2. path
+##### 4.5.1 asyncResolve
+...
+
+##### 4.5.2 asyncCallsSerie
+...
+
+#### 4.6 dependency file location
+...
+
+##### 4.6.1 autoload
+...
+
+##### 4.6.2 path
 ...
 
 
 ### 5. Container
 ...
 
-#### 1. rules
+#### 5.1 rules
 ...
 
-#### 2. rulesDefault
+#### 5.2 rulesDefault
 ...
 
-#### 3. autoloadFailOnMissingFile
+#### 5.3 autoloadFailOnMissingFile
 ...
 
-#### 4. dependencies
+#### 5.4 dependencies
 ...
 
-#### 5. autoloadExtensions
+#### 5.5 autoloadExtensions
 ...
 
-#### 6. autoloadPathResolver
+#### 5.6 autoloadPathResolver
 ...
 
-#### 7. defaultVar
+#### 5.7 defaultVar
 ...
 
-#### 8. defaultRuleVar
+#### 5.8 defaultRuleVar
 ...
 
-#### 9. defaultDecoratorVar
+#### 5.9 defaultDecoratorVar
 ...
 
-#### 10. defaultArgsVar
+#### 5.10 defaultArgsVar
 ...
 
-#### 11. defaultFactory
+#### 5.11 defaultFactory
 ...
 
-#### 12. defaultFunctionWrapper
+#### 5.12 defaultFunctionWrapper
 ...
 
-#### 13. promiseFactory
+#### 5.13 promiseFactory
 ...
 
-#### 14. promiseInterfaces
+#### 5.14 promiseInterfaces
 ...
 
-#### 15. interfacePrototype
+#### 5.15 interfacePrototype
 ...
 
-#### 16. interfaceTypeCheck
+#### 5.16 interfaceTypeCheck
 ...
 
-#### 17. globalKey
+#### 15.7 globalKey
 ...
 
 
