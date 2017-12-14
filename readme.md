@@ -1,4 +1,4 @@
-# DI-Strategy
+# DI-Strategy ![DI-Strategy ICON](https://raw.githubusercontent.com/redcatjs/di-strategy/master/icon/icon.png)
 
 High level and universal javascript Dependency-Injection (DI) container for node and browser.
 
@@ -334,4 +334,4 @@ di.get('A')
 Built with babel but use is unopinionated. Browser usage is optimized for webpack.
 Can be used with [interface-prototype](https://github.com/redcatjs/interface-prototype),
 you can get pre-wired implementation from [omniverse](https://github.com/redcatjs/omniverse) library.
-Inspired by [Strategy](https://github.com/redcatphp/strategy) for PHP, itself based on [Dice](https://r.je/dice.html) design.
+Inspired by [strategy](https://github.com/redcatphp/strategy) for PHP, itself based on [dice](https://r.je/dice.html) design.
