@@ -11,11 +11,34 @@ $ npm i di-strategy
 Implement [Composition Root](http://blog.ploeh.dk/2011/07/28/CompositionRoot/) and [IoC](https://en.wikipedia.org/wiki/Inversion_of_control) design patterns, helping developers to keep all things decoupled and wire application components and config at one root place.
 
 Allowing developers to write good [SOLID](https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)) Object Oriented (OO) design
-and encouraging [Composite Reuse](https://en.wikipedia.org/wiki/Composition_over_inheritance) without needing TypeScript (because I prefer Babel) or other transpiller dependency.
+and encouraging [Composite Reuse](https://en.wikipedia.org/wiki/Composition_over_inheritance) without needing TypeScript (because some of us, including myself, prefer Babel) or other transpiller dependency.
 
 ## Documentation
 
-### Getting started
+### Summary
+
+1. [Getting Started](#1-getting-started)
+
+2. [Approaches](#2-approaches)
+	1. [Composition Root](#21-composition-root)
+	2. [Inversion of Control (IoC)](#22-inversion-of-control-ioc)
+
+3. [Dependencies Resolution](#3-dependencies-resolution)
+	1. [Recursive classes or factories]
+	2. [Recursive params]
+	3. [Types of params]
+		1. [interface]
+		2. [value]
+		3. [factory]
+		4. [require]
+
+4. [Rules](#4-rules)
+
+5. [Container](#5-container)
+	
+	
+
+### 1. Getting Started
 ```javascript
 import container from 'di-strategy'
 
@@ -27,7 +50,9 @@ di.get('MyClassName');
 ```
 
 
-### Composition Root
+### 2. Approaches
+
+#### 2.1 Composition Root
 
 ```javascript
 di.addRules({
@@ -44,8 +69,9 @@ di.addRules({
 di.get('A')
 ```
 
-### Iversion of Control (IoC)
-#### with direct class definition
+#### 2.2 Inversion of Control (IoC)
+
+##### with direct class definition
 ```javascript
 @di('A',[ B ])
 class A{
@@ -56,7 +82,8 @@ class A{
 
 di.get('A')
 ```
-#### with abstract class definition based on rules
+
+##### with abstract class definition based on rules
 ```javascript
 di.addRule('B',{
   classDef: B,
@@ -72,10 +99,12 @@ class A{
 di.get('A')
 ```
 
+### 3. Dependencies Resolution
 
-### Rules config
 
-### Container config
+### 4. Rules
+
+### 5. Container
 
 
 
@@ -83,4 +112,4 @@ di.get('A')
 Built with babel but use is unopinionated. Browser usage is optimized for webpack.
 Can be used with [interface-prototype](https://github.com/redcatjs/interface-prototype),
 you can get pre-wired implementation from [omniverse](https://github.com/redcatjs/omniverse) library.
-Same design approach as [php-strategy](https://github.com/redcatphp/strategy) itself inspired by [Dice](https://r.je/dice.html).
+Inspired by [Strategy](https://github.com/redcatphp/strategy) for PHP itself based on [Dice](https://r.je/dice.html) design.
