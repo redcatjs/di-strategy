@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 213);
+/******/ 	return __webpack_require__(__webpack_require__.s = 214);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -3237,6 +3237,7 @@ function makeContainerApi(container) {
   di.addRule = container.addRule.bind(container);
   di.addRules = container.addRules.bind(container);
   di.config = container.config.bind(container);
+  di.wrap = container.wrap.bind(container);
   return di;
 }
 
@@ -3314,14 +3315,15 @@ exports.default = Sync;
 /* 210 */,
 /* 211 */,
 /* 212 */,
-/* 213 */
+/* 213 */,
+/* 214 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(214);
+module.exports = __webpack_require__(215);
 
 
 /***/ }),
-/* 214 */
+/* 215 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3344,11 +3346,11 @@ var _possibleConstructorReturn2 = _interopRequireDefault(__webpack_require__(17)
 
 var _inherits2 = _interopRequireDefault(__webpack_require__(18));
 
-var _container = _interopRequireDefault(__webpack_require__(215));
+var _container = _interopRequireDefault(__webpack_require__(216));
 
 var _makeContainerApi = _interopRequireDefault(__webpack_require__(175));
 
-var _browserRequire = _interopRequireDefault(__webpack_require__(247));
+var _browserRequire = _interopRequireDefault(__webpack_require__(248));
 
 var _dependency = _interopRequireDefault(__webpack_require__(174));
 
@@ -3408,7 +3410,7 @@ var _default = makeContainer;
 exports.default = _default;
 
 /***/ }),
-/* 215 */
+/* 216 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3425,11 +3427,11 @@ var _defineProperty = _interopRequireDefault(__webpack_require__(65));
 
 var _from = _interopRequireDefault(__webpack_require__(94));
 
-var _getPrototypeOf = _interopRequireDefault(__webpack_require__(216));
+var _getPrototypeOf = _interopRequireDefault(__webpack_require__(217));
 
-var _set = _interopRequireDefault(__webpack_require__(219));
+var _set = _interopRequireDefault(__webpack_require__(220));
 
-var _toConsumableArray2 = _interopRequireDefault(__webpack_require__(234));
+var _toConsumableArray2 = _interopRequireDefault(__webpack_require__(235));
 
 var _assign = _interopRequireDefault(__webpack_require__(96));
 
@@ -3447,7 +3449,7 @@ var _getOwnPropertySymbols = _interopRequireDefault(__webpack_require__(145));
 
 var _getOwnPropertyNames = _interopRequireDefault(__webpack_require__(147));
 
-var _extends2 = _interopRequireDefault(__webpack_require__(235));
+var _extends2 = _interopRequireDefault(__webpack_require__(236));
 
 var _keys = _interopRequireDefault(__webpack_require__(56));
 
@@ -3461,17 +3463,17 @@ var _classCallCheck2 = _interopRequireDefault(__webpack_require__(2));
 
 var _createClass2 = _interopRequireDefault(__webpack_require__(6));
 
-var _mapSerie = _interopRequireDefault(__webpack_require__(236));
+var _mapSerie = _interopRequireDefault(__webpack_require__(237));
 
 var _var = _interopRequireDefault(__webpack_require__(42));
 
 var _factory = _interopRequireDefault(__webpack_require__(158));
 
-var _valueFactory = _interopRequireDefault(__webpack_require__(237));
+var _valueFactory = _interopRequireDefault(__webpack_require__(238));
 
-var _classFactory = _interopRequireDefault(__webpack_require__(238));
+var _classFactory = _interopRequireDefault(__webpack_require__(239));
 
-var _value2 = _interopRequireDefault(__webpack_require__(239));
+var _value2 = _interopRequireDefault(__webpack_require__(240));
 
 var _interface2 = _interopRequireDefault(__webpack_require__(171));
 
@@ -3479,9 +3481,9 @@ var _interfaceClass2 = _interopRequireDefault(__webpack_require__(172));
 
 var _require = _interopRequireDefault(__webpack_require__(173));
 
-var _sharedInstance = _interopRequireDefault(__webpack_require__(240));
+var _sharedInstance = _interopRequireDefault(__webpack_require__(241));
 
-var _classDef = _interopRequireDefault(__webpack_require__(241));
+var _classDef = _interopRequireDefault(__webpack_require__(242));
 
 var _dependency = _interopRequireDefault(__webpack_require__(174));
 
@@ -3489,15 +3491,15 @@ var _makeContainerApi = _interopRequireDefault(__webpack_require__(175));
 
 var _sync = _interopRequireDefault(__webpack_require__(176));
 
-var _structuredHasPromise = _interopRequireDefault(__webpack_require__(242));
+var _structuredHasPromise = _interopRequireDefault(__webpack_require__(243));
 
-var _structuredPromiseAllRecursive = _interopRequireDefault(__webpack_require__(243));
+var _structuredPromiseAllRecursive = _interopRequireDefault(__webpack_require__(244));
 
-var _structuredResolveParamsInterface = _interopRequireDefault(__webpack_require__(244));
+var _structuredResolveParamsInterface = _interopRequireDefault(__webpack_require__(245));
 
-var _structuredInterfacePrototype = _interopRequireDefault(__webpack_require__(245));
+var _structuredInterfacePrototype = _interopRequireDefault(__webpack_require__(246));
 
-var _promiseInterface = _interopRequireDefault(__webpack_require__(246));
+var _promiseInterface = _interopRequireDefault(__webpack_require__(247));
 
 var interfacePrototypeDefault;
 
@@ -4023,32 +4025,104 @@ function () {
       }
     }
   }, {
-    key: "decorator",
-    value: function decorator(className) {
+    key: "wrap",
+    value: function wrap() {
       var _this10 = this;
 
-      var types = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-      return function (target) {
-        _this10.defineSym(target, _this10.symClassName, className);
+      var types = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
-        _this10.registerClass(className, target);
+      var _wrap = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
-        if (typeof types == 'function') {
-          types = types();
+      var interfaceName = arguments[2];
+      return function (target, method) {
+        target[method] = _this10.decoratorMethod(target, method, types, _wrap);
+        return target;
+      };
+    }
+  }, {
+    key: "decorator",
+    value: function decorator() {
+      var _this11 = this;
+
+      for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        args[_key2] = arguments[_key2];
+      }
+
+      return function (target, method) {
+        if (method === undefined) {
+          var className = args[0],
+              _args$ = args[1],
+              types = _args$ === void 0 ? [] : _args$;
+
+          _this11.decoratorClass(target, className, types);
+        } else {
+          var _args$2 = args[0],
+              _types = _args$2 === void 0 ? [] : _args$2,
+              _args$3 = args[1],
+              wrap = _args$3 === void 0 ? false : _args$3,
+              interfaceName = args[2];
+
+          target[method] = _this11.decoratorMethod(target, method, _types, wrap);
         }
-
-        types = types.map(function (type) {
-          return _this10.wrapVarType(type, _this10.defaultDecoratorVar);
-        });
-
-        if (target[_this10.symInterfaces]) {
-          types = types.concat(target[_this10.symInterfaces]);
-        }
-
-        _this10.defineSym(target, _this10.symInterfaces, types);
 
         return target;
       };
+    }
+  }, {
+    key: "decoratorClass",
+    value: function decoratorClass(target, className, types) {
+      var _this12 = this;
+
+      this.defineSym(target, this.symClassName, className);
+      this.registerClass(className, target);
+
+      if (typeof types == 'function') {
+        types = types();
+      }
+
+      types = types.map(function (type) {
+        return _this12.wrapVarType(type, _this12.defaultDecoratorVar);
+      });
+
+      if (target[this.symInterfaces]) {
+        types = types.concat(target[this.symInterfaces]);
+      }
+
+      this.defineSym(target, this.symInterfaces, types);
+      return target;
+    }
+  }, {
+    key: "decoratorMethod",
+    value: function decoratorMethod(target, method, types, wrap, interfaceName) {
+      var _this13 = this;
+
+      if (typeof types == 'function') {
+        types = types();
+      }
+
+      types = types.map(function (type) {
+        return _this13.wrapVarType(type, _this13.defaultDecoratorVar);
+      });
+      var fn = target[method];
+
+      if (wrap) {
+        var self = this;
+        return function () {
+          var rule = self.getRuleBase(interfaceName || target[self.symClassName]);
+          var params = types.map(function (param) {
+            return self.getParam(param, rule, {}, self.defaultRuleVar);
+          });
+          var resolvedParams = (0, _structuredResolveParamsInterface.default)(types, params);
+          return fn.apply(this, resolvedParams);
+        };
+      } else {
+        if (fn[this.symInterfaces]) {
+          types = types.concat(fn[this.symInterfaces]);
+        }
+
+        this.defineSym(fn, this.symInterfaces, types);
+        return fn;
+      }
     }
   }, {
     key: "exists",
@@ -4086,20 +4160,20 @@ function () {
   }, {
     key: "makeProvider",
     value: function makeProvider(interfaceName) {
-      var _this11 = this;
+      var _this14 = this;
 
       var rule = this.getRule(interfaceName);
       var classDef = this.resolveInstanceOf(interfaceName);
       return function (args, sharedInstances, stack) {
         //check for shared after params load
-        if (_this11.instanceRegistry[interfaceName]) {
-          return _this11.instanceRegistry[interfaceName];
+        if (_this14.instanceRegistry[interfaceName]) {
+          return _this14.instanceRegistry[interfaceName];
         }
 
         sharedInstances = (0, _assign.default)({}, sharedInstances);
         rule.sharedInTree.forEach(function (shareInterface) {
           if (!sharedInstances[shareInterface]) {
-            sharedInstances[shareInterface] = new _sharedInstance.default(shareInterface, _this11);
+            sharedInstances[shareInterface] = new _sharedInstance.default(shareInterface, _this14);
           }
         });
         var params;
@@ -4107,37 +4181,37 @@ function () {
 
         if (args) {
           params = args;
-          defaultVar = _this11.defaultArgsVar;
+          defaultVar = _this14.defaultArgsVar;
         } else {
-          params = rule.params || classDef[_this11.symInterfaces] || [];
-          defaultVar = _this11.defaultRuleVar;
+          params = rule.params || classDef[_this14.symInterfaces] || [];
+          defaultVar = _this14.defaultRuleVar;
         }
 
         var resolvedParams = params.map(function (interfaceDef, index) {
-          return _this11.getParam(interfaceDef, rule, sharedInstances, defaultVar, index, stack);
+          return _this14.getParam(interfaceDef, rule, sharedInstances, defaultVar, index, stack);
         }); //recheck for shared after params load
 
-        if (_this11.instanceRegistry[interfaceName]) {
-          return _this11.instanceRegistry[interfaceName];
+        if (_this14.instanceRegistry[interfaceName]) {
+          return _this14.instanceRegistry[interfaceName];
         }
 
         var makeInstance = function makeInstance(resolvedParams) {
           resolvedParams = (0, _structuredResolveParamsInterface.default)(params, resolvedParams);
 
-          if (_this11.interfaceTypeCheck) {
-            (0, _structuredInterfacePrototype.default)(rule.params || classDef[_this11.symInterfaces] || [], resolvedParams);
+          if (_this14.interfaceTypeCheck) {
+            (0, _structuredInterfacePrototype.default)(rule.params || classDef[_this14.symInterfaces] || [], resolvedParams);
           }
 
           var instance = new (Function.prototype.bind.apply(classDef, [null].concat((0, _toConsumableArray2.default)(resolvedParams))))();
 
           var finalizeInstanceCreation = function finalizeInstanceCreation() {
             if (rule.shared) {
-              _this11.registerInstance(interfaceName, instance);
+              _this14.registerInstance(interfaceName, instance);
             }
 
-            var callsReturn = _this11.runCalls(rule.lazyCalls, instance, rule, sharedInstances);
+            var callsReturn = _this14.runCalls(rule.lazyCalls, instance, rule, sharedInstances);
 
-            if (callsReturn instanceof _this11.PromiseInterface) {
+            if (callsReturn instanceof _this14.PromiseInterface) {
               return callsReturn.then(function () {
                 return instance;
               });
@@ -4146,9 +4220,9 @@ function () {
             return instance;
           };
 
-          var callsReturn = _this11.runCalls(rule.calls, instance, rule, sharedInstances);
+          var callsReturn = _this14.runCalls(rule.calls, instance, rule, sharedInstances);
 
-          if (callsReturn instanceof _this11.PromiseInterface) {
+          if (callsReturn instanceof _this14.PromiseInterface) {
             return callsReturn.then(function () {
               return finalizeInstanceCreation();
             });
@@ -4157,8 +4231,8 @@ function () {
           return finalizeInstanceCreation();
         };
 
-        if ((0, _structuredHasPromise.default)(params, resolvedParams, _this11.PromiseInterface)) {
-          return (0, _structuredPromiseAllRecursive.default)(params, resolvedParams, _this11.PromiseInterface, _this11.PromiseFactory).then(function (resolvedParams) {
+        if ((0, _structuredHasPromise.default)(params, resolvedParams, _this14.PromiseInterface)) {
+          return (0, _structuredPromiseAllRecursive.default)(params, resolvedParams, _this14.PromiseInterface, _this14.PromiseFactory).then(function (resolvedParams) {
             return makeInstance(resolvedParams);
           });
         }
@@ -4189,9 +4263,10 @@ function () {
     }
   }, {
     key: "getParam",
-    value: function getParam(interfaceDef, rule, sharedInstances) {
-      var _this12 = this;
+    value: function getParam(interfaceDef, rule) {
+      var _this15 = this;
 
+      var sharedInstances = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
       var defaultVar = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'interface';
       var index = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : undefined;
       var stack = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : [];
@@ -4239,7 +4314,7 @@ function () {
       if ((0, _typeof2.default)(interfaceDef) == 'object' && !(interfaceDef instanceof _var.default)) {
         var o = {};
         (0, _keys.default)(interfaceDef).forEach(function (k) {
-          o[k] = _this12.getParam(interfaceDef[k], rule, sharedInstances, defaultVar, undefined, stack);
+          o[k] = _this15.getParam(interfaceDef[k], rule, sharedInstances, defaultVar, undefined, stack);
         });
         return o;
       }
@@ -4249,7 +4324,7 @@ function () {
   }, {
     key: "wrapVarType",
     value: function wrapVarType(type, defaultVar, resolveFunction) {
-      var _this13 = this;
+      var _this16 = this;
 
       if (resolveFunction && typeof type == 'function') {
         type = type();
@@ -4269,7 +4344,7 @@ function () {
             var o = {};
             (0, _keys.default)(type).forEach(function (key) {
               var v = type[key];
-              o[key] = (0, _typeof2.default)(v) == 'object' && v !== null && !(v instanceof _var.default) ? _this13.wrapVarType(v, defaultVar) : v;
+              o[key] = (0, _typeof2.default)(v) == 'object' && v !== null && !(v instanceof _var.default) ? _this16.wrapVarType(v, defaultVar) : v;
             });
             return o;
           }
@@ -4304,13 +4379,16 @@ function () {
       var ruleBase = this.mergeRule({}, this.rulesDefault);
       ruleBase.interfaceName = interfaceName; //for info
 
-      this.mergeRule(ruleBase, this.rules[interfaceName] || {});
+      if (interfaceName) {
+        this.mergeRule(ruleBase, this.rules[interfaceName] || {});
+      }
+
       return ruleBase;
     }
   }, {
     key: "getRule",
     value: function getRule(interfaceName) {
-      var _this14 = this;
+      var _this17 = this;
 
       var rule = this.mergeRule({}, this.rulesDefault);
       rule.interfaceName = interfaceName; //for info
@@ -4338,7 +4416,7 @@ function () {
             var className;
 
             while (parentProto) {
-              className = parentProto[_this14.symClassName];
+              className = parentProto[_this17.symClassName];
 
               if (className) {
                 fullStack.add(className);
@@ -4352,34 +4430,34 @@ function () {
 
       fullStack = (0, _from.default)(fullStack).reverse();
       fullStack.forEach(function (className) {
-        var mergeRule = _this14.rules[className];
+        var mergeRule = _this17.rules[className];
 
         if (mergeRule.inheritMixins) {
-          _this14.mixinsRule(rule, mergeRule.inheritMixins);
+          _this17.mixinsRule(rule, mergeRule.inheritMixins);
         }
 
-        _this14.mergeRule(rule, mergeRule);
+        _this17.mergeRule(rule, mergeRule);
       });
       return rule;
     }
   }, {
     key: "mixinsRule",
     value: function mixinsRule(rule, mixinsGroup) {
-      var _this15 = this;
+      var _this18 = this;
 
       var mixinsGroups = this.ruleCollectExtendsRecursive(mixinsGroup).reverse();
       mixinsGroups.forEach(function (mixinGroup) {
         return mixinGroup.forEach(function (mixin) {
-          var mergeRule = _this15.rules[mixin];
+          var mergeRule = _this18.rules[mixin];
 
-          _this15.mergeRule(rule, mergeRule, false);
+          _this18.mergeRule(rule, mergeRule, false);
         });
       });
     }
   }, {
     key: "ruleCollectExtendsRecursive",
     value: function ruleCollectExtendsRecursive(mixinGroup) {
-      var _this16 = this;
+      var _this19 = this;
 
       var mixinsGroups = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
 
@@ -4389,10 +4467,10 @@ function () {
 
       mixinsGroups.push(mixinGroup);
       mixinGroup.forEach(function (mixin) {
-        var rule = _this16.rules[mixin];
+        var rule = _this19.rules[mixin];
 
         if (rule && rule.mixins) {
-          _this16.ruleCollectExtendsRecursive(rule.mixins, mixinsGroups);
+          _this19.ruleCollectExtendsRecursive(rule.mixins, mixinsGroups);
         }
       });
       return mixinsGroups;
@@ -4511,21 +4589,21 @@ function () {
   }, {
     key: "mergeRules",
     value: function mergeRules(extendRules, rules) {
-      var _this17 = this;
+      var _this20 = this;
 
       (0, _keys.default)(rules).forEach(function (k) {
         if (!extendRules[k]) {
           extendRules[k] = {};
         }
 
-        extendRules[k] = _this17.mergeRule(extendRules[k], rules[k]);
+        extendRules[k] = _this20.mergeRule(extendRules[k], rules[k]);
       });
       return extendRules;
     }
   }, {
     key: "runCalls",
     value: function runCalls(calls, instance, rule, sharedInstances) {
-      var _this18 = this;
+      var _this21 = this;
 
       var hasAsync;
       var callers = calls.map(function (c) {
@@ -4538,7 +4616,7 @@ function () {
               _c2 = (0, _slicedToArray2.default)(_c, 3),
               method = _c2[0],
               _c2$ = _c2[1],
-              params = _c2$ === void 0 ? [] : _c2$,
+              params = _c2$ === void 0 ? instance[method][_this21.symInterfaces] || [] : _c2$,
               _c2$2 = _c2[2],
               asyncResolve = _c2$2 === void 0 ? rule.asyncResolve : _c2$2;
 
@@ -4560,13 +4638,13 @@ function () {
           };
 
           var resolvedParams = params.map(function (param) {
-            return _this18.getParam(param, rule, sharedInstances, _this18.defaultRuleVar);
+            return _this21.getParam(param, rule, sharedInstances, _this21.defaultRuleVar);
           });
 
-          if ((0, _structuredHasPromise.default)(params, resolvedParams, _this18.PromiseInterface)) {
+          if ((0, _structuredHasPromise.default)(params, resolvedParams, _this21.PromiseInterface)) {
             hasAsync = true;
             return function () {
-              return (0, _structuredPromiseAllRecursive.default)(params, resolvedParams, _this18.PromiseInterface, _this18.PromiseFactory).then(function (resolvedParams) {
+              return (0, _structuredPromiseAllRecursive.default)(params, resolvedParams, _this21.PromiseInterface, _this21.PromiseFactory).then(function (resolvedParams) {
                 return makeCall(resolvedParams);
               });
             };
@@ -4587,9 +4665,9 @@ function () {
           if (asyncCallsSerie) {
             callersReturn = (0, _mapSerie.default)(callers, function (caller) {
               return caller();
-            }, _this18.PromiseInterface, _this18.PromiseFactory);
+            }, _this21.PromiseInterface, _this21.PromiseFactory);
           } else {
-            callersReturn = _this18.PromiseFactory.all(callers.map(function (caller) {
+            callersReturn = _this21.PromiseFactory.all(callers.map(function (caller) {
               return caller();
             }));
           }
@@ -4597,7 +4675,7 @@ function () {
           callersReturn = callers.map(function (caller) {
             var callerReturn = caller();
 
-            if (callerReturn instanceof _this18.PromiseInterface) {
+            if (callerReturn instanceof _this21.PromiseInterface) {
               hasAsync = true;
             }
 
@@ -4605,7 +4683,7 @@ function () {
           });
 
           if (hasAsync) {
-            callersReturn = _this18.PromiseFactory.all(callersReturn);
+            callersReturn = _this21.PromiseFactory.all(callersReturn);
           }
         }
 
@@ -4730,21 +4808,21 @@ exports.default = Container;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(35)))
 
 /***/ }),
-/* 216 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(217);
-
-/***/ }),
 /* 217 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(218);
+module.exports = __webpack_require__(218);
+
+/***/ }),
+/* 218 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(219);
 module.exports = __webpack_require__(1).Reflect.getPrototypeOf;
 
 
 /***/ }),
-/* 218 */
+/* 219 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.8 Reflect.getPrototypeOf(target)
@@ -4760,37 +4838,37 @@ $export($export.S, 'Reflect', {
 
 
 /***/ }),
-/* 219 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(220);
-
-/***/ }),
 /* 220 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(64);
-__webpack_require__(21);
-__webpack_require__(29);
-__webpack_require__(221);
-__webpack_require__(227);
-__webpack_require__(230);
-__webpack_require__(232);
-module.exports = __webpack_require__(1).Set;
-
+module.exports = __webpack_require__(221);
 
 /***/ }),
 /* 221 */
 /***/ (function(module, exports, __webpack_require__) {
 
+__webpack_require__(64);
+__webpack_require__(21);
+__webpack_require__(29);
+__webpack_require__(222);
+__webpack_require__(228);
+__webpack_require__(231);
+__webpack_require__(233);
+module.exports = __webpack_require__(1).Set;
+
+
+/***/ }),
+/* 222 */
+/***/ (function(module, exports, __webpack_require__) {
+
 "use strict";
 
-var strong = __webpack_require__(222);
+var strong = __webpack_require__(223);
 var validate = __webpack_require__(170);
 var SET = 'Set';
 
 // 23.2 Set Objects
-module.exports = __webpack_require__(223)(SET, function (get) {
+module.exports = __webpack_require__(224)(SET, function (get) {
   return function Set() { return get(this, arguments.length > 0 ? arguments[0] : undefined); };
 }, {
   // 23.2.3.1 Set.prototype.add(value)
@@ -4801,7 +4879,7 @@ module.exports = __webpack_require__(223)(SET, function (get) {
 
 
 /***/ }),
-/* 222 */
+/* 223 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4952,7 +5030,7 @@ module.exports = {
 
 
 /***/ }),
-/* 223 */
+/* 224 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4968,7 +5046,7 @@ var anInstance = __webpack_require__(82);
 var isObject = __webpack_require__(9);
 var setToStringTag = __webpack_require__(28);
 var dP = __webpack_require__(7).f;
-var each = __webpack_require__(224)(0);
+var each = __webpack_require__(225)(0);
 var DESCRIPTORS = __webpack_require__(10);
 
 module.exports = function (NAME, wrapper, methods, common, IS_MAP, IS_WEAK) {
@@ -5018,7 +5096,7 @@ module.exports = function (NAME, wrapper, methods, common, IS_MAP, IS_WEAK) {
 
 
 /***/ }),
-/* 224 */
+/* 225 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 0 -> Array#forEach
@@ -5032,7 +5110,7 @@ var ctx = __webpack_require__(11);
 var IObject = __webpack_require__(62);
 var toObject = __webpack_require__(20);
 var toLength = __webpack_require__(39);
-var asc = __webpack_require__(225);
+var asc = __webpack_require__(226);
 module.exports = function (TYPE, $create) {
   var IS_MAP = TYPE == 1;
   var IS_FILTER = TYPE == 2;
@@ -5068,11 +5146,11 @@ module.exports = function (TYPE, $create) {
 
 
 /***/ }),
-/* 225 */
+/* 226 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 9.4.2.3 ArraySpeciesCreate(originalArray, length)
-var speciesConstructor = __webpack_require__(226);
+var speciesConstructor = __webpack_require__(227);
 
 module.exports = function (original, length) {
   return new (speciesConstructor(original))(length);
@@ -5080,7 +5158,7 @@ module.exports = function (original, length) {
 
 
 /***/ }),
-/* 226 */
+/* 227 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(9);
@@ -5102,22 +5180,22 @@ module.exports = function (original) {
 
 
 /***/ }),
-/* 227 */
+/* 228 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
 var $export = __webpack_require__(4);
 
-$export($export.P + $export.R, 'Set', { toJSON: __webpack_require__(228)('Set') });
+$export($export.P + $export.R, 'Set', { toJSON: __webpack_require__(229)('Set') });
 
 
 /***/ }),
-/* 228 */
+/* 229 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
 var classof = __webpack_require__(41);
-var from = __webpack_require__(229);
+var from = __webpack_require__(230);
 module.exports = function (NAME) {
   return function toJSON() {
     if (classof(this) != NAME) throw TypeError(NAME + "#toJSON isn't generic");
@@ -5127,7 +5205,7 @@ module.exports = function (NAME) {
 
 
 /***/ }),
-/* 229 */
+/* 230 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var forOf = __webpack_require__(55);
@@ -5140,15 +5218,15 @@ module.exports = function (iter, ITERATOR) {
 
 
 /***/ }),
-/* 230 */
+/* 231 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://tc39.github.io/proposal-setmap-offrom/#sec-set.of
-__webpack_require__(231)('Set');
+__webpack_require__(232)('Set');
 
 
 /***/ }),
-/* 231 */
+/* 232 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5167,15 +5245,15 @@ module.exports = function (COLLECTION) {
 
 
 /***/ }),
-/* 232 */
+/* 233 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://tc39.github.io/proposal-setmap-offrom/#sec-set.from
-__webpack_require__(233)('Set');
+__webpack_require__(234)('Set');
 
 
 /***/ }),
-/* 233 */
+/* 234 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5210,7 +5288,7 @@ module.exports = function (COLLECTION) {
 
 
 /***/ }),
-/* 234 */
+/* 235 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _Array$from = __webpack_require__(94);
@@ -5230,7 +5308,7 @@ function _toConsumableArray(arr) {
 module.exports = _toConsumableArray;
 
 /***/ }),
-/* 235 */
+/* 236 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _Object$assign = __webpack_require__(96);
@@ -5256,7 +5334,7 @@ function _extends() {
 module.exports = _extends;
 
 /***/ }),
-/* 236 */
+/* 237 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5290,7 +5368,7 @@ function mapSerie(arr, callback) {
 }
 
 /***/ }),
-/* 237 */
+/* 238 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5341,7 +5419,7 @@ function (_Factory) {
 exports.default = ValueFactory;
 
 /***/ }),
-/* 238 */
+/* 239 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5392,7 +5470,7 @@ function (_Factory) {
 exports.default = ClassFactory;
 
 /***/ }),
-/* 239 */
+/* 240 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5443,7 +5521,7 @@ function (_Var) {
 exports.default = Value;
 
 /***/ }),
-/* 240 */
+/* 241 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5487,7 +5565,7 @@ function () {
 exports.default = SharedInstance;
 
 /***/ }),
-/* 241 */
+/* 242 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5524,7 +5602,7 @@ function () {
 exports.default = ClassDef;
 
 /***/ }),
-/* 242 */
+/* 243 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5562,7 +5640,7 @@ function structuredHasPromise(structure, mixed) {
 }
 
 /***/ }),
-/* 243 */
+/* 244 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5631,7 +5709,7 @@ var _default = structuredPromiseAllRecursive;
 exports.default = _default;
 
 /***/ }),
-/* 244 */
+/* 245 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5682,7 +5760,7 @@ var _default = structuredResolveParamsInterface;
 exports.default = _default;
 
 /***/ }),
-/* 245 */
+/* 246 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5727,7 +5805,7 @@ var _default = structuredInterfacePrototype;
 exports.default = _default;
 
 /***/ }),
-/* 246 */
+/* 247 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5784,7 +5862,7 @@ var _default = function _default() {
 exports.default = _default;
 
 /***/ }),
-/* 247 */
+/* 248 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
