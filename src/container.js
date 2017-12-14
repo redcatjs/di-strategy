@@ -463,26 +463,47 @@ export default class Container{
 		}
 	}
 	
-	
 	decorator(className, types = []){
-		return (target)=>{
+		return (target, method)=>{
 			
-			this.defineSym(target, this.symClassName, className);
-			
-			this.registerClass(className, target);
-			
-			if(typeof types == 'function'){
-				types = types();
+			if(method === undefined){
+				return this.decoratorClass(target, className, types);
 			}
-			types = types.map(type => this.wrapVarType(type, this.defaultDecoratorVar));
-			
-			if (target[this.symInterfaces]) {
-				types = types.concat(target[this.symInterfaces]);
+			else{
+				return this.decoratorMethod(target[method], className);
 			}
-			this.defineSym(target, this.symInterfaces, types);
 			
-			return target;
 		};
+	}
+	decoratorClass(target, className, types){
+		this.defineSym(target, this.symClassName, className);
+		
+		this.registerClass(className, target);
+		
+		if(typeof types == 'function'){
+			types = types();
+		}
+		types = types.map(type => this.wrapVarType(type, this.defaultDecoratorVar));
+		
+		if (target[this.symInterfaces]) {
+			types = types.concat(target[this.symInterfaces]);
+		}
+		this.defineSym(target, this.symInterfaces, types);
+		
+		return target;
+	}
+	decoratorMethod(target, types){
+		if(typeof types == 'function'){
+			types = types();
+		}
+		types = types.map(type => this.wrapVarType(type, this.defaultDecoratorVar));
+		
+		if (target[this.symInterfaces]) {
+			types = types.concat(target[this.symInterfaces]);
+		}
+		this.defineSym(target, this.symInterfaces, types);
+		
+		return target;
 	}
 	
 	exists(name){
@@ -900,7 +921,12 @@ export default class Container{
 			if(typeof c == 'function'){
 				c = [c];
 			}
-			const [ method, params = [], asyncResolve = rule.asyncResolve  ] = c;
+			
+			const [
+				method,
+				params = instance[method][this.symInterfaces] || [],
+				asyncResolve = rule.asyncResolve 
+			] = c;
 			
 			const makeCall = (resolvedParams)=>{				
 				resolvedParams = structuredResolveParamsInterface(params, resolvedParams);
