@@ -19,7 +19,7 @@ and encouraging [Composite Reuse](https://en.wikipedia.org/wiki/Composition_over
 
 1. [Getting Started](#1-getting-started)
 
-2. [Approaches](#2-approaches)
+2. [Dependencies declarations approaches](#2-dependencies-declarations-approaches)
 	1. [Composition Root](#21-composition-root)
 	2. [Inversion of Control (IoC)](#22-inversion-of-control-ioc)
 
@@ -50,9 +50,22 @@ di.get('MyClassName');
 ```
 
 
-### 2. Approaches
+### 2. Dependencies declarations approaches
 
-#### 2.1 Composition Root
+To define dependencies, you can use Composition-Root or IoC approach for each components individually.
+
+Differents approaches can be used for differents methods injections on same component.
+
+Dependencies definition can be overrided, the last call of addRule or @di decorator will take precedence.
+
+
+#### 2.1 Composition-Root
+
+The Composition Root is the highest level of your application, the top overlay.
+It's here that you will configure many rules for your components and wire them together.
+Using only the Composition Root design pattern has the advantage to let you have totaly unopinionated components,
+all your classes and factories can keep uncoupled from the dependency injector (di-strategy).
+
 
 ```javascript
 di.addRules({
@@ -71,9 +84,18 @@ di.get('A')
 
 #### 2.2 Inversion of Control (IoC)
 
-##### with direct class definition
+The IoC design pattern let your components define their own dependencies.
+These dependencies declarations can rely on container level defined abstractions (recommanded),
+or on direct class or factory definition.
+It can be used in addition to the Composition-Root and replace the rule's key "params" and also the parameters of call argument for rule's key "calls".
+
+##### with abstract class definition based on rules
 ```javascript
-@di('A',[ B ])
+di.addRule('B',{
+  classDef: B,
+})
+
+@di('A',[ 'B' ])
 class A{
   constructor(b){
     this.b = b;
@@ -83,13 +105,9 @@ class A{
 di.get('A')
 ```
 
-##### with abstract class definition based on rules
+##### with direct class definition
 ```javascript
-di.addRule('B',{
-  classDef: B,
-})
-
-@di('A',[ 'B' ])
+@di('A',[ B ])
 class A{
   constructor(b){
     this.b = b;
@@ -112,4 +130,4 @@ di.get('A')
 Built with babel but use is unopinionated. Browser usage is optimized for webpack.
 Can be used with [interface-prototype](https://github.com/redcatjs/interface-prototype),
 you can get pre-wired implementation from [omniverse](https://github.com/redcatjs/omniverse) library.
-Inspired by [Strategy](https://github.com/redcatphp/strategy) for PHP itself based on [Dice](https://r.je/dice.html) design.
+Inspired by [Strategy](https://github.com/redcatphp/strategy) for PHP, itself based on [Dice](https://r.je/dice.html) design.
