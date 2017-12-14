@@ -463,16 +463,23 @@ export default class Container{
 		}
 	}
 	
-	decorator(className, types = []){
+	wrap(types = [], wrap = true, interfaceName){
 		return (target, method)=>{
-			
+			target[method] = this.decoratorMethod(target, method, types, wrap);
+			return target;
+		};
+	}
+	decorator(...args){
+		return (target, method)=>{
 			if(method === undefined){
-				return this.decoratorClass(target, className, types);
+				const [ className, types = [] ] = args;
+				this.decoratorClass(target, className, types);
 			}
 			else{
-				return this.decoratorMethod(target[method], className);
+				const [ types = [], wrap = false, interfaceName ] = args;
+				target[method] = this.decoratorMethod(target, method, types, wrap);
 			}
-			
+			return target;
 		};
 	}
 	decoratorClass(target, className, types){
@@ -492,18 +499,34 @@ export default class Container{
 		
 		return target;
 	}
-	decoratorMethod(target, types){
+	decoratorMethod(target, method, types, wrap, interfaceName){
 		if(typeof types == 'function'){
 			types = types();
 		}
 		types = types.map(type => this.wrapVarType(type, this.defaultDecoratorVar));
 		
-		if (target[this.symInterfaces]) {
-			types = types.concat(target[this.symInterfaces]);
-		}
-		this.defineSym(target, this.symInterfaces, types);
+		const fn = target[method];
 		
-		return target;
+		if(wrap){
+			
+			const self = this;
+			return function(){
+				const rule =  self.getRuleBase(interfaceName || target[self.symClassName]);
+				const params = types.map( param => self.getParam(param, rule, {}, self.defaultRuleVar) );
+				const resolvedParams = structuredResolveParamsInterface(types, params);
+				return fn.apply(this, resolvedParams);
+			};
+			
+		}
+		else{
+		
+			if (fn[this.symInterfaces]) {
+				types = types.concat(fn[this.symInterfaces]);
+			}
+			this.defineSym(fn, this.symInterfaces, types);
+		
+			return fn;
+		}
 	}
 	
 	exists(name){
@@ -629,7 +652,7 @@ export default class Container{
 		}
 		return interfaceDef;
 	}
-	getParam(interfaceDef, rule, sharedInstances, defaultVar = 'interface', index = undefined, stack = []){
+	getParam(interfaceDef, rule, sharedInstances = {}, defaultVar = 'interface', index = undefined, stack = []){
 		
 		interfaceDef = this.wrapVarType(interfaceDef, defaultVar);
 		
@@ -729,7 +752,9 @@ export default class Container{
 	getRuleBase(interfaceName){
 		const ruleBase = this.mergeRule({}, this.rulesDefault);
 		ruleBase.interfaceName = interfaceName; //for info
-		this.mergeRule(ruleBase, this.rules[interfaceName] || {});
+		if(interfaceName){
+			this.mergeRule(ruleBase, this.rules[interfaceName] || {});
+		}
 		return ruleBase;
 	}
 	

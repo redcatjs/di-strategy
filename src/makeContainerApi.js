@@ -14,5 +14,6 @@ export default function makeContainerApi(container){
 	di.addRule = container.addRule.bind(container);
 	di.addRules = container.addRules.bind(container);
 	di.config = container.config.bind(container);
+	di.wrap = container.wrap.bind(container);
 	return di;
 }
