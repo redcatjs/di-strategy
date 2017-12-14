@@ -1,4 +1,4 @@
-# DI-Strategy ![DI-Strategy ICON](https://raw.githubusercontent.com/redcatjs/di-strategy/master/icon/icon.png)
+# DI-Strategy [![DI-Strategy ICON](https://raw.githubusercontent.com/redcatjs/di-strategy/master/icon/icon.png)](https://raw.githubusercontent.com/redcatjs/di-strategy)
 
 High level and universal javascript Dependency-Injection (DI) container for node and browser.
 
