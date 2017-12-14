@@ -23,6 +23,22 @@ export default ({di, expect})=>{
 			}
 		}
 		
+		@di('D')
+		class D{
+			@di(['B'], true)
+			method(b){
+				this.B = b;
+			}
+		}
+		
+		@di('E')
+		class E{
+			@di.wrap(['B'])
+			method(b){
+				this.B = b;
+			}
+		}
+		
 		di.addRules({
 			'A':{
 				classDef: A,
@@ -48,7 +64,22 @@ export default ({di, expect})=>{
 		
 		it('should return an instance of B',function(){
 			const instance = di.get('C');
-			//instance.method();
+			expect(instance.B).instanceof( B );
+		});
+		it('should not return an instance of B',function(){
+			const instance = di.get('C');
+			instance.method();
+			expect(instance.B).not.instanceof( B );
+		});
+		
+		it('should return an instance of B',function(){
+			const instance = di.get('D');
+			instance.method();
+			expect(instance.B).instanceof( B );
+		});
+		it('should return an instance of B',function(){
+			const instance = di.get('E');
+			instance.method();
 			expect(instance.B).instanceof( B );
 		});
 		
