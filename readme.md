@@ -8,7 +8,7 @@ $ npm i di-strategy
 ```
 
 ## Goals
-  * Implement [Composition Root](http://blog.ploeh.dk/2011/07/28/CompositionRoot/) and [IoC](https://en.wikipedia.org/wiki/Inversion_of_control) design, allowing to keep all things decoupled and to wire application components and config at one unique root place.
+  * Implement [IoC](https://en.wikipedia.org/wiki/Inversion_of_control) using [Composition Root](http://blog.ploeh.dk/2011/07/28/CompositionRoot/) design pattern, allowing to keep all things decoupled and to wire application components and config at one unique root place.
 
   * Replace the singleton anti-pattern with dependency-injection by refacto export of instances to export of classes and factories.
   
@@ -28,7 +28,7 @@ $ npm i di-strategy
 
 2. [Dependencies declarations approaches](#2-dependencies-declarations-approaches)
 	1. [Composition Root](#21-composition-root)
-	2. [Inversion of Control (IoC)](#22-inversion-of-control-ioc)
+	2. [Decorator injection approach](#22-decorator-injection-approach)
 		1. [abstract class](#221-abstract-class)
 		2. [reference class](#222-reference-class)
 
@@ -143,9 +143,9 @@ di.addRules({
 di.get('A')
 ```
 
-#### 2.2 Inversion of Control (IoC)
+#### 2.2 Decorator injection approach
 
-The IoC design pattern let your components define their own dependencies.  
+The Decorator injection approach let your components define their own dependencies.  
 These dependencies declarations can rely on container level defined abstractions (recommanded),
 or on direct class or factory definition.  
 It can be used in addition to the Composition-Root and replace the rule's key "[params](#411-params)" and also the parameters of call argument for rule's key "[calls](#412-calls)" and "[lazyCalls](#413-lazycalls)".
