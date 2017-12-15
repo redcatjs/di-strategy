@@ -8,7 +8,7 @@ $ npm i di-strategy
 ```
 
 ## Goals
-  * Implement [Composition Root](http://blog.ploeh.dk/2011/07/28/CompositionRoot/) and [IoC](https://en.wikipedia.org/wiki/Inversion_of_control) design patterns, allowing to keep all things decoupled and to wire application components and config at one unique root place.
+  * Implement [Composition Root](http://blog.ploeh.dk/2011/07/28/CompositionRoot/) and [IoC](https://en.wikipedia.org/wiki/Inversion_of_control) design, allowing to keep all things decoupled and to wire application components and config at one unique root place.
 
   * Replace the singleton anti-pattern with dependency-injection by refacto export of instances to export of classes and factories.
   
