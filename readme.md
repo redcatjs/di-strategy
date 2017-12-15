@@ -148,7 +148,7 @@ di.get('A')
 The IoC design pattern let your components define their own dependencies.
 These dependencies declarations can rely on container level defined abstractions (recommanded),
 or on direct class or factory definition.
-It can be used in addition to the Composition-Root and replace the rule's key "params" and also the parameters of call argument for rule's key "calls" and "lazyCalls".
+It can be used in addition to the Composition-Root and replace the rule's key "[params](#411-params)" and also the parameters of call argument for rule's key "[calls](#412-calls)" and "[lazyCalls](#413-lazycalls)".
 
 ##### 2.2.1 abstract class
 ```javascript
@@ -179,7 +179,7 @@ di.get('A')
 ```
 
 ### 3. Dependencies Resolution
-The dependencies are resolved according to rule's key "params" and parameters of call argument for rule's key "calls" and "lazyCalls".
+The dependencies are resolved according to rule's key "[params](#411-params)" and parameters of call argument for rule's key "[calls](#412-calls)" and "[lazyCalls](#413-lazycalls)".
 
 #### 3.1 Recursive classes or factories
 You can use factories or classes, and obviously, all dependencies are resolved recursively.
@@ -219,6 +219,9 @@ const a = new A( new B( C() ) );
 
 #### 3.2 Recursive params
 You can nest dependencies declarations to infinite. It's very common use for config.
+
+(for others params behaviors see [params](#411-params))
+
 ```javascript
 class A{
 	constructor(config, aSecondInstanceOfB){
@@ -267,6 +270,8 @@ All these behaviors can be configured, but the default config is well and the do
 [defaultArgsVar](#510-defaultargsvar),	
 [defaultFactory](#511-defaultfactory),
 [defaultFunctionWrapper](#512-defaultfunctionwrapper))
+
+(for others params behaviors see [params](#411-params))
 
 ##### 3.3.1 interface
 Container will resolve dependency as, an instance of class or a value from factory, defined by corresponding rule's key.
@@ -439,6 +444,7 @@ function A(b, c, d){
 
 ##### 4.1.1 params
 type: **Array** || undefined
+
 default: **undefined**
 
 The rule's key "params" define what will be injected to class constructor or factory.
