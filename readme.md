@@ -258,7 +258,7 @@ const a = new A( {
 #### 3.3. Types of params
 You can wrap each value of param with a di-strategy class that will tell container how to resolve the dependency.
 By default all values and subvalues of params are traversed when it's an Object or Array,
-are wrapped with "classFactory" if it's a function, and else by "interface".
+are wrapped with "classFactory" when it's a function, and else by "interface".
 All these behaviors can be configured, but the default config is well and the documentation rely on it.
 (see
 [defaultVar](#57-defaultvar),
@@ -393,20 +393,74 @@ const a = di.get('A');
 
 
 ### 4. Rules
-...
+The rules define resolutions behaviors of the classes or factories and their dependencies.
 ```javascript
+const rules = {};
 
+//1st way to define rules
+const di = container();
+di.addRules(rules);
+
+//2nd way to define rules
+const di = container({
+	rules,
+});
 ```
 
 #### 4.1. dependencies
-...
+The following rule's key are about classes or factories dependencies.
 ```javascript
+//you can use class
+class A{
+	constructor(b, c, d){
+		this.b = b;
+		this.c = c;
+		this.d = d;
+	}
+}
 
+//or instance factory
+function A(b, c, d){
+	this.b = b;
+	this.c = c;
+	this.d = d;
+}
+
+//or factory
+function A(b, c, d){
+	const anotherValue = {
+		b: b,
+		c: c,
+		d: d,
+	};
+	return anotherValue;
+}
 ```
 
 ##### 4.1.1 params
-...
+type: **Array** || undefined
+default: **undefined**
+
+The rule's key "params" define what will be injected to class constructor or factory.
+The keys can be nested (see [Recursive params](#32-recursive-params)).
+The resolutions behavior depends of [Types of params](#33-types-of-params).
+
 ```javascript
+class A{
+	constructor(b, c, d){
+		this.b = b;
+		this.c = c;
+		this.d = d;
+	}
+}
+
+di.addRule('A', { params: ['B','C','D'] });
+
+```
+
+You can override params defined in rule on manual call:
+```javascript
+di.get('A', ['E','F','G']);
 
 ```
 
@@ -642,7 +696,7 @@ const a = di.get('A');
 
 ```
 
-#### 15.7 globalKey
+#### 15.17 globalKey
 ...
 ```javascript
 
