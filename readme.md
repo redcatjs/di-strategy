@@ -121,7 +121,7 @@ di.get('MyClassName');
 
 ### 2. Dependencies declarations approaches
 
-To define dependencies, you can use Composition-Root or IoC approach for each components individually.  
+To define dependencies, you can use [Composition-Root](#21-composition-root) or [Decorator injection approach](#22-decorator-injection-approach) for each components individually.  
 Differents approaches can be used for differents methods injections on same component.  
 Dependencies definition can be overrided, the last call of addRule or @di decorator will take precedence.
 
