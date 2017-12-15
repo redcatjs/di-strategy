@@ -443,9 +443,8 @@ function A(b, c, d){
 ```
 
 ##### 4.1.1 params
-type: **Array** || undefined
-
-default: **undefined**
+type: **array**
+containing nested dependencies
 
 The rule's key "params" define what will be injected to class constructor or factory.
 The keys can be nested (see [Recursive params](#32-recursive-params)).
@@ -471,17 +470,45 @@ di.get('A', ['E','F','G']);
 ```
 
 ##### 4.1.2 calls
-...
+type: **array**
+stack of call array with 1st item for method name or callback and 2nd item an array of params for methods (working same as [params](#411-params)).
+
+Stack of methods to call after instance creation.
+If some circular dependencies are detected, some items of calls stack will be placed automatically in [lazyCalls](#413-lazycalls).
+
 ```javascript
+class A{
+	method1(dep1){
+		this.dep1 = dep1;
+	}
+	method2(dep2){
+		this.dep2 = dep2;
+	}
+	method3(dep3){
+		this.dep3 = dep3;
+	}
+}
+di.addRule('A', {
+	classDef: A,
+	calls: [
+		
+		[ 'method1', [ 'dep1' ] ],
+		[ 'method2', [ 'dep2' ] ],
+		
+		[
+			function(a, dep3){
+				a.method3(dep3);
+			},
+			[ 'dep3' ]
+		],
+		
+	],
+});
 
 ```
 
 ##### 4.1.3 lazyCalls
-...
-```javascript
-
-```
-
+Same as [calls](#412-calls), but run after dependency has been distributed to needing instances, this helper offer a simple way to solving circular dependency problem.
 
 #### 4.2. instance
 ...
