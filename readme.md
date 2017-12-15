@@ -443,7 +443,7 @@ function A(b, c, d){
 ```
 
 ##### 4.1.1 params
-type: **array**
+type: **array**  
 containing nested dependencies
 
 The rule's key "params" define what will be injected to class constructor or factory.
@@ -470,7 +470,7 @@ di.get('A', ['E','F','G']);
 ```
 
 ##### 4.1.2 calls
-type: **array**
+type: **array**  
 stack of call array with 1st item for method name or callback and 2nd item an array of params for methods (working same as [params](#411-params)).
 
 Stack of methods to call after instance creation.
