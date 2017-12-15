@@ -12,7 +12,7 @@ $ npm i di-strategy
 
   * Replace the singleton anti-pattern with dependency-injection by refacto export of instances to export of classes and factories.
   
-  * Offer a pure JavaScript non-dogmatic cross-transpiller [Dependency-Injection](https://en.wikipedia.org/wiki/Dependency_injection) framework.
+  * Get a pure JavaScript non-dogmatic cross-transpiller [Dependency-Injection](https://en.wikipedia.org/wiki/Dependency_injection) framework.
 
   * Encourage adherence to the best practices of Object Oriented design
   ( [SOLID](https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)),
