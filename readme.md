@@ -26,6 +26,8 @@ Improve whole code testability.
 2. [Dependencies declarations approaches](#2-dependencies-declarations-approaches)
 	1. [Composition Root](#21-composition-root)
 	2. [Inversion of Control (IoC)](#22-inversion-of-control-ioc)
+		1. [abstract class](#221-abstract-class)
+		2. [reference class](#222-reference-class)
 
 3. [Dependencies Resolution](#3-dependencies-resolution)
 	1. [Recursive classes or factories](#31-recursive-classes-or-factories)
@@ -34,7 +36,9 @@ Improve whole code testability.
 		1. [interface](#331-interface)
 		2. [value](#332-value)
 		3. [factory](#333-factory)
-		4. [require](#334-require)
+		5. [valueFactory](#334-valuefactory)
+		6. [classFactory](#335-classfactory)
+		4. [require](#336-require)
 
 4. [Rules](#4-rules)
 	
@@ -144,9 +148,9 @@ di.get('A')
 The IoC design pattern let your components define their own dependencies.
 These dependencies declarations can rely on container level defined abstractions (recommanded),
 or on direct class or factory definition.
-It can be used in addition to the Composition-Root and replace the rule's key "params" and also the parameters of call argument for rule's key "calls".
+It can be used in addition to the Composition-Root and replace the rule's key "params" and also the parameters of call argument for rule's key "calls" and "lazyCalls".
 
-##### with abstract class definition based on rules
+##### 2.2.1 abstract class
 ```javascript
 di.addRule('B',{
   classDef: B,
@@ -162,7 +166,7 @@ class A{
 di.get('A')
 ```
 
-##### with direct class definition
+##### 2.2.2 reference class
 ```javascript
 @di('A',[ B ])
 class A{
@@ -175,159 +179,474 @@ di.get('A')
 ```
 
 ### 3. Dependencies Resolution
-...
+The dependencies are resolved according to rule's key "params" and parameters of call argument for rule's key "calls" and "lazyCalls".
 
 #### 3.1 Recursive classes or factories
-...
+You can use factories or classes, and obviously, all dependencies are resolved recursively.
+```javascript
+class A{
+	constructor(b){
+		this.b = b;
+	}
+}
+class B{
+	constructor(c){
+		this.c = c;
+	}
+}
+function C(){
+	return 'Hello world !';
+}
+di.addRules({
+	A: {
+		classDef: A,
+		params: [ 'B' ],
+	},
+	B: {
+		classDef: B,
+		params: [ 'C' ],
+	},
+	C: {
+		classDef: C,
+	},
+});
+
+const a = di.get('A'); //will resolve C and pass it's return to new B, then it will pass the new B to new A
+
+//it will be equivalent to
+const a = new A( new B( C() ) );
+```
 
 #### 3.2 Recursive params
-...
+You can nest dependencies declarations to infinite. It's very common use for config.
+```javascript
+class A{
+	constructor(config, aSecondInstanceOfB){
+		this.b = config.wathever.anotherKey.b;
+		this.b2 = aSecondInstanceOfB;
+	}
+}
+class B{}
+di.addRules({
+	A: {
+		classDef: A,
+		params: [ {
+			wathever: {
+				anotherKey: {
+					b: 'B'
+				},
+			},
+		}, 'B' ],
+	},
+	B: {
+		classDef: B,
+	},
+});
+
+const a = di.get('A');
+
+//it will be equivalent to
+const a = new A( {
+	wathever: {
+		anotherKey: {
+			b: new B(),
+		},
+	},
+}, new B() );
+```
 
 #### 3.3. Types of params
-...
+You can wrap each value of param with a di-strategy class that will tell container how to resolve the dependency.
+By default all values and subvalues of params are traversed when it's an Object or Array,
+are wrapped with "classFactory" if it's a function, and else by "interface".
+All these behaviors can be configured, but the default config is well and the documentation rely on it.
+(see
+[defaultVar](#57-defaultvar),
+[defaultRuleVar](#58-defaultrulevar),
+[defaultDecoratorVar](#59-defaultdecoratorvar),
+[defaultArgsVar](#510-defaultargsvar),	
+[defaultFactory](#511-defaultfactory),
+[defaultFunctionWrapper](#512-defaultfunctionwrapper))
 
 ##### 3.3.1 interface
-...
+Container will resolve dependency as, an instance of class or a value from factory, defined by corresponding rule's key.
+This is the default wrapper for string.
+```javascript
+class A{
+	constructor(b){
+		this.b = b;
+	}
+}
+class B{}
+
+di.addRule('A', { classDef: A });
+di.addRule('B', { classDef: B });
+
+di.addRule('A', { params: [ di.interface('B') ] });
+
+//with default config, previous rule will be equivalent to next one
+di.addRule('A', { params: [ 'B' ] });
+
+
+const a = di.get('A');
+
+//will be equivalent to
+const a = new A( new B() );
+```
 
 ##### 3.3.2 value
-...
+Container will resolve dependency with the specified value. The value type can be anything: scalar, object, array, function...
+```javascript
+class A{
+	constructor(bar){
+		this.foo = bar;
+	}
+}
+
+di.addRule('A', {
+	classDef: A,
+	params: [ di.value('bar') ],
+});
+
+const a = di.get('A');
+
+//will be equivalent to
+const a = new A( 'bar' );
+```
 
 ##### 3.3.3 factory
-...
+The behavior of this method can be configured with container config's key [defaultFactory](#511-defaultfactory).
+By default it's an alias for [valueFactory](#334-valueFactory),
+
+##### 3.3.4 valueFactory
+Container will resolve dependency with the value returned by the given function.
+```javascript
+class A{
+	constructor(bar){
+		this.foo = bar;
+	}
+}
+
+function getFoo(){
+	return 'bar';
+}
+
+di.addRule('A', {
+	classDef: A,
+	params: [ di.factory( getFoo ) ],
+});
+
+const a = di.get('A');
+
+//will be equivalent to
+const a = new A( getFoo() );
+```
+
+##### 3.3.5 classFactory
+Container will resolve dependency with an instance of the referenced class (or the returned value of a factory).
+This is the default wrapper for classes references.
+```javascript
+class A{
+	constructor(b){
+		this.b = b;
+	}
+}
+class B{}
+
+di.addRule('A', { classDef: A });
+
+di.addRule('A', { params: [ di.classFactory(B) ] });
+
+//with default config, previous rule will be equivalent to next one
+di.addRule('A', { params: [ B ] });
+
+
+const a = di.get('A');
+
+//will be equivalent to
+const a = new A( new B() );
+```
 
 ##### 3.3.4 require
-...
+Container will resolve dependency with an instance (or value returned by the function)
+of the class (or factory) (CJS export or ES6 export default) exported by specified file.
+
+You can use rules to configure it.
+
+The behavior of this method differ according to environnement:
+in all environnement it will rely on preloaded require.context (see [dependencies](#54-dependencies))
+wich is the only way to include dependency in webpack (because of static require resolution),
+for node, if the dependency it's not registred, it will require the specified file and register it.
+```javascript
+di.addRules({
+	'A': {
+		classDef: A,
+		params: [ di.require('path/to/my-file') ],
+	},
+	'path/to/my-file': {
+		/* ... */
+	},
+);
+
+const a = di.get('A');
+```
 
 
 ### 4. Rules
 ...
+```javascript
+
+```
 
 #### 4.1. dependencies
 ...
+```javascript
+
+```
 
 ##### 4.1.1 params
 ...
+```javascript
+
+```
 
 ##### 4.1.2 calls
 ...
+```javascript
+
+```
 
 ##### 4.1.3 lazyCalls
 ...
+```javascript
+
+```
 
 
 #### 4.2. instance
 ...
+```javascript
+
+```
 
 ##### 4.2.1 classDef
 ...
+```javascript
+
+```
 
 ##### 4.2.2 instanceOf
 ...
+```javascript
+
+```
 
 ##### 4.2.3 substitutions
 ...
+```javascript
+
+```
 
 
 #### 4.3. single instance
 ...
+```javascript
+
+```
 
 ##### 4.3.1 shared
 ...
+```javascript
+
+```
 
 ##### 4.3.2 singleton
 ...
+```javascript
+
+```
 
 ##### 4.3.3 sharedInTree
 ...
+```javascript
+
+```
 
 
 #### 4.4. rule inheritance
 ...
+```javascript
+
+```
 
 ##### 4.4.1 inheritInstanceOf
 ...
+```javascript
+
+```
 
 ##### 4.4.2 inheritPrototype
 ...
+```javascript
+
+```
 
 ##### 4.4.3 inheritMixins
 ...
+```javascript
+
+```
 
 ##### 4.4.4 decorator
 ...
+```javascript
+
+```
 
 #### 4.5. asynchrone dependencies resolution
 ...
+```javascript
+
+```
 
 ##### 4.5.1 asyncResolve
 ...
+```javascript
+
+```
 
 ##### 4.5.2 asyncCallsSerie
 ...
+```javascript
+
+```
 
 #### 4.6 dependency file location
 ...
+```javascript
+
+```
 
 ##### 4.6.1 autoload
 ...
+```javascript
+
+```
 
 ##### 4.6.2 path
 ...
+```javascript
+
+```
 
 
 ### 5. Container
 ...
+```javascript
+
+```
 
 #### 5.1 rules
 ...
+```javascript
+
+```
 
 #### 5.2 rulesDefault
 ...
+```javascript
+
+```
 
 #### 5.3 autoloadFailOnMissingFile
 ...
+```javascript
+
+```
 
 #### 5.4 dependencies
 ...
+```javascript
+
+```
 
 #### 5.5 autoloadExtensions
 ...
+```javascript
+
+```
 
 #### 5.6 autoloadPathResolver
 ...
+```javascript
+
+```
 
 #### 5.7 defaultVar
 ...
+```javascript
+
+```
 
 #### 5.8 defaultRuleVar
 ...
+```javascript
+
+```
 
 #### 5.9 defaultDecoratorVar
 ...
+```javascript
+
+```
 
 #### 5.10 defaultArgsVar
 ...
+```javascript
+
+```
 
 #### 5.11 defaultFactory
 ...
+```javascript
+
+```
 
 #### 5.12 defaultFunctionWrapper
 ...
+```javascript
+
+```
 
 #### 5.13 promiseFactory
 ...
+```javascript
+
+```
 
 #### 5.14 promiseInterfaces
 ...
+```javascript
+
+```
 
 #### 5.15 interfacePrototype
 ...
+```javascript
+
+```
 
 #### 5.16 interfaceTypeCheck
 ...
+```javascript
+
+```
 
 #### 15.7 globalKey
 ...
+```javascript
+
+```
 
 
 ## About
