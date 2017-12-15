@@ -113,17 +113,14 @@ di.get('MyClassName');
 
 ### 2. Dependencies declarations approaches
 
-To define dependencies, you can use Composition-Root or IoC approach for each components individually.
-
-Differents approaches can be used for differents methods injections on same component.
-
+To define dependencies, you can use Composition-Root or IoC approach for each components individually.  
+Differents approaches can be used for differents methods injections on same component.  
 Dependencies definition can be overrided, the last call of addRule or @di decorator will take precedence.
-
 
 #### 2.1 Composition-Root
 
-The Composition Root is the highest level of your application, the top overlay.
-It's here that you will configure many rules for your components and wire them together.
+The Composition Root is the highest level of your application, the top overlay.  
+It's here that you will configure many rules for your components and wire them together.  
 Using only the Composition Root design pattern has the advantage to let you have totaly unopinionated components,
 all your classes and factories can keep uncoupled from the dependency injector (di-strategy).
 
@@ -145,9 +142,9 @@ di.get('A')
 
 #### 2.2 Inversion of Control (IoC)
 
-The IoC design pattern let your components define their own dependencies.
+The IoC design pattern let your components define their own dependencies.  
 These dependencies declarations can rely on container level defined abstractions (recommanded),
-or on direct class or factory definition.
+or on direct class or factory definition.  
 It can be used in addition to the Composition-Root and replace the rule's key "[params](#411-params)" and also the parameters of call argument for rule's key "[calls](#412-calls)" and "[lazyCalls](#413-lazycalls)".
 
 ##### 2.2.1 abstract class
@@ -259,9 +256,9 @@ const a = new A( {
 ```
 
 #### 3.3. Types of params
-You can wrap each value of param with a di-strategy class that will tell container how to resolve the dependency.
+You can wrap each value of param with a di-strategy class that will tell container how to resolve the dependency.  
 By default all values and subvalues of params are traversed when it's an Object or Array,
-are wrapped with "classFactory" when it's a function, and else by "interface".
+are wrapped with "classFactory" when it's a function, and else by "interface".  
 All these behaviors can be configured, but the default config is well and the documentation rely on it.
 (see
 [defaultVar](#57-defaultvar),
@@ -274,7 +271,7 @@ All these behaviors can be configured, but the default config is well and the do
 (for others params behaviors see [params](#411-params))
 
 ##### 3.3.1 interface
-Container will resolve dependency as, an instance of class or a value from factory, defined by corresponding rule's key.
+Container will resolve dependency as, an instance of class or a value from factory, defined by corresponding rule's key.  
 This is the default wrapper for string.
 ```javascript
 class A{
@@ -320,8 +317,8 @@ const a = new A( 'bar' );
 ```
 
 ##### 3.3.3 factory
-The behavior of this method can be configured with container config's key [defaultFactory](#511-defaultfactory).
-By default it's an alias for [valueFactory](#334-valueFactory),
+The behavior of this method can be configured with container config's key [defaultFactory](#511-defaultfactory).  
+By default it's an alias for [valueFactory](#334-valueFactory).
 
 ##### 3.3.4 valueFactory
 Container will resolve dependency with the value returned by the given function.
@@ -348,7 +345,7 @@ const a = new A( getFoo() );
 ```
 
 ##### 3.3.5 classFactory
-Container will resolve dependency with an instance of the referenced class (or the returned value of a factory).
+Container will resolve dependency with an instance of the referenced class (or the returned value of a factory).  
 This is the default wrapper for classes references.
 ```javascript
 class A{
@@ -374,11 +371,9 @@ const a = new A( new B() );
 
 ##### 3.3.4 require
 Container will resolve dependency with an instance (or value returned by the function)
-of the class (or factory) (CJS export or ES6 export default) exported by specified file.
-
-You can use rules to configure it.
-
-The behavior of this method differ according to environnement:
+of the class (or factory) (CJS export or ES6 export default) exported by specified file.  
+You can use rules to configure it.  
+The behavior of this method differ according to environnement:  
 in all environnement it will rely on preloaded require.context (see [dependencies](#54-dependencies))
 wich is the only way to include dependency in webpack (because of static require resolution),
 for node, if the dependency it's not registred, it will require the specified file and register it.
@@ -473,7 +468,7 @@ di.get('A', ['E','F','G']);
 type: **array**  
 stack of call array with 1st item for method name or callback and 2nd item an array of params for methods (working same as [params](#411-params)).
 
-Stack of methods to call after instance creation.
+Stack of methods to call after instance creation.  
 If some circular dependencies are detected, some items of calls stack will be placed automatically in [lazyCalls](#413-lazycalls).
 
 ```javascript
