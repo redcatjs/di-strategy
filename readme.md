@@ -14,7 +14,12 @@ $ npm i di-strategy
   
   * Offer a pure JavaScript non-dogmatic cross-transpiller [Dependency-Injection](https://en.wikipedia.org/wiki/Dependency_injection) framework.
 
-  * Encourage adherence to the best practices of Object Oriented design ([SOLID](https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)), [Dependency-Injection](https://en.wikipedia.org/wiki/Dependency_injection), [Composition Root](http://blog.ploeh.dk/2011/07/28/CompositionRoot/), [IoC](https://en.wikipedia.org/wiki/Inversion_of_control), [Strategy](https://en.wikipedia.org/wiki/Strategy_pattern) ...).
+  * Encourage adherence to the best practices of Object Oriented design
+  ( [SOLID](https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)),
+  [IoC](https://en.wikipedia.org/wiki/Inversion_of_control),
+  [Dependency-Injection](https://en.wikipedia.org/wiki/Dependency_injection),
+  [Composition Root](http://blog.ploeh.dk/2011/07/28/CompositionRoot/),
+  [Strategy](https://en.wikipedia.org/wiki/Strategy_pattern) ...).
   
   * Improve code testability.
   
