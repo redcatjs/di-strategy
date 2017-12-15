@@ -8,14 +8,14 @@ $ npm i di-strategy
 ```
 
 ## Motivations
-⋅⋅* Implement [Composition Root](http://blog.ploeh.dk/2011/07/28/CompositionRoot/) and [IoC](https://en.wikipedia.org/wiki/Inversion_of_control) design patterns, allowing to keep all things decoupled and to wire application components and config at one unique root place.
+  * Implement [Composition Root](http://blog.ploeh.dk/2011/07/28/CompositionRoot/) and [IoC](https://en.wikipedia.org/wiki/Inversion_of_control) design patterns, allowing to keep all things decoupled and to wire application components and config at one unique root place.
 
-⋅⋅* Encourage best practices, replacing the singleton anti-pattern with dependency-injection by refacto export of instances to export of classes and factories.
+  * Encourage best practices, replacing the singleton anti-pattern with dependency-injection by refacto export of instances to export of classes and factories.
 
-⋅⋅* Help developers to write good and [SOLID](https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)) Object Oriented (OO) design,
+  * Help developers to write good and [SOLID](https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)) Object Oriented (OO) design,
 allowing [Composite Reuse](https://en.wikipedia.org/wiki/Composition_over_inheritance) without needing TypeScript (because some of us, including myself, prefer Babel) or other specific transpiller dependency.
 
-⋅⋅* Improve whole code testability.
+  * Improve whole code testability.
 
 ## Documentation
 
