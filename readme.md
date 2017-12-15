@@ -7,17 +7,18 @@ High level and universal javascript Dependency-Injection (DI) container for node
 $ npm i di-strategy
 ```
 
-## Motivations
+## Goals
   * Implement [Composition Root](http://blog.ploeh.dk/2011/07/28/CompositionRoot/) and [IoC](https://en.wikipedia.org/wiki/Inversion_of_control) design patterns, allowing to keep all things decoupled and to wire application components and config at one unique root place.
 
-  * Encourage best practices, replacing the singleton anti-pattern with dependency-injection by refacto export of instances to export of classes and factories.
+  * Replace the singleton anti-pattern with dependency-injection by refacto export of instances to export of classes and factories.
   
-  * Make a pure JavaScript non-dogmatic cross-transpiller Dependency-Injection framework.
+  * Offer a pure JavaScript non-dogmatic cross-transpiller [Dependency-Injection](https://en.wikipedia.org/wiki/Dependency_injection) framework.
 
-  * Help developers to write good and [SOLID](https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)) Object Oriented (OO) design,
-allowing [Composite Reuse](https://en.wikipedia.org/wiki/Composition_over_inheritance).
-
-  * Improve whole code testability.
+  * Encourage adherence to the best practices of Object Oriented design ([SOLID](https://en.wikipedia.org/wiki/SOLID_(object-oriented_design), [Dependency-Injection](https://en.wikipedia.org/wiki/Dependency_injection), [Composition Root](http://blog.ploeh.dk/2011/07/28/CompositionRoot/), [IoC](https://en.wikipedia.org/wiki/Inversion_of_control), [Strategy](https://en.wikipedia.org/wiki/Strategy_pattern) ...).
+  
+  * Improve code testability.
+  
+  * Improve the Art of JavaScript development.
 
 ## Documentation
 
